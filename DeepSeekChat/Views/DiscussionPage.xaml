@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeepSeekChat.Views.DiscussionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeepSeekChat.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uim="using:DeepSeekChat.Models"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=local:MainPage}">
+    <Grid Grid.Column="1" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="120"/>
+        </Grid.RowDefinitions>
+        <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItem.Title, Mode=TwoWay}"/>
+
+        <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItem.Messages, Mode=TwoWay}">
+            <!-- The ItemsStackPanel must be edited to update the following two properties -->
+            <!-- These properties allow the list to grow from the bottom -->
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
+                  VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <!-- This setter property is created so ListViewItems correctly align to the left or right. -->
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="0,0,0,8"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="uim:ChatMessage">
+                    <ListViewItem>
+                        <Grid RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Right">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="32"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" CornerRadius="4" Padding="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                    <TextBlock HorizontalAlignment="Right" IsTextSelectionEnabled="True" TextWrapping="Wrap" Text="{Binding UserPrompt}"/>
+                                </Grid>
+                                <PersonPicture Grid.Column="1" ProfilePicture="ms-appx:///Assets/uSER.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                            </Grid>
+                            <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="1" CornerRadius="4" Padding="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                    <TextBlock IsTextSelectionEnabled="True" TextWrapping="Wrap" Text="{Binding AiAnswer}"/>
+                                </Grid>
+                                <PersonPicture Grid.Column="0" ProfilePicture="ms-appx:///Assets/AI.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                            </Grid>
+                        </Grid>
+                    </ListViewItem>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Grid Grid.Row="2" Margin="-36,0,-36,-40" Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="64"/>
+            </Grid.ColumnDefinitions>
+            <Grid Padding="16,16,0,16" Grid.Column="0">
+                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Button HorizontalAlignment="Center" Width="48" Height="48" Style="{ThemeResource AccentButtonStyle}">
+                    <FontIcon Glyph="&#xE724;" FontSize="18" />
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

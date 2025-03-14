@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DeepSeekChat (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DeepSeekChat (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
