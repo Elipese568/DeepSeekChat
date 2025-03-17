@@ -8,7 +8,7 @@ using OpenAI;
 
 namespace DeepSeekChat.Models;
 
-public partial class ChatMessage : ObservableObject
+public partial class ApplicationChatMessage : ObservableObject
 {
     [ObservableProperty]
     private string _userPrompt;

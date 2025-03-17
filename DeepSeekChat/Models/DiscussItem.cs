@@ -20,5 +20,5 @@ public partial class DiscussItem : ObservableObject
     private DateTime _creationTime;
 
     [ObservableProperty]
-    private ObservableCollection<ChatMessage> _messages;
+    private ObservableCollection<ApplicationChatMessage> _messages;
 }

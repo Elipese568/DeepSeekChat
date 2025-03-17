@@ -36,14 +36,14 @@
             </ListView.ItemContainerStyle>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="uim:ChatMessage">
+                <DataTemplate x:DataType="uim:ApplicationChatMessage">
                     <ListViewItem>
-                        <Grid RowSpacing="8">
+                        <Grid RowSpacing="18">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Right">
+                            <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Right">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="32"/>
@@ -53,7 +53,7 @@
                                 </Grid>
                                 <PersonPicture Grid.Column="1" ProfilePicture="ms-appx:///Assets/uSER.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
                             </Grid>
-                            <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Left">
+                            <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="32"/>
                                     <ColumnDefinition Width="*"/>
@@ -75,10 +75,15 @@
                 <ColumnDefinition Width="64"/>
             </Grid.ColumnDefinitions>
             <Grid Padding="16,16,0,16" Grid.Column="0">
-                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Grid.Column="1">
-                <Button HorizontalAlignment="Center" Width="48" Height="48" Style="{ThemeResource AccentButtonStyle}">
+                <Button HorizontalAlignment="Center" 
+                        Command="{x:Bind ViewModel.SendCommand}"
+                        CommandParameter="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay}"
+                        Width="48" 
+                        Height="48" 
+                        Style="{ThemeResource AccentButtonStyle}">
                     <FontIcon Glyph="&#xE724;" FontSize="18" />
                 </Button>
             </Grid>
