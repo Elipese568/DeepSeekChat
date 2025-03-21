@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,6 +9,7 @@ using System.Windows.Input;
 using DeepSeekChat.Models;
 using Microsoft.UI.Dispatching;
 using OpenAI;
+using OpenAI.Assistants;
 using OpenAI.Chat;
 
 namespace DeepSeekChat.Command;
@@ -72,27 +74,31 @@ public class CallAICommand : ICommand
             // 添加当前新消息
             messages.Add(UserChatMessage.CreateUserMessage(currentPrompt));
 
-            var responseStream = _chatClient.CompleteChatStreamingAsync(messages, options: new ChatCompletionOptions()
+            var responseStream = _chatClient.CompleteChatStreaming(messages, options: new ChatCompletionOptions()
             {
                 MaxOutputTokenCount = 8192,
                 Temperature = 0.6F,
                 TopP = 0.95F,
                 FrequencyPenalty = 0.0F,
-                Seed = Random.Shared.Next(0, int.MaxValue)
+                Seed = Random.Shared.Next(0, int.MaxValue),
             }, cancellationToken: _cts.Token);
 
             var fullResponse = new StringBuilder();
-            await foreach (StreamingChatCompletionUpdate response in responseStream)
+
+            foreach (var response in responseStream)
             {
-                var contentText = string.Join("", response.ContentUpdate.Select(x => x.Text));
-                if (!string.IsNullOrEmpty(contentText))
-                {
-                    fullResponse.Append(contentText);
-                    _dispatcherQueue.TryEnqueue(() =>
-                    {
-                        StreamResponseReceived?.Invoke(this, fullResponse.ToString());
-                    });
-                }
+                var c = response;
+                //var responsec = c.Text;
+                //Debug.Write(responsec);
+                //var contentText = responsec;
+                //if (!string.IsNullOrEmpty(contentText))
+                //{
+                //    fullResponse.Append(contentText);
+                //    _dispatcherQueue.TryEnqueue(() =>
+                //    {
+                //        StreamResponseReceived?.Invoke(this, fullResponse.ToString());
+                //    });
+                //}
             }
         }
         catch (OperationCanceledException)

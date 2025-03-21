@@ -34,9 +34,13 @@
         <Grid RowSpacing="4" Grid.Column="0" Background="{ThemeResource LayerFillColorAlt}" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="54"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="1" Margin="8" Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
+            <StackPanel Grid.Row="1" Padding="8" Spacing="8">
+                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
+                <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch">Go Setting</Button>
+            </StackPanel>
+            
             <ScrollViewer Grid.Row="0" Padding="0,16,0,16">
                 <Grid>
                     <ListView x:Name="DiscussList" Grid.Row="1" SelectionChanged="DiscussList_SelectionChanged" ItemClick="DiscussList_ItemClick" ItemsSource="{x:Bind ViewModel.DiscussItems}">
@@ -58,6 +62,6 @@
             </ScrollViewer>
         </Grid>
 
-        <ContentPresenter x:Name="DiscussionFrame" Grid.Column="1" Margin="36,40"/>
+        <ContentPresenter x:Name="DiscussionFrame" Grid.Column="1" Content="{x:Bind ViewModel.ContentPage, Mode=TwoWay}" Margin="36,40"/>
     </Grid>
 </Page>

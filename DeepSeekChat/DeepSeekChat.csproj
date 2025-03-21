@@ -16,6 +16,7 @@
     <None Remove="Assets\User.png" />
     <None Remove="MainPage.xaml" />
     <None Remove="Views\DiscussionPage.xaml" />
+    <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

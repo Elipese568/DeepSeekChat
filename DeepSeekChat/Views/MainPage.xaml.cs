@@ -91,8 +91,13 @@ namespace DeepSeekChat.Views
             else
             {
                 ViewModel.SelectedDiscussItem = e.AddedItems[0] as DiscussItem;
-                DiscussionFrame.Content = new DiscussionPage(ViewModel.SelectedDiscussItem);
+                ViewModel.TryNavigate(ViewModel.SelectedDiscussItem.Id.ToString(), ()=> new DiscussionPage(ViewModel.SelectedDiscussItem));
             }
+        }
+        private void GoSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.TryNavigate("Setting", () => new SettingPage());
+            DiscussList.SelectedIndex = -1;
         }
     }
 }
