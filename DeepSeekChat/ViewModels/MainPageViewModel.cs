@@ -40,14 +40,14 @@ public partial class MainPageViewModel : ObservableRecipient
     [RelayCommand]
     public void RemoveDiscussion()
     {
-        DiscussItems.RemoveAt(DiscussItems.FindIndex(x => x.Id == OperatingItem.Id));
+        DiscussItems.RemoveAt(DiscussItems.IndexOf(x => x.Id == OperatingItem.Id));
         TryRemovePage(OperatingItem.Id.ToString());
     }
 
     [RelayCommand]
     public async Task ChangeDiscussionTitle()
     {
-        int operatingIndex = DiscussItems.FindIndex(x => x.Id == OperatingItem.Id);
+        int operatingIndex = DiscussItems.IndexOf(x => x.Id == OperatingItem.Id);
         ContentDialog contentDialog = new();
         contentDialog.Title = "Change Title";
         contentDialog.PrimaryButtonText = "Confirm";
@@ -107,9 +107,14 @@ public partial class MainPageViewModel : ObservableRecipient
                         new()
                         {
                             UserPrompt = "Test",
-                            AiAnswer = "Test"
+                            AiChatCompletion = new AiChatCompletion()
+                            {
+                                ReasoningContent = "Test",
+                                Content = "Test"
+                            }
                         }
-                    ]
+                    ],
+                    ChatOptions = new()
                 });
             }
         };
@@ -120,6 +125,7 @@ public partial class MainPageViewModel : ObservableRecipient
 
     private Dictionary<string, Page> _pages = new();
     private string _currentPageId = string.Empty;
+    public string CurrentPageId => _currentPageId;
     public void TryNavigate(string pageId, Func<Page> addPageFactory)
     {
         if (_pages.TryGetValue(pageId, out Page page))

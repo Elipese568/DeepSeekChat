@@ -1,5 +1,6 @@
 ﻿using OpenAI;
 using OpenAI.Assistants;
+using OpenAI.Chat;
 using System;
 using System.ClientModel;
 using System.Collections.Generic;
@@ -33,4 +34,6 @@ public class ClientService
         
         var assistantClient = _client.GetAssistantClient();
     }
+
+
 }

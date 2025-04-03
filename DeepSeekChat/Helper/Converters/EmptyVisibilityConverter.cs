@@ -27,7 +27,7 @@ public partial class EmptyVisibilityConverter : IValueConverter
             return Microsoft.UI.Xaml.Visibility.Collapsed;
         }
 
-        bool rev = parameter != null && (bool)parameter;
+        bool rev = parameter != null && bool.Parse((parameter as string)??"false");
 
         return _handler[value.GetType()](value) ^ rev ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
     }

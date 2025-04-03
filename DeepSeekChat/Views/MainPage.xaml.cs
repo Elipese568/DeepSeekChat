@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using DeepSeekChat.ViewModels;
 using DeepSeekChat.Models;
 using System.Threading.Tasks;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,31 +29,39 @@ namespace DeepSeekChat.Views
     {
         public MainPageViewModel ViewModel { get; set; }
 
+        public static MainPage Current { get; private set; }
+
         public MainPage()
         {
             ViewModel = new(this)
             {
                 DiscussItems =
                 [
-                    new DiscussItem 
-                    { 
-                        Id = Guid.NewGuid(), 
-                        Title = "First Discussion", 
+                    new DiscussItem
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "First Discussion",
                         CreationTime = DateTime.Now,
                         Messages =
                         [
                             new()
                             {
                                 UserPrompt = "Test",
-                                AiAnswer = "Test"
+                                AiChatCompletion = new()
+                                {
+                                    ReasoningContent = "Reasoning Content",
+                                    Content = "Hello, how can I help you today?"
+                                }
                             }
-                        ] 
+                        ],
+                        ChatOptions = new()
                     }
                 ]
             };
             DataContext = ViewModel;
 
             ViewModel.DiscussItems.CollectionChanged += DiscussItems_CollectionChanged;
+            Current = this;
 
             this.InitializeComponent();
         }
@@ -91,13 +100,20 @@ namespace DeepSeekChat.Views
             else
             {
                 ViewModel.SelectedDiscussItem = e.AddedItems[0] as DiscussItem;
+                ViewModel.SelectedDiscussItem.CurrentUIStatus = ProgressStatus.None;
                 ViewModel.TryNavigate(ViewModel.SelectedDiscussItem.Id.ToString(), ()=> new DiscussionPage(ViewModel.SelectedDiscussItem));
+
             }
         }
         private void GoSettingButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.TryNavigate("Setting", () => new SettingPage());
             DiscussList.SelectedIndex = -1;
+        }
+
+        public static Visibility Transparent2Visibility(Color color)
+        {
+            return color.A > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

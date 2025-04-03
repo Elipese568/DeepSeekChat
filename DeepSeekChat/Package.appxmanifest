@@ -17,7 +17,7 @@
   <Properties>
     <DisplayName>DeepSeekChat</DisplayName>
     <PublisherDisplayName>Admin</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\StoreLogo.backup.png</Logo>
   </Properties>
 
   <Dependencies>

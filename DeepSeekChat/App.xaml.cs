@@ -19,6 +19,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,6 +46,17 @@ namespace DeepSeekChat
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussItem>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ItemCollection), (value) => (value as ItemCollection).Count != 0);
+
+            EmptyVisibilityConverter.RegisterHandler(typeof(SolidColorBrush), v => ((SolidColorBrush)v).Color.A > 0);
+
+            DictionaryConeverter.RegisterHandler((typeof(ProgressStatus), typeof(int)), (x, y) =>
+            {
+                return (int)x == (int)y;
+            });
+            DictionaryConeverter.RegisterHandler((typeof(ProgressStatus), typeof(ProgressStatus)), (x, y) =>
+            {
+                return (int)x == (int)y;
+            });
         }
 
         /// <summary>
@@ -58,5 +70,6 @@ namespace DeepSeekChat
         }
 
         private Window? m_window;
+
     }
 }

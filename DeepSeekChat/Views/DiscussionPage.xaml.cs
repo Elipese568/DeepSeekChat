@@ -20,6 +20,18 @@ using Windows.Foundation.Collections;
 
 namespace DeepSeekChat.Views
 {
+    public class ProgressStatusVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (ProgressStatus)value == ProgressStatus.InProgress ? Visibility.Visible : Visibility.Collapsed;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -37,6 +49,16 @@ namespace DeepSeekChat.Views
             {
                 InvertedListView.ScrollIntoView(ViewModel.SelectedDiscussItem.Messages.LastOrDefault());
             };
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OptionPane.IsPaneOpen = !OptionPane.IsPaneOpen;
+        }
+
+        private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.StopGenerating();
         }
     }
 }
