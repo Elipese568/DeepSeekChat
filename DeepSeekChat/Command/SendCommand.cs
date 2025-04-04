@@ -39,7 +39,20 @@ public partial class SendCommand : ICommand
         return !InProgress;
     }
 
+    public bool CanExecute() => CanExecute("__TEST_STRING___DO_NOT_CHANGE__");
+
     public void Execute(object? parameter)
     {
+        if (parameter == null)
+            return;
+        string pmt = parameter as string;
+        if (string.IsNullOrEmpty(pmt))
+            return;
+        InProgress = true;
+        Task.Run(() =>
+        {
+            Thread.Sleep(1000);
+            InProgress = false;
+        });
     }
 }

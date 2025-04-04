@@ -51,7 +51,7 @@
                                 <Grid Grid.Column="0" CornerRadius="4" Padding="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                                     <TextBlock HorizontalAlignment="Right" IsTextSelectionEnabled="True" TextWrapping="Wrap" Text="{Binding UserPrompt}"/>
                                 </Grid>
-                                <PersonPicture Grid.Column="1" ProfilePicture="ms-appx:///Assets/uSER.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                                <PersonPicture Grid.Column="1" ProfilePicture="ms-appx:///Assets/User.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
                             </Grid>
                             <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
@@ -78,7 +78,7 @@
                 <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
             </Grid>
             <Grid Grid.Column="1">
-                <Button HorizontalAlignment="Center" Width="48" Height="48" Style="{ThemeResource AccentButtonStyle}">
+                <Button HorizontalAlignment="Center" IsEnabled="{x:Bind ViewModel.Sendable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Command="{x:Bind ViewModel.SendCommand}" CommandParameter="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="48" Height="48" Style="{ThemeResource AccentButtonStyle}">
                     <FontIcon Glyph="&#xE724;" FontSize="18" />
                 </Button>
             </Grid>
