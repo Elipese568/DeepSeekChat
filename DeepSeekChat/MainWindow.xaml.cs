@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -24,8 +25,12 @@ namespace DeepSeekChat
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow() : base()
         {
+            ExtendsContentIntoTitleBar = true;
+            AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
+
+            SetTitleBar(MyTitleBar);
             this.InitializeComponent();
         }
     }

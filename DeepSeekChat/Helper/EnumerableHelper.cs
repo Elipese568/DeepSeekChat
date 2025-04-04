@@ -8,7 +8,7 @@ namespace DeepSeekChat.Helper;
 
 public static class EnumerableHelper
 {
-    public static int FindIndex<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+    public static int IndexOf<T>(this IEnumerable<T> source, Func<T, bool> predicate)
     {
         int index = 0;
         foreach (var item in source)

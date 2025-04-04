@@ -6,82 +6,398 @@
     xmlns:local="using:DeepSeekChat.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:uim="using:DeepSeekChat.Models"
+    xmlns:m="using:DeepSeekChat.Models"
+    xmlns:com="using:System.Collections.ObjectModel"
+    xmlns:conv="using:DeepSeekChat.Helper.Converters"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=local:MainPage}">
-    <Grid Grid.Column="1" RowSpacing="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="120"/>
-        </Grid.RowDefinitions>
-        <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItem.Title, Mode=TwoWay}"/>
-
-        <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItem.Messages, Mode=TwoWay}">
-            <!-- The ItemsStackPanel must be edited to update the following two properties -->
-            <!-- These properties allow the list to grow from the bottom -->
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
-                  VerticalAlignment="Bottom"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-
-            <!-- This setter property is created so ListViewItems correctly align to the left or right. -->
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    <Setter Property="Margin" Value="0,0,0,8"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="uim:ChatMessage">
-                    <ListViewItem>
-                        <Grid RowSpacing="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Right">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="32"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0" CornerRadius="4" Padding="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                    <TextBlock HorizontalAlignment="Right" IsTextSelectionEnabled="True" TextWrapping="Wrap" Text="{Binding UserPrompt}"/>
-                                </Grid>
-                                <PersonPicture Grid.Column="1" ProfilePicture="ms-appx:///Assets/User.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
-                            </Grid>
-                            <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="500" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="32"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="1" CornerRadius="4" Padding="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                    <TextBlock IsTextSelectionEnabled="True" TextWrapping="Wrap" Text="{Binding AiAnswer}"/>
-                                </Grid>
-                                <PersonPicture Grid.Column="0" ProfilePicture="ms-appx:///Assets/AI.png" Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
-                            </Grid>
-                        </Grid>
-                    </ListViewItem>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-        <Grid Grid.Row="2" Margin="-36,0,-36,-40" Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="64"/>
-            </Grid.ColumnDefinitions>
-            <Grid Padding="16,16,0,16" Grid.Column="0">
-                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-            </Grid>
-            <Grid Grid.Column="1">
-                <Button HorizontalAlignment="Center" IsEnabled="{x:Bind ViewModel.Sendable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Command="{x:Bind ViewModel.SendCommand}" CommandParameter="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="48" Height="48" Style="{ThemeResource AccentButtonStyle}">
-                    <FontIcon Glyph="&#xE724;" FontSize="18" />
+    <Page.Resources>
+        <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
+        <conv:IntyConverter x:Key="IntyConverter"/>
+        <local:ProgressStatusVisibilityConverter x:Key="ProgressStatusVisibilityConverter"/>
+    </Page.Resources>
+    <Grid x:Name="MainArea">
+        <Grid RowSpacing="16" Padding="36,40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="120"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItem.Title, Mode=TwoWay}"/>
+                <Button Click="Button_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <FontIcon FontSize="16" Glyph="&#xE713;" />
+                        <TextBlock>Option</TextBlock>
+                    </StackPanel>
                 </Button>
             </Grid>
+            
+            <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItem.Messages, Mode=TwoWay}">
+                <!-- The ItemsStackPanel must be edited to update the following two properties -->
+                <!-- These properties allow the list to grow from the bottom -->
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
+                                         VerticalAlignment="Bottom"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <!-- This setter property is created so ListViewItems correctly align to the left or right. -->
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Margin" Value="0,0,0,8"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="m:ApplicationChatMessage">
+                        <ListViewItem>
+                            <Grid RowSpacing="18">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Right">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="32"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" 
+                                          CornerRadius="4" 
+                                          Padding="12" 
+                                          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                          BorderThickness="1" 
+                                          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                        <TextBlock HorizontalAlignment="Right" 
+                                                   IsTextSelectionEnabled="True" 
+                                                   TextWrapping="Wrap" 
+                                                   Text="{Binding UserPrompt}"/>
+                                    </Grid>
+                                    <PersonPicture Grid.Column="1" 
+                                                   ProfilePicture="ms-appx:///Assets/User.png" 
+                                                   Height="32" 
+                                                   Width="32" 
+                                                   VerticalAlignment="Top" 
+                                                   HorizontalAlignment="Center" 
+                                                   BorderThickness="1" 
+                                                   BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                                </Grid>
+                                <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="32"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="1" CornerRadius="4" Spacing="8">
+                                        <Expander IsExpanded="True"
+                                                  ExpandDirection="Down"
+                                                  VerticalAlignment="Top"
+                                                  HorizontalContentAlignment="Left">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
+                                                        <Image Height="16">
+                                                            <Image.Resources>
+                                                                <ResourceDictionary>
+                                                                    <ResourceDictionary.ThemeDictionaries>
+                                                                        <ResourceDictionary x:Key="Light">
+                                                                            <Style TargetType="Image">
+                                                                                <Setter Property="Source" Value="ms-appx:///Assets/DeepSeekingIconLightMode.svg" />
+                                                                            </Style>
+                                                                        </ResourceDictionary>
+                                                                        <ResourceDictionary x:Key="Dark">
+                                                                            <Style TargetType="Image">
+                                                                                <Setter Property="Source" Value="ms-appx:///Assets/DeepSeekingIconDarkMode.svg" />
+                                                                            </Style>
+                                                                        </ResourceDictionary>
+                                                                    </ResourceDictionary.ThemeDictionaries>
+                                                                </ResourceDictionary>
+                                                            </Image.Resources>
+                                                        </Image>
+                                                        <TextBlock>Deep Seeking</TextBlock>
+                                                    </StackPanel>
+                                                    <Border VerticalAlignment="Stretch"
+                                                            Width="1"
+                                                            BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
+                                                            BorderThickness="1"
+                                                            Height="Auto"/>
+                                                    <Button Margin="0,2,0,0" VerticalAlignment="Center" Style="{StaticResource SubtleButtonStyle}">
+                                                        <Button.Flyout>
+                                                            <Flyout>
+                                                                <StackPanel Spacing="16">
+                                                                    <StackPanel Spacing="8">
+                                                                        <TextBlock VerticalAlignment="Center"
+                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                   Text="Prompt Token Usage"/>
+                                                                        <TextBlock Text="{Binding TokenUsage.PromptTokens}"/>
+                                                                    </StackPanel>
+                                                                    <MenuFlyoutSeparator Margin="-12" />
+                                                                    <StackPanel Spacing="8">
+                                                                        <TextBlock VerticalAlignment="Center"
+                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                   Text="Completion Token Usage"/>
+                                                                        <TextBlock Text="{Binding TokenUsage.CompletionTokens}"/>
+                                                                    </StackPanel>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock>Token Usage:</TextBlock>
+                                                            <TextBlock Text="{Binding TokenUsage.TotalTokens}"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <Button Margin="-11,2,0,0" VerticalAlignment="Center" Style="{StaticResource SubtleButtonStyle}">
+                                                        <Button.Flyout>
+                                                            <Flyout>
+                                                                <StackPanel Spacing="16">
+                                                                    <StackPanel Spacing="8">
+                                                                        <TextBlock VerticalAlignment="Center"
+                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                   Text="Message ID"/>
+                                                                        <TextBlock Text="{Binding CurrentMessageMetadata.Id}"/>
+                                                                    </StackPanel>
+                                                                    <MenuFlyoutSeparator Margin="-12" />
+                                                                    <StackPanel Spacing="8">
+                                                                        <TextBlock VerticalAlignment="Center"
+                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                   Text="Create Time"/>
+                                                                        <TextBlock Text="{Binding CurrentMessageMetadata.TimeCreated}"/>
+                                                                    </StackPanel>
+                                                                    <MenuFlyoutSeparator Margin="-12" />
+                                                                    <Grid RowSpacing="12" Margin="-16,-16,-16,-16" Padding="16"  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition/>
+                                                                            <RowDefinition/>
+                                                                        </Grid.RowDefinitions>
+                                                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Arguments</TextBlock>
+                                                                        <StackPanel Grid.Row="1" Spacing="16">
+                                                                            <StackPanel Spacing="8">
+                                                                                <StackPanel Spacing="4" Orientation="Horizontal">
+                                                                                    <TextBlock VerticalAlignment="Center"
+                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                               Text="System Prompt"/>
+                                                                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="{Binding CurrentMessageMetadata.Options.SystemPrompt}" FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                                                                </StackPanel>
+                                                                                <TextBlock Text="{Binding CurrentMessageMetadata.Options.SystemPrompt}" MaxWidth="250"/>
+                                                                            </StackPanel>
+                                                                            <MenuFlyoutSeparator Margin="-12" />
+                                                                            <Grid ColumnSpacing="8">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="*"/>
+                                                                                    <ColumnDefinition Width="1"/>
+                                                                                    <ColumnDefinition Width="*"/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <StackPanel Spacing="8" Grid.Column="0">
+                                                                                    <TextBlock VerticalAlignment="Center"
+                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                               Text="Max Token Output Count"/>
+                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.MaxTokens}"/>
+                                                                                </StackPanel>
+                                                                                <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                                                                                <StackPanel Spacing="8" Grid.Column="2">
+                                                                                    <TextBlock VerticalAlignment="Center"
+                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                               Text="Seed"/>
+                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.Seed}"/>
+                                                                                </StackPanel>
+                                                                            </Grid>
+                                                                            <MenuFlyoutSeparator Margin="-12" />
+                                                                            <Grid ColumnSpacing="8">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="*"/>
+                                                                                    <ColumnDefinition Width="1"/>
+                                                                                    <ColumnDefinition Width="*"/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <StackPanel Spacing="8" Grid.Column="0">
+                                                                                    <TextBlock VerticalAlignment="Center"
+                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                               Text="Temperature"/>
+                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.Temperature}"/>
+                                                                                </StackPanel>
+                                                                                <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                                                                                <StackPanel Spacing="8" Grid.Column="2">
+                                                                                    <TextBlock VerticalAlignment="Center"
+                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                               Text="Top-P"/>
+                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.TopP}"/>
+                                                                                </StackPanel>
+                                                                            </Grid>
+                                                                            
+                                                                            <MenuFlyoutSeparator Margin="-12" />
+                                                                            <StackPanel Spacing="8">
+                                                                                <TextBlock VerticalAlignment="Center"
+                                                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                           Text="Frequency Penalty"/>
+                                                                                <TextBlock Text="{Binding CurrentMessageMetadata.Options.FrequencyPenalty}"/>
+                                                                            </StackPanel>
+                                                                        </StackPanel>
+                                                                    </Grid>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
+                                                            <Border CornerRadius="16" Width="16" Height="16" Background="{Binding ProgressStatus, Converter={StaticResource ProgressStatusToColorConverter}}" />
+                                                            <TextBlock Text="{Binding ProgressStatus, Converter={StaticResource ProgressStatusToTextConverter}}"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <Border VerticalAlignment="Stretch"
+                                                            Width="1"
+                                                            BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
+                                                            BorderThickness="1"
+                                                            Height="Auto"
+                                                            Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}"/>
+                                                    <Button Padding="4" 
+                                                            Width="28" 
+                                                            Style="{ThemeResource SubtleButtonStyle}" 
+                                                            Name="StopGeneratingButton" Click="StopGeneratingButton_Click" 
+                                                            Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}">
+                                                        <FontIcon FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE71A;" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <Expander.Content>
+                                                <TextBlock MaxWidth="800" TextWrapping="Wrap" HorizontalTextAlignment="Left" IsTextSelectionEnabled="True" Text="{Binding AiChatCompletion.ReasoningContent}"></TextBlock>
+                                            </Expander.Content>
+                                        </Expander>
+                                        <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                              BorderThickness="1" 
+                                              CornerRadius="4"
+                                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                              Padding="12"
+                                              Visibility="{Binding AiChatCompletion.Content, Converter={StaticResource EmptyVisibilityConverter}}">
+                                            <TextBlock MaxWidth="800" TextWrapping="Wrap" IsTextSelectionEnabled="True" Text="{Binding AiChatCompletion.Content}"></TextBlock>
+                                        </Grid>
+                                    </StackPanel>
+                                    <PersonPicture Grid.Column="0" 
+                                                   ProfilePicture="ms-appx:///Assets/AI.png" 
+                                                   Height="32" 
+                                                   Width="32" 
+                                                   VerticalAlignment="Top" 
+                                                   HorizontalAlignment="Center" 
+                                                   BorderThickness="1" 
+                                                   BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                                </Grid>
+                            </Grid>
+                        </ListViewItem>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <SplitView PaneBackground="{ThemeResource SolidBackgroundFillColorBase}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
+                <SplitView.Pane>
+                    <Grid BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Margin="24,32,0,0" Grid.Row="0" Style="{ThemeResource TitleTextBlockStyle}">Options</TextBlock>
+                        <ScrollView Padding="24,0,24,32" Grid.Row="2">
+                            <StackPanel Spacing="16">
+                                <StackPanel.Resources>
+                                    <Style BasedOn="{StaticResource DefaultSliderStyle}" TargetType="Slider">
+                                        <Setter Property="Margin" Value="2,0"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0">System Prompt</TextBlock>
+                                    <Button HorizontalAlignment="Right" Command="{x:Bind ViewModel.DetailEditSystemPromptCommand}">Detail</Button>
+                                    <TextBox MaxHeight="200" Text="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.SystemPrompt, Mode=TwoWay}" TextWrapping="Wrap" Grid.Row="1" AcceptsReturn="True" MinHeight="70"/>
+                                </Grid>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center">Max Tokens</TextBlock>
+                                    <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.MaxTokens, Mode=TwoWay}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.MaxTokens, Mode=TwoWay}" Name="MaxTSlider" Grid.Row="1" Maximum="16384" Minimum="1"/>
+                                </Grid>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center">Seed</TextBlock>
+                                    <ToggleButton IsChecked="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.SeedAutoRefresh, Mode=TwoWay}" Content="Auto Refresh" HorizontalAlignment="Right" />
+                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Seed, Mode=TwoWay}" PlaceholderText="It will be fill randomly if empty" HorizontalAlignment="Stretch"/>
+                                        <Button Grid.Column="1" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.RandomSeedCommand}">
+                                            <FontIcon Glyph="&#xE72C;" FontSize="14" />
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center">Temperature</TextBlock>
+                                    <NumberBox ValidationMode="Disabled" Maximum="1" Minimum="0" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}" Name="TemptSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Maximum="2"/>
+                                </Grid>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center">Top-P</TextBlock>
+                                    <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
+                                    <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopPSlider" TickFrequency="0.05" StepFrequency="0.05" TickPlacement="None" Maximum="1" Minimum="0.1"/>
+                                </Grid>
+                                <Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center">Frequency Penalty</TextBlock>
+                                    <NumberBox Maximum="2" Minimum="-2" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}" Name="FPSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Minimum="-2" Maximum="2"/>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollView>
+                    </Grid>
+                </SplitView.Pane>
+            </SplitView>
+            <Grid Grid.Row="2" 
+                  Margin="-36,0,-36,-40" 
+                  Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"  
+                  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                  BorderThickness="0,1,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="64"/>
+                </Grid.ColumnDefinitions>
+                <Grid Padding="16,16,0,16" Grid.Column="0">
+                    <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Button HorizontalAlignment="Center" 
+                            Command="{x:Bind ViewModel.SendCommand}"
+                            CommandParameter="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Width="48" 
+                            Height="48" 
+                            Style="{ThemeResource AccentButtonStyle}">
+                        <FontIcon Glyph="&#xE724;" FontSize="18" />
+                    </Button>
+                </Grid>
+            </Grid>
         </Grid>
+        
     </Grid>
+    
 </Page>

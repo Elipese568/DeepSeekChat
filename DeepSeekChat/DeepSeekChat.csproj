@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DeepSeekChat</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,19 +13,69 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\LargeTile.scale-100.png" />
+    <Content Remove="Assets\LargeTile.scale-125.png" />
+    <Content Remove="Assets\LargeTile.scale-150.png" />
+    <Content Remove="Assets\LargeTile.scale-200.png" />
+    <Content Remove="Assets\LargeTile.scale-400.png" />
+    <Content Remove="Assets\SmallTile.scale-100.png" />
+    <Content Remove="Assets\SmallTile.scale-125.png" />
+    <Content Remove="Assets\SmallTile.scale-150.png" />
+    <Content Remove="Assets\SmallTile.scale-200.png" />
+    <Content Remove="Assets\SmallTile.scale-400.png" />
+    <Content Remove="Assets\SplashScreen.scale-100.png" />
+    <Content Remove="Assets\SplashScreen.scale-125.png" />
+    <Content Remove="Assets\SplashScreen.scale-150.png" />
+    <Content Remove="Assets\SplashScreen.scale-200.png" />
+    <Content Remove="Assets\SplashScreen.scale-400.png" />
+    <Content Remove="Assets\Square150x150Logo.scale-100.png" />
+    <Content Remove="Assets\Square150x150Logo.scale-125.png" />
+    <Content Remove="Assets\Square150x150Logo.scale-150.png" />
+    <Content Remove="Assets\Square150x150Logo.scale-200.png" />
+    <Content Remove="Assets\Square150x150Logo.scale-400.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-unplated_targetsize-24.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Content Remove="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Content Remove="Assets\Square44x44Logo.scale-100.png" />
+    <Content Remove="Assets\Square44x44Logo.scale-125.png" />
+    <Content Remove="Assets\Square44x44Logo.scale-150.png" />
+    <Content Remove="Assets\Square44x44Logo.scale-200.png" />
+    <Content Remove="Assets\Square44x44Logo.scale-400.png" />
+    <Content Remove="Assets\Square44x44Logo.targetsize-16.png" />
+    <Content Remove="Assets\Square44x44Logo.targetsize-24.png" />
+    <Content Remove="Assets\Square44x44Logo.targetsize-256.png" />
+    <Content Remove="Assets\Square44x44Logo.targetsize-32.png" />
+    <Content Remove="Assets\Square44x44Logo.targetsize-48.png" />
+    <Content Remove="Assets\StoreLogo.png" />
+    <Content Remove="Assets\StoreLogo.scale-125.png" />
+    <Content Remove="Assets\StoreLogo.scale-150.png" />
+    <Content Remove="Assets\StoreLogo.scale-200.png" />
+    <Content Remove="Assets\StoreLogo.scale-400.png" />
+    <Content Remove="Assets\Wide310x150Logo.scale-100.png" />
+    <Content Remove="Assets\Wide310x150Logo.scale-125.png" />
+    <Content Remove="Assets\Wide310x150Logo.scale-150.png" />
+    <Content Remove="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Remove="Assets\Wide310x150Logo.scale-400.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\SplashScreen.png" />
+    <None Remove="Assets\StoreLogo.scale-100.png" />
     <None Remove="Assets\User.png" />
     <None Remove="MainPage.xaml" />
+    <None Remove="Styles\Text.xaml" />
     <None Remove="Views\DiscussionPage.xaml" />
+    <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="AppIconIco.ico" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,8 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
     <PackageReference Include="OpenAI" Version="2.1.0" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
@@ -59,6 +110,21 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\DeepSeekingIconDarkMode.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Style\Text.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--
@@ -78,5 +144,6 @@
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <ApplicationIcon>AppIconIco.ico</ApplicationIcon>
     <PublishAot>False</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 </Project>
