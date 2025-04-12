@@ -10,6 +10,7 @@
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:h="using:DeepSeekChat.Helper"
     xmlns:vm="using:DeepSeekChat.ViewModels" d:DataContext="{d:DesignInstance Type=local:MainPage}"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
         <MenuFlyout  x:Name="RightClickCommands">
@@ -73,6 +74,6 @@
             </ScrollViewer>
         </Grid>
 
-        <ContentPresenter Background="{ThemeResource LayerFillColorAlt}" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" CornerRadius="8,0,0,0" BorderThickness="1,1,0,0" x:Name="DiscussionFrame" Grid.Column="1" Content="{x:Bind ViewModel.ContentPage, Mode=TwoWay}"/>
+        <ContentPresenter Background="{ThemeResource LayerFillColorDefault}" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" CornerRadius="8,0,0,0" BorderThickness="1,1,0,0" x:Name="DiscussionFrame" Grid.Column="1" Content="{x:Bind ViewModel.ContentPage, Mode=TwoWay}"/>
     </Grid>
 </Page>

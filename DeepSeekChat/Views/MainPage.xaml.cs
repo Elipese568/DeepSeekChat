@@ -35,28 +35,28 @@ namespace DeepSeekChat.Views
         {
             ViewModel = new(this)
             {
-                DiscussItems =
-                [
-                    new DiscussItem
-                    {
-                        Id = Guid.NewGuid(),
-                        Title = "First Discussion",
-                        CreationTime = DateTime.Now,
-                        Messages =
-                        [
-                            new()
-                            {
-                                UserPrompt = "Test",
-                                AiChatCompletion = new()
-                                {
-                                    ReasoningContent = "Reasoning Content",
-                                    Content = "Hello, how can I help you today?"
-                                }
-                            }
-                        ],
-                        ChatOptions = new()
-                    }
-                ]
+                //DiscussItems =
+                //[
+                //    new DiscussItem
+                //    {
+                //        Id = Guid.NewGuid(),
+                //        Title = "First Discussion",
+                //        CreationTime = DateTime.Now,
+                //        Messages =
+                //        [
+                //            new()
+                //            {
+                //                UserPrompt = "Test",
+                //                AiChatCompletion = new()
+                //                {
+                //                    ReasoningContent = "Reasoning Content",
+                //                    Content = "Hello, how can I help you today?"
+                //                }
+                //            }
+                //        ],
+                //        ChatOptions = new()
+                //    }
+                //]
             };
             DataContext = ViewModel;
 
@@ -114,6 +114,11 @@ namespace DeepSeekChat.Views
         public static Visibility Transparent2Visibility(Color color)
         {
             return color.A > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ((FrameworkElement)MainWindow.Current.Content).RequestedTheme = (ElementTheme)int.Parse(Helper.SettingHelper.Read("ApplicationTheme", "0"));
         }
     }
 }

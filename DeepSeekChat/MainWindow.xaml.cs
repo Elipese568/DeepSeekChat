@@ -24,10 +24,14 @@ namespace DeepSeekChat
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public static new MainWindow Current { get; private set; }
+
         public MainWindow() : base()
         {
             ExtendsContentIntoTitleBar = true;
             AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
+            AppWindow.TitleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
+            Current = this;
 
             SetTitleBar(MyTitleBar);
             this.InitializeComponent();

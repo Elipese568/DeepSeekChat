@@ -1,21 +1,122 @@
-<Page
+﻿<Page
     x:Class="DeepSeekChat.Views.SettingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DeepSeekChat.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:tk="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
-    <Grid Padding="36,40">
+    <Grid RowSpacing="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="36"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Setting</TextBlock>
-        <StackPanel Spacing="16">
-            <controls:SettingsCard/>
-        </StackPanel>
+        <TextBlock Margin="36,40,36,0" Style="{ThemeResource TitleTextBlockStyle}" Grid.Row="0">Setting</TextBlock>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="36" Padding="36,0,36,40">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">AI Service</TextBlock>
+                    <StackPanel Grid.Row="1" Spacing="8">
+                        <tk:SettingsCard Header="Server Endpoint" Description="Set up AI Server endpoint">
+                            <tk:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE968;"/>
+                            </tk:SettingsCard.HeaderIcon>
+
+                            <TextBox MinWidth="106" TextAlignment="Left" HorizontalAlignment="Right" IsEnabled="False" VerticalAlignment="Center" Text="https://api.siliconflow.cn/v1/"></TextBox>
+
+                        </tk:SettingsCard>
+                        <tk:SettingsCard Header="API Key" Description="Set up API-Key to use AI">
+                            <tk:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE8D7;"/>
+                            </tk:SettingsCard.HeaderIcon>
+
+                            <TextBox MinWidth="333" Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay}" TextAlignment="Left" PlaceholderText="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                        </tk:SettingsCard>
+                    </StackPanel>
+                </Grid>
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">General</TextBlock>
+                    <StackPanel Grid.Row="1" Spacing="8">
+                        <tk:SettingsCard Header="App theme" Description="Select which app theme to display">
+                            <tk:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE790;"/>
+                            </tk:SettingsCard.HeaderIcon>
+
+                            <ComboBox SelectedIndex="{x:Bind ViewModel.ApplicationTheme, Mode=TwoWay}">
+                                <ComboBoxItem>Default</ComboBoxItem>
+                                <ComboBoxItem>Light</ComboBoxItem>
+                                <ComboBoxItem>Dark</ComboBoxItem>
+                            </ComboBox>
+
+                        </tk:SettingsCard>
+                        <tk:SettingsCard Header="Display language" Description="Select which language to display">
+                            <tk:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE790;"/>
+                            </tk:SettingsCard.HeaderIcon>
+
+                            <ComboBox SelectedIndex="0" IsEnabled="False">
+                                <ComboBoxItem>English</ComboBoxItem>
+                                <ComboBoxItem>简体中文</ComboBoxItem>
+                            </ComboBox>
+
+                        </tk:SettingsCard>
+                    </StackPanel>
+                </Grid>
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">About</TextBlock>
+                    <StackPanel Grid.Row="1" Spacing="8">
+                        <tk:SettingsExpander Header="DeepSeekChat" Description="© 2025 Elipese. All rights reversed.">
+                            <tk:SettingsExpander.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///Assets/AppIconLight.png" Width="24"/>
+                            </tk:SettingsExpander.HeaderIcon>
+                            <tk:SettingsExpander.Items>
+                                <tk:SettingsCard Header="To clone this repository">
+                                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   IsTextSelectionEnabled="True">
+                                    git clone https://github.com/Elipese568/DeepSeekChat.git
+                                    </TextBlock>
+                                </tk:SettingsCard>
+                                <tk:SettingsCard Header="File a bug or proposed your idea"
+                                          ActionIconToolTip="Open a new window"
+                                          Click="SettingsCard_Click"
+                                          IsClickEnabled="True"
+                                          IsActionIconVisible="True">
+                                    <tk:SettingsCard.ActionIcon>
+                                        <FontIcon Glyph="&#xE8A7;"/>
+                                    </tk:SettingsCard.ActionIcon>
+                                </tk:SettingsCard>
+
+                                <tk:SettingsCard>
+                                    <tk:SettingsCard.Header>
+                                        <StackPanel Spacing="3">
+                                            <TextBlock>Dependencies and references</TextBlock>
+                                            <HyperlinkButton NavigateUri="https://aka.ms/windowsappsdk">Windows App SDK 1.3, Windows App Runtime</HyperlinkButton>
+                                            <HyperlinkButton NavigateUri="https://aka.ms/winui">Windows UI Library</HyperlinkButton>
+                                            <HyperlinkButton NavigateUri="https://aka.ms/toolkit/windows">Windows Community Toolkit</HyperlinkButton>
+                                            <HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">Newtonsoft JSON Library</HyperlinkButton>
+                                        </StackPanel>
+                                    </tk:SettingsCard.Header>
+                                </tk:SettingsCard>
+                            </tk:SettingsExpander.Items>
+                        </tk:SettingsExpander>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

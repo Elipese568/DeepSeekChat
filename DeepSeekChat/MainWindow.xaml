@@ -17,10 +17,11 @@
             <RowDefinition Height="48"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" x:Name="MyTitleBar" Padding="16,12" Spacing="8" Height="48" Grid.Row="0">
-            <Image Source="ms-appx:///Assets/AppIconLight.png" Height="16" VerticalAlignment="Center"/>
-            <TextBlock VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}">DeepSeekChat</TextBlock>
-        </StackPanel>
+        <TitleBar Title="DeepSeekChat"  Subtitle="Preview" x:Name="MyTitleBar" IsBackButtonVisible="True">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="ms-appx:///Assets/AppIconLight.png"/>
+            </TitleBar.IconSource>
+        </TitleBar>
         <Frame Grid.Row="1" x:Name="ContentFrame" SourcePageType="v:MainPage"/>
     </Grid>
     

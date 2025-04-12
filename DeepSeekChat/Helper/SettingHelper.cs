@@ -16,18 +16,19 @@ public static class SettingHelper
     {
         _innerApplicationDataInstance = ApplicationData.GetDefault();
     }
-    public static T Read<T>(string key, T? defaultValue = default)
+    public static string Read(string key, string? defaultValue = default)
     {
         if (_innerApplicationDataInstance.LocalSettings.Values.TryGetValue(key, out object result) )
         {
-            return (T)result;
+            return (string)result;
         }
         return defaultValue;
     }
 
-    public static void Write<T>(string key, T value)
+    public static void Write(string key, string value)
     {
-        if (_innerApplicationDataInstance.LocalSettings.Values.TryAdd(key, value))
+        if (!_innerApplicationDataInstance.LocalSettings.Values.TryAdd(key, value))
             _innerApplicationDataInstance.LocalSettings.Values[key] = value;
+
     }
 }

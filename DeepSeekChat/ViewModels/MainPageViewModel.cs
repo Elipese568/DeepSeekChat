@@ -19,7 +19,7 @@ namespace DeepSeekChat.ViewModels;
 public partial class MainPageViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    private ObservableCollection<DiscussItem> _discussItems;
+    private ObservableCollection<DiscussItem> _discussItems = new();
 
     [ObservableProperty]
     private DiscussItem _operatingItem;
@@ -103,17 +103,7 @@ public partial class MainPageViewModel : ObservableRecipient
                     Title = textBox.Text,
                     CreationTime = DateTime.Now,
                     Messages =
-                    [
-                        new()
-                        {
-                            UserPrompt = "Test",
-                            AiChatCompletion = new AiChatCompletion()
-                            {
-                                ReasoningContent = "Test",
-                                Content = "Test"
-                            }
-                        }
-                    ],
+                    [],
                     ChatOptions = new()
                 });
             }

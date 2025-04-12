@@ -9,12 +9,14 @@
     xmlns:m="using:DeepSeekChat.Models"
     xmlns:com="using:System.Collections.ObjectModel"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
+    xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=local:MainPage}">
     <Page.Resources>
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
         <conv:IntyConverter x:Key="IntyConverter"/>
         <local:ProgressStatusVisibilityConverter x:Key="ProgressStatusVisibilityConverter"/>
+        <tkconv:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
     </Page.Resources>
     <Grid x:Name="MainArea">
         <Grid RowSpacing="16" Padding="36,40">
@@ -32,7 +34,10 @@
                     </StackPanel>
                 </Button>
             </Grid>
-            
+            <!--<StackPanel Spacing="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding ViewModel.SelectedDiscussItem.Messages, Converter={StaticResource CollectionVisibilityConverter}, ConverterParameter=True}">
+                <TextBlock HorizontalAlignment="Center" Style="{ThemeResource SubtitleTextBlockStyle}">No Messages</TextBlock>
+                <TextBlock HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}">Please input a prompt and click <Run FontFamily="{StaticResource SymbolThemeFontFamily}" Text=" &#xE725; "/> to start</TextBlock>
+            </StackPanel>-->
             <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItem.Messages, Mode=TwoWay}">
                 <!-- The ItemsStackPanel must be edited to update the following two properties -->
                 <!-- These properties allow the list to grow from the bottom -->

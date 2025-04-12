@@ -32,7 +32,7 @@ public partial class DiscussionViewModel : ObservableRecipient
     public DiscussionViewModel(DiscussItem item)
     {
         _selectedDiscussItem = item;
-        _sendCommand = new CallAICommand("sk-pxynejtfvsigjxldrkivxfugfbxggqzrauumsirdlrvifvcy", _selectedDiscussItem);
+        _sendCommand = new CallAICommand(SettingHelper.Read("ApiKey", string.Empty), _selectedDiscussItem);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
