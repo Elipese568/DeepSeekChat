@@ -22,6 +22,17 @@ public partial class DiscussionViewModel : ObservableRecipient
 {
     public readonly CallAICommand _sendCommand;
 
+    private string _inputingPrompt;
+    public string InputingPrompt
+    {
+        get => _inputingPrompt;
+        set
+        {
+            SetProperty(ref _inputingPrompt, value);
+            OnSendableChanging()
+        }
+    }
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     private string _inputingPrompt;
