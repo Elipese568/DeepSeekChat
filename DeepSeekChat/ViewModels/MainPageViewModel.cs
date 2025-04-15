@@ -13,22 +13,32 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI;
+using System.ComponentModel;
 
 namespace DeepSeekChat.ViewModels;
 
+public class DiscussionViewStatusChangedEventArgs : EventArgs
+{
+    public ProgressStatus Status { get; set; }
+    public DiscussItem DiscussItem { get; set; }
+}
+
 public partial class MainPageViewModel : ObservableRecipient
 {
-    [ObservableProperty]
-    private ObservableCollection<DiscussItem> _discussItems = new();
+    private List<DiscussItem> _discussItems = new();
+
+    public ObservableCollection<DiscussItemViewModel> DiscussItemViewModels { get; set; } = new();
 
     [ObservableProperty]
-    private DiscussItem _operatingItem;
+    private DiscussItemViewModel _operatingItem;
 
     [ObservableProperty]
-    private DiscussItem _selectedDiscussItem;
+    private DiscussItemViewModel _selectedDiscussItem;
 
     [ObservableProperty]
     private Page _contentPage;
+
+    public event EventHandler<DiscussionViewStatusChangedEventArgs> DiscussionViewStatusChanged;
 
     public MainPage Parent { get; set; }
 
@@ -40,14 +50,15 @@ public partial class MainPageViewModel : ObservableRecipient
     [RelayCommand]
     public void RemoveDiscussion()
     {
-        DiscussItems.RemoveAt(DiscussItems.IndexOf(x => x.Id == OperatingItem.Id));
+        _discussItems.RemoveAt(_discussItems.IndexOf(x => x.Id == OperatingItem.Id));
+        DiscussItemViewModels.Remove(DiscussItemViewModels.FirstOrDefault(x => x.Id == OperatingItem.Id));
         TryRemovePage(OperatingItem.Id.ToString());
     }
 
     [RelayCommand]
     public async Task ChangeDiscussionTitle()
     {
-        int operatingIndex = DiscussItems.IndexOf(x => x.Id == OperatingItem.Id);
+        int operatingIndex = _discussItems.IndexOf(x => x.Id == OperatingItem.Id);
         ContentDialog contentDialog = new();
         contentDialog.Title = "Change Title";
         contentDialog.PrimaryButtonText = "Confirm";
@@ -67,7 +78,7 @@ public partial class MainPageViewModel : ObservableRecipient
             }
             else
             {
-                DiscussItems[operatingIndex].Title = textBox.Text;
+                DiscussItemViewModels[operatingIndex].Title = textBox.Text;
             }
         };
         contentDialog.DefaultButton = ContentDialogButton.Primary;
@@ -97,7 +108,7 @@ public partial class MainPageViewModel : ObservableRecipient
             }
             else
             {
-                DiscussItems.Add(new DiscussItem()
+                var newDiscussion = new DiscussItem()
                 {
                     Id = Guid.NewGuid(),
                     Title = textBox.Text,
@@ -105,12 +116,26 @@ public partial class MainPageViewModel : ObservableRecipient
                     Messages =
                     [],
                     ChatOptions = new()
-                });
+                };
+                _discussItems.Add(newDiscussion);
+                var ndVM = new DiscussItemViewModel(newDiscussion);
+                ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
+                DiscussItemViewModels.Add(ndVM);
             }
         };
         contentDialog.DefaultButton = ContentDialogButton.Primary;
         contentDialog.XamlRoot = Parent.Content.XamlRoot;
         await contentDialog.ShowAsync();
+    }
+
+    private void OnDiscussItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "IsViewed")
+            DiscussionViewStatusChanged(this, new()
+            {
+                DiscussItem = (sender as DiscussItemViewModel).InnerObject,
+                Status = (sender as DiscussItemViewModel).LeastStatus
+            });
     }
 
     private Dictionary<string, Page> _pages = new();

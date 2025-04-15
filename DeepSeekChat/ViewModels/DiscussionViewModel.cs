@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
@@ -17,33 +18,21 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-
 public partial class DiscussionViewModel : ObservableRecipient
 {
     public readonly CallAICommand _sendCommand;
 
-    private string _inputingPrompt;
-    public string InputingPrompt
-    {
-        get => _inputingPrompt;
-        set
-        {
-            SetProperty(ref _inputingPrompt, value);
-            OnSendableChanging()
-        }
-    }
-
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     private string _inputingPrompt;
+    
 
-    [ObservableProperty]
-    private DiscussItem _selectedDiscussItem;
+    public DiscussItemViewModel SelectedDiscussItemViewModel { get; set; }
 
-    public DiscussionViewModel(DiscussItem item)
+    public DiscussionViewModel(DiscussItemViewModel item)
     {
-        _selectedDiscussItem = item;
-        _sendCommand = new CallAICommand(SettingHelper.Read("ApiKey", string.Empty), _selectedDiscussItem);
+        SelectedDiscussItemViewModel = item;
+        _sendCommand = new CallAICommand(SettingHelper.Read("ApiKey", string.Empty), item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
@@ -51,7 +40,7 @@ public partial class DiscussionViewModel : ObservableRecipient
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)
     {
-        SelectedDiscussItem.Messages[^1].CurrentMessageMetadata = e;
+        SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].Metadata = e;
     }
 
     [RelayCommand(CanExecute = nameof(CanSend))]
@@ -60,7 +49,7 @@ public partial class DiscussionViewModel : ObservableRecipient
         if (string.IsNullOrWhiteSpace(InputingPrompt)) return;
 
         InputingPrompt = string.Empty;
-        SelectedDiscussItem.Messages.Add(new ApplicationChatMessage
+        SelectedDiscussItemViewModel.MessagesViewModel.Add(new ApplicationChatMessage
         {
             UserPrompt = prompt,
             AiChatCompletion = new()
@@ -91,12 +80,12 @@ public partial class DiscussionViewModel : ObservableRecipient
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
         };
         ScrollViewer.SetVerticalScrollBarVisibility(textBox, ScrollBarVisibility.Visible);
-        textBox.Text = SelectedDiscussItem.ChatOptions.SystemPrompt;
+        textBox.Text = SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt;
         contentDialog.Content = textBox;
         contentDialog.XamlRoot = MainPage.Current.Content.XamlRoot;
         if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
         {
-            SelectedDiscussItem.ChatOptions.SystemPrompt = textBox.Text;
+            SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt = textBox.Text;
         }
     }
 
@@ -105,33 +94,36 @@ public partial class DiscussionViewModel : ObservableRecipient
     [RelayCommand]
     public void RandomSeed()
     {
-        SelectedDiscussItem.ChatOptions.Seed = Random.Shared.Next();
+        SelectedDiscussItemViewModel.ChatOptionsViewModel.Seed = Random.Shared.Next();
     }
 
     public void StopGenerating()
     {
         _sendCommand.Cancel();
-        SelectedDiscussItem.Messages[^1].ProgressStatus = ProgressStatus.Stoped;
+        SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus = ProgressStatus.Stoped;
     }
     private void OnStreamResponseReceived(object sender, ChatResponseReceivedEventArgs e)
     {
         if (e.Type == UpdateType.Reasoning)
         {
-            SelectedDiscussItem.Messages[^1].AiChatCompletion.ReasoningContent += e.ContentUpdate;
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContent += e.ContentUpdate;
         }
         else
         {
-            SelectedDiscussItem.Messages[^1].AiChatCompletion.Content += e.ContentUpdate.TrimStart('\n');
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.Content += e.ContentUpdate.TrimStart('\n');
         }
-        SelectedDiscussItem.Messages[^1].TokenUsage = e.TokenUsage;
+        SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
 
     private void OnStreamCompleted(object sender, ChatResponseCompletedEventArgs e)
     {
-        if(SelectedDiscussItem.Messages[^1].ProgressStatus != ProgressStatus.Stoped)
-            SelectedDiscussItem.Messages[^1].ProgressStatus = e.Status;
-        if(MainPage.Current.ViewModel.SelectedDiscussItem.Id != SelectedDiscussItem.Id)
-            SelectedDiscussItem.CurrentUIStatus = e.Status;
+        if(SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus != ProgressStatus.Stoped)
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus = e.Status;
+        SelectedDiscussItemViewModel.LeastStatus = e.Status;
+        if (MainPage.Current.ViewModel.SelectedDiscussItem.Id != SelectedDiscussItemViewModel.Id)
+            SelectedDiscussItemViewModel.IsViewed = false;
+        else
+            SelectedDiscussItemViewModel.IsViewed = true;
     }
 
     public event EventHandler ScrollToBottomRequested;

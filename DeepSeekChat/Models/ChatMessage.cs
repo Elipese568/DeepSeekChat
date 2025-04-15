@@ -26,31 +26,22 @@ public enum ProgressStatus
 
 public partial class AiChatCompletion : ObservableObject
 {
-    [ObservableProperty]
-    private string _reasoningContent;
+    public string ReasoningContent { get; set; }
 
-    [ObservableProperty]
-    private string _content;
+    public string Content { get; set; }
 }
 
 public partial class ApplicationChatMessage : ObservableObject
 {
-    [ObservableProperty]
-    private string _userPrompt;
+    public string UserPrompt { get; set; }
 
-    [ObservableProperty]
-    private AiChatCompletion _aiChatCompletion;
+    public AiChatCompletion AiChatCompletion { get; set; }
 
-    [ObservableProperty]
-    private TokenUsage _tokenUsage;
+    public TokenUsage TokenUsage { get; set; }
 
-    [ObservableProperty]
-    private ChatCompletionMetadata _currentMessageMetadata;
+    public ChatCompletionMetadata CurrentMessageMetadata { get; set; }
 
-    [ObservableProperty]
-    private string _id;
+    public string Id { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-    [ObservableProperty]
-    private ProgressStatus _progressStatus;
+    public ProgressStatus ProgressStatus { get; set; }
 }

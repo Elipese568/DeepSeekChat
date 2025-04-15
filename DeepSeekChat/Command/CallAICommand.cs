@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DeepSeekChat.Models;
 using Microsoft.UI.Dispatching;
 using OpenAI;
@@ -108,8 +109,6 @@ public class CallAICommand : ICommand
                 messages.Add(AssistantChatMessage.CreateAssistantMessage(msg.AiChatCompletion.Content));
             }
         }
-
-        messages.Add(UserChatMessage.CreateUserMessage(currentPrompt));
         return messages;
     }
 

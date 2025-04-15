@@ -9,24 +9,19 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.Models;
 
-public partial class DiscussItem : ObservableObject
+public partial class DiscussItem
 {
-    [ObservableProperty]
-    private Guid _id;
+    public Guid Id { get; set; }
 
-    [ObservableProperty]
-    private string _title;
+    public string Title { get; set; }
 
-    [ObservableProperty]
-    private DateTime _creationTime;
+    public DateTime CreationTime { get; set; }
 
-    [ObservableProperty]
-    private ObservableCollection<ApplicationChatMessage> _messages;
+    public List<ApplicationChatMessage> Messages { get; set; }
 
-    [ObservableProperty]
-    private ChatOptions _chatOptions;
+    public ChatOptions ChatOptions { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-    [ObservableProperty]
-    private ProgressStatus _currentUIStatus = ProgressStatus.None;
+    public ProgressStatus LeastStatus { get; set; }
+
+    public bool IsViewed { get; set; } = true;
 }

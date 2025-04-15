@@ -16,6 +16,7 @@ using DeepSeekChat.ViewModels;
 using DeepSeekChat.Models;
 using System.Threading.Tasks;
 using Windows.UI;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -33,37 +34,27 @@ namespace DeepSeekChat.Views
 
         public MainPage()
         {
-            ViewModel = new(this)
-            {
-                //DiscussItems =
-                //[
-                //    new DiscussItem
-                //    {
-                //        Id = Guid.NewGuid(),
-                //        Title = "First Discussion",
-                //        CreationTime = DateTime.Now,
-                //        Messages =
-                //        [
-                //            new()
-                //            {
-                //                UserPrompt = "Test",
-                //                AiChatCompletion = new()
-                //                {
-                //                    ReasoningContent = "Reasoning Content",
-                //                    Content = "Hello, how can I help you today?"
-                //                }
-                //            }
-                //        ],
-                //        ChatOptions = new()
-                //    }
-                //]
-            };
+            ViewModel = new(this);
             DataContext = ViewModel;
 
-            ViewModel.DiscussItems.CollectionChanged += DiscussItems_CollectionChanged;
+            ViewModel.DiscussItemViewModels.CollectionChanged += DiscussItems_CollectionChanged;
+            ViewModel.DiscussionViewStatusChanged += ViewModel_DiscussionViewStatusChanged;
             Current = this;
 
             this.InitializeComponent();
+        }
+
+        private bool _self_set_property_no_process_flag_dont_remove = false;
+        private void ViewModel_DiscussionViewStatusChanged(object? sender, DiscussionViewStatusChangedEventArgs e)
+        {
+            //if(_self_set_property_no_process_flag_dont_remove)
+            //{
+            //    _self_set_property_no_process_flag_dont_remove = false;
+            //    return;
+            //}
+            //_self_set_property_no_process_flag_dont_remove = true;
+            //var item = DiscussList.ItemsPanelRoot.Children.First(x => ((x as ListViewItem).DataContext as DiscussItemViewModel).Id == e.DiscussItem.Id) as ListViewItem;
+            //((item.Content as Grid).FindName("StatusSelector") as Border).Visibility = Visibility.Visible;
         }
 
         private void DiscussItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -73,7 +64,7 @@ namespace DeepSeekChat.Views
                 DiscussList.Visibility = Visibility.Visible;
                 NoItemTip.Visibility = Visibility.Collapsed;
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove && ViewModel.DiscussItems.Count == 0)
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove && ViewModel.DiscussItemViewModels.Count == 0)
             {
                 DiscussList.Visibility = Visibility.Collapsed;
                 NoItemTip.Visibility = Visibility.Visible;
@@ -82,7 +73,8 @@ namespace DeepSeekChat.Views
 
         private void ListViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            ViewModel.OperatingItem = (sender as FrameworkElement).Tag as DiscussItem;
+            ViewModel.OperatingItem = ((sender as FrameworkElement).Tag as DiscussItemViewModel);
+            ViewModel.OperatingItem.IsViewed = true;
             RightClickCommands.ShowAt(sender as UIElement, e.GetPosition(sender as UIElement));
         }
 
@@ -99,8 +91,8 @@ namespace DeepSeekChat.Views
             }
             else
             {
-                ViewModel.SelectedDiscussItem = e.AddedItems[0] as DiscussItem;
-                ViewModel.SelectedDiscussItem.CurrentUIStatus = ProgressStatus.None;
+                ViewModel.SelectedDiscussItem = (e.AddedItems[0] as DiscussItemViewModel);
+                ViewModel.SelectedDiscussItem.LeastStatus = ProgressStatus.None;
                 ViewModel.TryNavigate(ViewModel.SelectedDiscussItem.Id.ToString(), ()=> new DiscussionPage(ViewModel.SelectedDiscussItem));
 
             }

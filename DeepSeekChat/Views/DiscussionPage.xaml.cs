@@ -9,8 +9,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -39,7 +41,7 @@ namespace DeepSeekChat.Views
     {
         public DiscussionViewModel ViewModel { get; set; }
 
-        public DiscussionPage(DiscussItem item)
+        public DiscussionPage(DiscussItemViewModel item)
         {
             ViewModel = new DiscussionViewModel(item); // 传递item到ViewModel
             this.InitializeComponent();
@@ -47,12 +49,13 @@ namespace DeepSeekChat.Views
             // 确保消息更新时自动滚动到底部
             ViewModel.ScrollToBottomRequested += (s, e) =>
             {
-                InvertedListView.ScrollIntoView(ViewModel.SelectedDiscussItem.Messages.LastOrDefault());
+                InvertedListView.ScrollIntoView(ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels.LastOrDefault());
             };
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.SelectedDiscussItemViewModel.IsViewed = false;
             OptionPane.IsPaneOpen = !OptionPane.IsPaneOpen;
         }
 

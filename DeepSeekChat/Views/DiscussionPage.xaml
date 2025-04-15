@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:m="using:DeepSeekChat.Models"
+    xmlns:vm="using:DeepSeekChat.ViewModels"
     xmlns:com="using:System.Collections.ObjectModel"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
@@ -26,7 +27,7 @@
                 <RowDefinition Height="120"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItem.Title, Mode=TwoWay}"/>
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.Title, Mode=TwoWay}"/>
                 <Button Click="Button_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                     <StackPanel Spacing="8" Orientation="Horizontal">
                         <FontIcon FontSize="16" Glyph="&#xE713;" />
@@ -34,11 +35,11 @@
                     </StackPanel>
                 </Button>
             </Grid>
-            <!--<StackPanel Spacing="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding ViewModel.SelectedDiscussItem.Messages, Converter={StaticResource CollectionVisibilityConverter}, ConverterParameter=True}">
+            <!--<StackPanel Spacing="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding ViewModel.SelectedDiscussItemViewModel.Messages, Converter={StaticResource CollectionVisibilityConverter}, ConverterParameter=True}">
                 <TextBlock HorizontalAlignment="Center" Style="{ThemeResource SubtitleTextBlockStyle}">No Messages</TextBlock>
                 <TextBlock HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}">Please input a prompt and click <Run FontFamily="{StaticResource SymbolThemeFontFamily}" Text=" &#xE725; "/> to start</TextBlock>
             </StackPanel>-->
-            <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItem.Messages, Mode=TwoWay}">
+            <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels, Mode=TwoWay}">
                 <!-- The ItemsStackPanel must be edited to update the following two properties -->
                 <!-- These properties allow the list to grow from the bottom -->
                 <ListView.ItemsPanel>
@@ -57,7 +58,7 @@
                 </ListView.ItemContainerStyle>
 
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="m:ApplicationChatMessage">
+                    <DataTemplate x:DataType="vm:ApplicationChatMessageViewModel">
                         <ListViewItem>
                             <Grid RowSpacing="18">
                                 <Grid.RowDefinitions>
@@ -160,14 +161,14 @@
                                                                         <TextBlock VerticalAlignment="Center"
                                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                    Text="Message ID"/>
-                                                                        <TextBlock Text="{Binding CurrentMessageMetadata.Id}"/>
+                                                                        <TextBlock Text="{Binding Metadata.Id}"/>
                                                                     </StackPanel>
                                                                     <MenuFlyoutSeparator Margin="-12" />
                                                                     <StackPanel Spacing="8">
                                                                         <TextBlock VerticalAlignment="Center"
                                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                    Text="Create Time"/>
-                                                                        <TextBlock Text="{Binding CurrentMessageMetadata.TimeCreated}"/>
+                                                                        <TextBlock Text="{Binding Metadata.TimeCreated}"/>
                                                                     </StackPanel>
                                                                     <MenuFlyoutSeparator Margin="-12" />
                                                                     <Grid RowSpacing="12" Margin="-16,-16,-16,-16" Padding="16"  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
@@ -182,9 +183,9 @@
                                                                                     <TextBlock VerticalAlignment="Center"
                                                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                                Text="System Prompt"/>
-                                                                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="{Binding CurrentMessageMetadata.Options.SystemPrompt}" FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                                                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="{Binding Metadata.Options.SystemPrompt}" FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                                                                 </StackPanel>
-                                                                                <TextBlock Text="{Binding CurrentMessageMetadata.Options.SystemPrompt}" MaxWidth="250"/>
+                                                                                <TextBlock Text="{Binding Metadata.Options.SystemPrompt}" MaxWidth="250"/>
                                                                             </StackPanel>
                                                                             <MenuFlyoutSeparator Margin="-12" />
                                                                             <Grid ColumnSpacing="8">
@@ -197,14 +198,14 @@
                                                                                     <TextBlock VerticalAlignment="Center"
                                                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                                Text="Max Token Output Count"/>
-                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.MaxTokens}"/>
+                                                                                    <TextBlock Text="{Binding Metadata.Options.MaxTokens}"/>
                                                                                 </StackPanel>
                                                                                 <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
                                                                                 <StackPanel Spacing="8" Grid.Column="2">
                                                                                     <TextBlock VerticalAlignment="Center"
                                                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                                Text="Seed"/>
-                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.Seed}"/>
+                                                                                    <TextBlock Text="{Binding Metadata.Options.Seed}"/>
                                                                                 </StackPanel>
                                                                             </Grid>
                                                                             <MenuFlyoutSeparator Margin="-12" />
@@ -218,14 +219,14 @@
                                                                                     <TextBlock VerticalAlignment="Center"
                                                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                                Text="Temperature"/>
-                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.Temperature}"/>
+                                                                                    <TextBlock Text="{Binding Metadata.Options.Temperature}"/>
                                                                                 </StackPanel>
                                                                                 <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
                                                                                 <StackPanel Spacing="8" Grid.Column="2">
                                                                                     <TextBlock VerticalAlignment="Center"
                                                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                                Text="Top-P"/>
-                                                                                    <TextBlock Text="{Binding CurrentMessageMetadata.Options.TopP}"/>
+                                                                                    <TextBlock Text="{Binding Metadata.Options.TopP}"/>
                                                                                 </StackPanel>
                                                                             </Grid>
                                                                             
@@ -234,7 +235,7 @@
                                                                                 <TextBlock VerticalAlignment="Center"
                                                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                                            Text="Frequency Penalty"/>
-                                                                                <TextBlock Text="{Binding CurrentMessageMetadata.Options.FrequencyPenalty}"/>
+                                                                                <TextBlock Text="{Binding Metadata.Options.FrequencyPenalty}"/>
                                                                             </StackPanel>
                                                                         </StackPanel>
                                                                     </Grid>
@@ -312,7 +313,7 @@
 
                                     <TextBlock Grid.Row="0">System Prompt</TextBlock>
                                     <Button HorizontalAlignment="Right" Command="{x:Bind ViewModel.DetailEditSystemPromptCommand}">Detail</Button>
-                                    <TextBox MaxHeight="200" Text="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.SystemPrompt, Mode=TwoWay}" TextWrapping="Wrap" Grid.Row="1" AcceptsReturn="True" MinHeight="70"/>
+                                    <TextBox MaxHeight="200" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt, Mode=TwoWay}" TextWrapping="Wrap" Grid.Row="1" AcceptsReturn="True" MinHeight="70"/>
                                 </Grid>
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
@@ -321,8 +322,8 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center">Max Tokens</TextBlock>
-                                    <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.MaxTokens, Mode=TwoWay}"/>
-                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.MaxTokens, Mode=TwoWay}" Name="MaxTSlider" Grid.Row="1" Maximum="16384" Minimum="1"/>
+                                    <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}" Name="MaxTSlider" Grid.Row="1" Maximum="16384" Minimum="1"/>
                                 </Grid>
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
@@ -331,13 +332,13 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center">Seed</TextBlock>
-                                    <ToggleButton IsChecked="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.SeedAutoRefresh, Mode=TwoWay}" Content="Auto Refresh" HorizontalAlignment="Right" />
+                                    <ToggleButton IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.SeedAutoRefresh, Mode=TwoWay}" Content="Auto Refresh" HorizontalAlignment="Right" />
                                     <Grid Grid.Row="1" ColumnSpacing="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Seed, Mode=TwoWay}" PlaceholderText="It will be fill randomly if empty" HorizontalAlignment="Stretch"/>
+                                        <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Seed, Mode=TwoWay}" PlaceholderText="It will be fill randomly if empty" HorizontalAlignment="Stretch"/>
                                         <Button Grid.Column="1" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.RandomSeedCommand}">
                                             <FontIcon Glyph="&#xE72C;" FontSize="14" />
                                         </Button>
@@ -350,8 +351,8 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center">Temperature</TextBlock>
-                                    <NumberBox ValidationMode="Disabled" Maximum="1" Minimum="0" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}" Name="TemptSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Maximum="2"/>
+                                    <NumberBox ValidationMode="Disabled" Maximum="1" Minimum="0" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}" Name="TemptSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Maximum="2"/>
                                 </Grid>
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
@@ -360,8 +361,8 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center">Top-P</TextBlock>
-                                    <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
-                                    <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopPSlider" TickFrequency="0.05" StepFrequency="0.05" TickPlacement="None" Maximum="1" Minimum="0.1"/>
+                                    <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
+                                    <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopPSlider" TickFrequency="0.05" StepFrequency="0.05" TickPlacement="None" Maximum="1" Minimum="0.1"/>
                                 </Grid>
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
@@ -370,8 +371,8 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center">Frequency Penalty</TextBlock>
-                                    <NumberBox Maximum="2" Minimum="-2" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}"/>
-                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItem.ChatOptions.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}" Name="FPSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Minimum="-2" Maximum="2"/>
+                                    <NumberBox Maximum="2" Minimum="-2" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}" Name="FPSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Minimum="-2" Maximum="2"/>
                                 </Grid>
                             </StackPanel>
                         </ScrollView>
