@@ -29,33 +29,50 @@
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
         <Grid RowSpacing="4" Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="1" Padding="8" Spacing="8">
+            <StackPanel Grid.Row="2" Padding="8" Spacing="8">
                 <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
                 <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch">Go Setting</Button>
             </StackPanel>
+            <Grid Grid.Row="0" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Image Source="ms-appx:///Assets/AppIconLight.png" VerticalAlignment="Center" Grid.Column="0" Width="48"/>
+                <StackPanel Grid.Column="1" Padding="16" Spacing="4">
+                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">DeepSeekChat</TextBlock>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}">Your helpful AI assistant.</TextBlock>
+                </StackPanel>
+            </Grid>
             
-            <ScrollViewer Grid.Row="0" Padding="0,0,0,16">
+            
+            <ScrollViewer Grid.Row="1" Padding="0,0,0,16">
                 <Grid>
                     <ListView x:Name="DiscussList" Grid.Row="1" SelectionChanged="DiscussList_SelectionChanged" ItemClick="DiscussList_ItemClick" ItemsSource="{x:Bind ViewModel.DiscussionItemViewModels}">
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="vm:DiscussionItemViewModel">
                                 <ListViewItem RightTapped="ListViewItem_RightTapped" Tag="{Binding}" VerticalContentAlignment="Center">
-                                    <Grid>
-                                        <StackPanel Spacing="0" Padding="12" HorizontalAlignment="Stretch" Height="64">
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={h:Int32Markup Value=20}, Mode=TwoWay}"/>
-                                            <Grid HorizontalAlignment="Stretch">
+                                    <Grid Padding="0,16">
+                                        <Grid HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Center">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={h:Int32Markup Value=20}, Mode=TwoWay}"/>
+                                            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{Binding CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
                                             </Grid>
-                                        </StackPanel>
+                                        </Grid>
                                         <Border HorizontalAlignment="Right" 
                                                 VerticalAlignment="Top" 
                                                 CornerRadius="8"
@@ -72,7 +89,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <TextBlock x:Name="NoItemTip" Visibility="Collapsed" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">No Discussion</TextBlock>
+                    <TextBlock x:Name="NoItemTip" Visibility="Collapsed" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">No Discussion</TextBlock>
                 </Grid>
             </ScrollViewer>
         </Grid>
