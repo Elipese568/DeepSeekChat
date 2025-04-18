@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-public class DiscussItemViewModel : WrapperViewModelBase<DiscussItem>
+public class DiscussionItemViewModel : WrapperViewModelBase<DiscussionItem>
 {
-    public DiscussItemViewModel(DiscussItem wrapped) : base(wrapped)
+    public DiscussionItemViewModel(DiscussionItem wrapped) : base(wrapped)
     {
         _chatOptionsViewModel = new ChatOptionsViewModel(wrapped.ChatOptions);
 		_messagesViewModel = new MessagesViewModel(wrapped.Messages);

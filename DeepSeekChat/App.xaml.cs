@@ -5,8 +5,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
+using DeepSeekChat.Service;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -44,7 +47,7 @@ namespace DeepSeekChat
 
             EmptyVisibilityConverter.RegisterHandler(typeof(List<>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<>), (value) => (value as ICollection).Count != 0);
-            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussItem>), (value) => (value as ICollection).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItem>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ItemCollection), (value) => (value as ItemCollection).Count != 0);
 
             EmptyVisibilityConverter.RegisterHandler(typeof(SolidColorBrush), v => ((SolidColorBrush)v).Color.A > 0);
@@ -57,6 +60,15 @@ namespace DeepSeekChat
             {
                 return (int)x == (int)y;
             });
+
+            m_ioc = new();
+            m_ioc.ConfigureServices(
+                new ServiceCollection()
+                .AddSingleton<DiscussionItemService>()
+                .BuildServiceProvider()
+            );
+
+            Current = this;
         }
 
         /// <summary>
@@ -69,7 +81,14 @@ namespace DeepSeekChat
             m_window.Activate();
         }
 
-        private Window? m_window;
+        public T? GetService<T>()
+        {
+            return m_ioc.GetService<T>();
+        }
 
+        private Window? m_window;
+        private readonly Ioc m_ioc;
+
+        public static new App Current { get; private set; }
     }
 }

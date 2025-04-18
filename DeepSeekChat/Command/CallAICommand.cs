@@ -34,7 +34,7 @@ public class CallAICommand : ICommand
     private readonly string _model;
     private readonly OpenAIClient _client;
     private readonly ChatClient _chatClient;
-    private readonly DiscussItem _discussItem;
+    private readonly DiscussionItem _discussItem;
     private readonly DispatcherQueue _dispatcherQueue;
 
     private CancellationTokenSource _cts;
@@ -45,7 +45,7 @@ public class CallAICommand : ICommand
     public event EventHandler<ChatResponseCompletedEventArgs> StreamCompleted;
     public event EventHandler<ChatCompletionMetadata> CompletionMetadataReceived;
 
-    public CallAICommand(string apiKey, DiscussItem discussItem, string model = "deepseek-ai/DeepSeek-R1")
+    public CallAICommand(string apiKey, DiscussionItem discussItem, string model = "deepseek-ai/DeepSeek-R1")
     {
         _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         _model = model ?? throw new ArgumentNullException(nameof(model));

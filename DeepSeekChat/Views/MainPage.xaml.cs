@@ -37,7 +37,7 @@ namespace DeepSeekChat.Views
             ViewModel = new(this);
             DataContext = ViewModel;
 
-            ViewModel.DiscussItemViewModels.CollectionChanged += DiscussItems_CollectionChanged;
+            ViewModel.DiscussionItemViewModels.CollectionChanged += DiscussItems_CollectionChanged;
             ViewModel.DiscussionViewStatusChanged += ViewModel_DiscussionViewStatusChanged;
             Current = this;
 
@@ -64,7 +64,7 @@ namespace DeepSeekChat.Views
                 DiscussList.Visibility = Visibility.Visible;
                 NoItemTip.Visibility = Visibility.Collapsed;
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove && ViewModel.DiscussItemViewModels.Count == 0)
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove && ViewModel.DiscussionItemViewModels.Count == 0)
             {
                 DiscussList.Visibility = Visibility.Collapsed;
                 NoItemTip.Visibility = Visibility.Visible;
@@ -73,7 +73,7 @@ namespace DeepSeekChat.Views
 
         private void ListViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            ViewModel.OperatingItem = ((sender as FrameworkElement).Tag as DiscussItemViewModel);
+            ViewModel.OperatingItem = ((sender as FrameworkElement).Tag as DiscussionItemViewModel);
             ViewModel.OperatingItem.IsViewed = true;
             RightClickCommands.ShowAt(sender as UIElement, e.GetPosition(sender as UIElement));
         }
@@ -91,7 +91,7 @@ namespace DeepSeekChat.Views
             }
             else
             {
-                ViewModel.SelectedDiscussItem = (e.AddedItems[0] as DiscussItemViewModel);
+                ViewModel.SelectedDiscussItem = (e.AddedItems[0] as DiscussionItemViewModel);
                 ViewModel.SelectedDiscussItem.LeastStatus = ProgressStatus.None;
                 ViewModel.TryNavigate(ViewModel.SelectedDiscussItem.Id.ToString(), ()=> new DiscussionPage(ViewModel.SelectedDiscussItem));
 

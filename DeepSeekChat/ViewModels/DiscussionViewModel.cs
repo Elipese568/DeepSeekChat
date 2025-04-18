@@ -28,9 +28,9 @@ public partial class DiscussionViewModel : ObservableRecipient
     private string _inputingPrompt;
     
 
-    public DiscussItemViewModel SelectedDiscussItemViewModel { get; set; }
+    public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
-    public DiscussionViewModel(DiscussItemViewModel item)
+    public DiscussionViewModel(DiscussionItemViewModel item)
     {
         SelectedDiscussItemViewModel = item;
         _sendCommand = new CallAICommand(SettingHelper.Read("ApiKey", string.Empty), item.InnerObject);

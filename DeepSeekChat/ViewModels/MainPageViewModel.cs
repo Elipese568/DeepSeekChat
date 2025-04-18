@@ -14,26 +14,29 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI;
 using System.ComponentModel;
+using DeepSeekChat.Service;
 
 namespace DeepSeekChat.ViewModels;
 
 public class DiscussionViewStatusChangedEventArgs : EventArgs
 {
     public ProgressStatus Status { get; set; }
-    public DiscussItem DiscussItem { get; set; }
+    public DiscussionItem DiscussItem { get; set; }
 }
 
 public partial class MainPageViewModel : ObservableRecipient
 {
-    private List<DiscussItem> _discussItems = new();
-
-    public ObservableCollection<DiscussItemViewModel> DiscussItemViewModels { get; set; } = new();
-
-    [ObservableProperty]
-    private DiscussItemViewModel _operatingItem;
+    private List<DiscussionItem> _discussionItems;
+    private DiscussionItemService _discussionItemService;
 
     [ObservableProperty]
-    private DiscussItemViewModel _selectedDiscussItem;
+    private ObservableCollection<DiscussionItemViewModel> _discussionItemViewModels = new();
+
+    [ObservableProperty]
+    private DiscussionItemViewModel _operatingItem;
+
+    [ObservableProperty]
+    private DiscussionItemViewModel _selectedDiscussItem;
 
     [ObservableProperty]
     private Page _contentPage;
@@ -45,20 +48,24 @@ public partial class MainPageViewModel : ObservableRecipient
     public MainPageViewModel(MainPage page)
     {
         Parent = page;
+        _discussionItemService = App.Current.GetService<DiscussionItemService>();
+        _discussionItems = _discussionItemService.GetStroragedDiscussionItems();
+        DiscussionItemViewModels = new( _discussionItems.Select(x => new DiscussionItemViewModel(x)));
+
     }
 
     [RelayCommand]
     public void RemoveDiscussion()
     {
-        _discussItems.RemoveAt(_discussItems.IndexOf(x => x.Id == OperatingItem.Id));
-        DiscussItemViewModels.Remove(DiscussItemViewModels.FirstOrDefault(x => x.Id == OperatingItem.Id));
+        _discussionItemService.RemoveDiscussionItem(OperatingItem.Id);
+        DiscussionItemViewModels.Remove(DiscussionItemViewModels.FirstOrDefault(x => x.Id == OperatingItem.Id));
         TryRemovePage(OperatingItem.Id.ToString());
     }
 
     [RelayCommand]
     public async Task ChangeDiscussionTitle()
     {
-        int operatingIndex = _discussItems.IndexOf(x => x.Id == OperatingItem.Id);
+        int operatingIndex = _discussionItems.IndexOf(x => x.Id == OperatingItem.Id);
         ContentDialog contentDialog = new();
         contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
         contentDialog.Title = "Change Title";
@@ -79,7 +86,7 @@ public partial class MainPageViewModel : ObservableRecipient
             }
             else
             {
-                DiscussItemViewModels[operatingIndex].Title = textBox.Text;
+                DiscussionItemViewModels[operatingIndex].Title = textBox.Text;
             }
         };
         contentDialog.DefaultButton = ContentDialogButton.Primary;
@@ -110,19 +117,10 @@ public partial class MainPageViewModel : ObservableRecipient
             }
             else
             {
-                var newDiscussion = new DiscussItem()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = textBox.Text,
-                    CreationTime = DateTime.Now,
-                    Messages =
-                    [],
-                    ChatOptions = new()
-                };
-                _discussItems.Add(newDiscussion);
-                var ndVM = new DiscussItemViewModel(newDiscussion);
+                var current = _discussionItemService.CreateNewDiscussionItem(textBox.Text);
+                var ndVM = new DiscussionItemViewModel(current);
                 ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
-                DiscussItemViewModels.Add(ndVM);
+                DiscussionItemViewModels.Add(ndVM);
             }
         };
         contentDialog.DefaultButton = ContentDialogButton.Primary;
@@ -135,8 +133,8 @@ public partial class MainPageViewModel : ObservableRecipient
         if (e.PropertyName == "IsViewed")
             DiscussionViewStatusChanged(this, new()
             {
-                DiscussItem = (sender as DiscussItemViewModel).InnerObject,
-                Status = (sender as DiscussItemViewModel).LeastStatus
+                DiscussItem = (sender as DiscussionItemViewModel).InnerObject,
+                Status = (sender as DiscussionItemViewModel).LeastStatus
             });
     }
 

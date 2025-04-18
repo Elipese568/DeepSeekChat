@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.Models;
 
-public partial class DiscussItem
+public partial class DiscussionItem
 {
     public Guid Id { get; set; }
 
@@ -23,5 +23,5 @@ public partial class DiscussItem
 
     public ProgressStatus LeastStatus { get; set; }
 
-    public bool IsViewed { get; set; } = true;
+    public bool IsViewed { get; set; }
 }

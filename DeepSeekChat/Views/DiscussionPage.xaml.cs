@@ -41,7 +41,7 @@ namespace DeepSeekChat.Views
     {
         public DiscussionViewModel ViewModel { get; set; }
 
-        public DiscussionPage(DiscussItemViewModel item)
+        public DiscussionPage(DiscussionItemViewModel item)
         {
             ViewModel = new DiscussionViewModel(item); // ´«µÝitemµ½ViewModel
             this.InitializeComponent();
