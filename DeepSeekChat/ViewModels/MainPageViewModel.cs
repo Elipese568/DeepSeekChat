@@ -60,6 +60,7 @@ public partial class MainPageViewModel : ObservableRecipient
     {
         int operatingIndex = _discussItems.IndexOf(x => x.Id == OperatingItem.Id);
         ContentDialog contentDialog = new();
+        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
         contentDialog.Title = "Change Title";
         contentDialog.PrimaryButtonText = "Confirm";
         contentDialog.SecondaryButtonText = "Cancel";
@@ -90,6 +91,7 @@ public partial class MainPageViewModel : ObservableRecipient
     public async Task AddDiscussion()
     {
         ContentDialog contentDialog = new();
+        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
         contentDialog.Title = "Add Discussion";
         contentDialog.PrimaryButtonText = "Add";
         contentDialog.SecondaryButtonText = "Cancel";
@@ -145,11 +147,13 @@ public partial class MainPageViewModel : ObservableRecipient
     {
         if (_pages.TryGetValue(pageId, out Page page))
         {
+            page.RequestedTheme = Parent.RequestedTheme;
             ContentPage = page;
         }
         else
         {
             Page newPage = addPageFactory();
+            newPage.RequestedTheme = Parent.RequestedTheme;
             _pages.Add(pageId, newPage);
             ContentPage = newPage;
         }

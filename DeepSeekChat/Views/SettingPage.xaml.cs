@@ -37,5 +37,11 @@ namespace DeepSeekChat.Views
         {
             Launcher.LaunchUriAsync(new("https://github.com/Elipese568/DeepSeekChat/issues"));
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if((e.AddedItems[0] as ComboBoxItem).Content.Equals("Light"))
+                ThemeTeachingTip.IsOpen = true;
+        }
     }
 }

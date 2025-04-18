@@ -5,6 +5,7 @@ using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
 using DeepSeekChat.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
@@ -68,6 +69,7 @@ public partial class DiscussionViewModel : ObservableRecipient
     public async Task DetailEditSystemPrompt()
     {
         ContentDialog contentDialog = new();
+        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
         contentDialog.Title = "Edit System Prompt";
         contentDialog.PrimaryButtonText = "Confirm";
         contentDialog.SecondaryButtonText = "Cancel";

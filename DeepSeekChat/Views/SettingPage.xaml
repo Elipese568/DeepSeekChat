@@ -51,13 +51,22 @@
                             <tk:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE790;"/>
                             </tk:SettingsCard.HeaderIcon>
-
-                            <ComboBox SelectedIndex="{x:Bind ViewModel.ApplicationTheme, Mode=TwoWay}">
-                                <ComboBoxItem>Default</ComboBoxItem>
-                                <ComboBoxItem>Light</ComboBoxItem>
-                                <ComboBoxItem>Dark</ComboBoxItem>
-                            </ComboBox>
-
+                            <Grid>
+                                <TeachingTip x:Name="ThemeTeachingTip"
+                                             Title="Unexpect Theme Changed"
+                                             Subtitle="Theme 'Light' will bring some expected issues, recommending use 'System' or 'Dark' theme."
+                                             IsOpen="False"
+                                             PreferredPlacement="RightBottom">
+                                    <TeachingTip.IconSource>
+                                        <FontIconSource Glyph="&#xE8C9;" />
+                                    </TeachingTip.IconSource>
+                                </TeachingTip>
+                                    <ComboBox x:Name="ThemeSelectorComboBox" SelectedIndex="{x:Bind ViewModel.ApplicationTheme, Mode=TwoWay}" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem>System</ComboBoxItem>
+                                    <ComboBoxItem>Light</ComboBoxItem>
+                                    <ComboBoxItem>Dark</ComboBoxItem>
+                                </ComboBox>
+                            </Grid>
                         </tk:SettingsCard>
                         <tk:SettingsCard Header="Display language" Description="Select which language to display">
                             <tk:SettingsCard.HeaderIcon>
