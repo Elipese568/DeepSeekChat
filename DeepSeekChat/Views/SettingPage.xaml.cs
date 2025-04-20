@@ -43,5 +43,52 @@ namespace DeepSeekChat.Views
             if((e.AddedItems[0] as ComboBoxItem).Content.Equals("Light"))
                 ThemeTeachingTip.IsOpen = true;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if(string.IsNullOrEmpty(ModelNameTextBox.Text) || string.IsNullOrEmpty(ModelIDTextBox.Text))
+            {
+                ArgWrongTip.IsOpen = true;
+                return;
+            }
+            ViewModel.AddModel(ModelNameTextBox.Text, ModelDescriptionTextBox.Text, ModelIDTextBox.Text);
+            ClearAddModelInfo();
+        }
+
+        private void ClearAddModelInfo()
+        {
+            ModelNameTextBox.Text = string.Empty;
+            ModelDescriptionTextBox.Text = string.Empty;
+            ModelIDTextBox.Text = string.Empty;
+        }
+
+        private void Flyout_Closed(object sender, object e)
+        {
+            ClearAddModelInfo();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ClearAddModelInfo();
+            AddModelFlyout.Hide();
+        }
+
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.SelectedModel.ToString().ToUpper() is "545B7456-BCF5-4E19-9E23-6C08AD3A90A3" or "F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37")
+            {
+                ContentDialog contentDialog = new();
+                contentDialog.XamlRoot = this.XamlRoot;
+                contentDialog.Title = "Unexpected Operation";
+                contentDialog.Content = "Cannot remove default model.";
+                contentDialog.CloseButtonText = "OK";
+                contentDialog.CloseButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
+                contentDialog.RequestedTheme = RequestedTheme;
+                await contentDialog.ShowAsync();
+                return;
+            }
+
+            ViewModel.RemoveModel(ViewModel.SelectedModel);
+        }
     }
 }

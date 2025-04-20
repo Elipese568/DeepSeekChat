@@ -30,11 +30,11 @@ public class CallAICommand : ICommand
 {
     private const string DoneMarker = "data: [DONE]";
 
-    private readonly string _apiKey;
-    private readonly string _model;
-    private readonly OpenAIClient _client;
-    private readonly ChatClient _chatClient;
     private readonly DiscussionItem _discussItem;
+    private string _apiKey;
+    private string _model;
+    private OpenAIClient _client;
+    private ChatClient _chatClient;
     private readonly DispatcherQueue _dispatcherQueue;
 
     private CancellationTokenSource _cts;
@@ -45,18 +45,20 @@ public class CallAICommand : ICommand
     public event EventHandler<ChatResponseCompletedEventArgs> StreamCompleted;
     public event EventHandler<ChatCompletionMetadata> CompletionMetadataReceived;
 
-    public CallAICommand(string apiKey, DiscussionItem discussItem, string model = "deepseek-ai/DeepSeek-R1")
+    public CallAICommand(DiscussionItem discussItem)
+    {
+        _discussItem = discussItem ?? throw new ArgumentNullException(nameof(discussItem));
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+    }
+
+    public void Configure(string apiKey, string model)
     {
         _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         _model = model ?? throw new ArgumentNullException(nameof(model));
-        _discussItem = discussItem ?? throw new ArgumentNullException(nameof(discussItem));
-
         _client = new OpenAIClient(
-            new ApiKeyCredential(apiKey),
-            new OpenAIClientOptions { Endpoint = new Uri("https://api.siliconflow.cn/v1/") });
-
+                new ApiKeyCredential(apiKey),
+                new OpenAIClientOptions { Endpoint = new Uri("https://api.siliconflow.cn/v1/") });
         _chatClient = _client.GetChatClient(model);
-        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     }
 
     public bool CanExecute(object parameter) => !_isRunning;

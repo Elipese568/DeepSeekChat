@@ -12,43 +12,15 @@ using Windows.UI.Core.Preview;
 
 namespace DeepSeekChat.Service;
 
-
-public class DiscussionItemService
+[JsonStorageFile(FileName = "chatHistory.json")]
+public class DiscussionItemService : JsonSeriailizingServiceBase<List<DiscussionItem>>
 {
-    private StorageFile _historyStorage;
-    private List<DiscussionItem> _discussionItems;
-
-    public DiscussionItemService()
+    public DiscussionItemService() : base()
     {
-        Initialize();
-        AppDomain.CurrentDomain.ProcessExit += ChatHistoryService_CloseRequested;
     }
-
-    private void ChatHistoryService_CloseRequested(object? sender, EventArgs e)
-    {
-        var serializedStream = _historyStorage.OpenStreamForWriteAsync().GetAwaiter().GetResult();
-        JsonSerializer.Serialize(serializedStream, _discussionItems);
-        serializedStream.Flush();
-        serializedStream.Close();
-    }
-
-    private void Initialize()
-    {
-        var localFolder = ApplicationData.Current.LocalFolder;
-        _historyStorage = localFolder.CreateFileAsync("chatHistory.json", CreationCollisionOption.OpenIfExists).GetAwaiter().GetResult();
-
-        using var readStream = _historyStorage.OpenStreamForReadAsync().GetAwaiter().GetResult();
-        if(readStream.Length == 0)
-        {
-            _discussionItems = new List<DiscussionItem>();
-            return;
-        }
-        _discussionItems = JsonSerializer.DeserializeAsync<List<DiscussionItem>>(readStream).GetAwaiter().GetResult();
-    }
-
     public List<DiscussionItem> GetStroragedDiscussionItems()
     {
-        return _discussionItems;
+        return _data;
     }
 
     public DiscussionItem CreateNewDiscussionItem(string name)
@@ -63,22 +35,22 @@ public class DiscussionItemService
             Messages = new List<ApplicationChatMessage>(),
             Title = name
         };
-        _discussionItems.Add(discussionItem);
+        _data.Add(discussionItem);
 
         return discussionItem;
     }
 
     public DiscussionItem GetDiscussionItemById(Guid id)
     {
-        return _discussionItems.FirstOrDefault(x => x.Id == id);
+        return _data.FirstOrDefault(x => x.Id == id);
     }
 
     public void RemoveDiscussionItem(Guid id)
     {
-        var discussionItem = _discussionItems.FirstOrDefault(x => x.Id == id);
+        var discussionItem = _data.FirstOrDefault(x => x.Id == id);
         if (discussionItem != null)
         {
-            _discussionItems.Remove(discussionItem);
+            _data.Remove(discussionItem);
         }
     }
 }

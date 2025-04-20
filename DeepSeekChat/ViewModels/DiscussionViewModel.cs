@@ -4,6 +4,7 @@ using DeepSeekChat.Command;
 using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
+using DeepSeekChat.Service;
 using DeepSeekChat.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -33,10 +34,23 @@ public partial class DiscussionViewModel : ObservableRecipient
     public DiscussionViewModel(DiscussionItemViewModel item)
     {
         SelectedDiscussItemViewModel = item;
-        _sendCommand = new CallAICommand(SettingHelper.Read("ApiKey", string.Empty), item.InnerObject);
+        _sendCommand = new CallAICommand(item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
+
+        App.Current.GetService<SettingService>().SettingChanged += OnSettingChanged;
+    }
+
+    private void OnSettingChanged(object? sender, SettingChangedEventArgs e)
+    {
+        if(e.Name != SettingService.SETTING_APIKEY)
+            return;
+
+        if (string.IsNullOrWhiteSpace(e.Value))
+            return;
+
+        _sendCommand.Configure(e.Value, "deepseek-ai/DeepSeek-R1");
     }
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)

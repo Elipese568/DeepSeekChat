@@ -5,8 +5,15 @@
     xmlns:local="using:DeepSeekChat.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:tk="using:CommunityToolkit.WinUI.Controls"
+    xmlns:tkc="using:CommunityToolkit.WinUI.Controls"
+    xmlns:m="using:DeepSeekChat.Models"
+    xmlns:vm="using:DeepSeekChat.ViewModels"
+    xmlns:conv="using:DeepSeekChat.Helper.Converters"
+    xmlns:tkwui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
+    <Page.Resources>
+        <conv:GuidToModelIndexConverter x:Key="GuidToModelIndexConverter"/>
+    </Page.Resources>
     <Grid RowSpacing="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,22 +29,95 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">AI Service</TextBlock>
                     <StackPanel Grid.Row="1" Spacing="8">
-                        <tk:SettingsCard Header="Server Endpoint" Description="Set up AI Server endpoint">
-                            <tk:SettingsCard.HeaderIcon>
+                        <tkc:SettingsCard Header="Server Endpoint" Description="Set AI Server endpoint">
+                            <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE968;"/>
-                            </tk:SettingsCard.HeaderIcon>
+                            </tkc:SettingsCard.HeaderIcon>
 
                             <TextBox MinWidth="106" TextAlignment="Left" HorizontalAlignment="Right" IsEnabled="False" VerticalAlignment="Center" Text="https://api.siliconflow.cn/v1/"></TextBox>
 
-                        </tk:SettingsCard>
-                        <tk:SettingsCard Header="API Key" Description="Set up API-Key to use AI">
-                            <tk:SettingsCard.HeaderIcon>
+                        </tkc:SettingsCard>
+                        <tkc:SettingsCard Header="API Key" Description="Set up API-Key to use AI">
+                            <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE8D7;"/>
-                            </tk:SettingsCard.HeaderIcon>
+                            </tkc:SettingsCard.HeaderIcon>
 
                             <TextBox MinWidth="333" Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay}" TextAlignment="Left" PlaceholderText="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-                        </tk:SettingsCard>
+                        </tkc:SettingsCard>
+                        <tkc:SettingsCard Header="Model" Description="Set model to chat">
+                            <tkc:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE8F2;" />
+                            </tkc:SettingsCard.HeaderIcon>
+                            <Grid Width="1000" ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="160" />
+                                </Grid.ColumnDefinitions>
+
+                                <ListView MaxHeight="300" Grid.Column="0" ItemsSource="{x:Bind ViewModel.AiModelViewModels}" SelectedIndex="{x:Bind ViewModel.SelectedModel, Mode=TwoWay, Converter={StaticResource GuidToModelIndexConverter}}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AiModelViewModel">
+                                            <ListViewItem>
+                                                <Grid Height="80">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" MinWidth="80"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid VerticalAlignment="Center" Grid.Column="0">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Row="0" Text="{Binding Name}"/>
+                                                        <TextBlock Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{Binding Description}"/>
+                                                    </Grid>
+                                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{Binding ModelID}"/>
+                                                </Grid>
+                                            </ListViewItem>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <StackPanel Grid.Column="1" Spacing="8">
+                                    <Button Style="{ThemeResource AccentButtonStyle}">
+                                        <Button.Flyout>
+                                            <Flyout x:Name="AddModelFlyout" Placement="Left" Closed="Flyout_Closed">
+                                                <Grid RowSpacing="24">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Grid.Row="0">Add Model</TextBlock>
+                                                    <StackPanel Grid.Row="1" Spacing="16" Margin="0,-8,0,0">
+                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelNameTextBox" Header="Model Name" TextAlignment="Left" HorizontalAlignment="Stretch"/>
+                                                        <TextBox MinWidth="200" MaxWidth="400" TextWrapping="Wrap" AcceptsReturn="True" x:Name="ModelDescriptionTextBox" Header="Model Description" TextAlignment="Left" HorizontalAlignment="Stretch"/>
+                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelIDTextBox" Header="Model ID" TextAlignment="Left" HorizontalAlignment="Stretch"/>
+                                                    </StackPanel>
+
+                                                    <Grid Grid.Row="2" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TeachingTip IsLightDismissEnabled="True" PreferredPlacement="Left" x:Name="ArgWrongTip" Target="{Binding ElementName=AddButton}" Title="Argument wrong" Subtitle="The model name and id cannot be empty." IsOpen="False">
+                                                            <TeachingTip.IconSource>
+                                                                <SymbolIconSource Symbol="Important"/>
+                                                            </TeachingTip.IconSource>
+                                                        </TeachingTip>
+                                                        <Button x:Name="AddButton" Grid.Column="0" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" Click="Button_Click">Add</Button>
+                                                        <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="Button_Click_1">Cancel</Button>
+                                                    </Grid>
+                                                </Grid>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                        <TextBlock>Add Model</TextBlock>
+                                    </Button>
+                                    <Button>Options</Button>
+                                    <Button Click="Button_Click_2">Remove Model</Button>
+                                </StackPanel>
+                            </Grid>
+                        </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
                 <Grid RowSpacing="8">
@@ -47,10 +127,10 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">General</TextBlock>
                     <StackPanel Grid.Row="1" Spacing="8">
-                        <tk:SettingsCard Header="App theme" Description="Select which app theme to display">
-                            <tk:SettingsCard.HeaderIcon>
+                        <tkc:SettingsCard Header="App theme" Description="Select which app theme to display">
+                            <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE790;"/>
-                            </tk:SettingsCard.HeaderIcon>
+                            </tkc:SettingsCard.HeaderIcon>
                             <Grid>
                                 <TeachingTip x:Name="ThemeTeachingTip"
                                              Title="Unexpect Theme Changed"
@@ -67,18 +147,18 @@
                                     <ComboBoxItem>Dark</ComboBoxItem>
                                 </ComboBox>
                             </Grid>
-                        </tk:SettingsCard>
-                        <tk:SettingsCard Header="Display language" Description="Select which language to display">
-                            <tk:SettingsCard.HeaderIcon>
+                        </tkc:SettingsCard>
+                        <tkc:SettingsCard Header="Display language" Description="Select which language to display">
+                            <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE790;"/>
-                            </tk:SettingsCard.HeaderIcon>
+                            </tkc:SettingsCard.HeaderIcon>
 
                             <ComboBox SelectedIndex="0" IsEnabled="False">
                                 <ComboBoxItem>English</ComboBoxItem>
                                 <ComboBoxItem>简体中文</ComboBoxItem>
                             </ComboBox>
 
-                        </tk:SettingsCard>
+                        </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
                 <Grid RowSpacing="8">
@@ -88,30 +168,30 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">About</TextBlock>
                     <StackPanel Grid.Row="1" Spacing="8">
-                        <tk:SettingsExpander Header="DeepSeekChat" Description="© 2025 Elipese. All rights reversed.">
-                            <tk:SettingsExpander.HeaderIcon>
+                        <tkc:SettingsExpander Header="DeepSeekChat" Description="© 2025 Elipese. All rights reversed.">
+                            <tkc:SettingsExpander.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///Assets/AppIconLight.png" Width="24"/>
-                            </tk:SettingsExpander.HeaderIcon>
-                            <tk:SettingsExpander.Items>
-                                <tk:SettingsCard Header="To clone this repository">
+                            </tkc:SettingsExpander.HeaderIcon>
+                            <tkc:SettingsExpander.Items>
+                                <tkc:SettingsCard Header="To clone this repository">
                                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}" 
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    IsTextSelectionEnabled="True">
                                     git clone https://github.com/Elipese568/DeepSeekChat.git
                                     </TextBlock>
-                                </tk:SettingsCard>
-                                <tk:SettingsCard Header="File a bug or proposed your idea"
+                                </tkc:SettingsCard>
+                                <tkc:SettingsCard Header="File a bug or proposed your idea"
                                           ActionIconToolTip="Open a new window"
                                           Click="SettingsCard_Click"
                                           IsClickEnabled="True"
                                           IsActionIconVisible="True">
-                                    <tk:SettingsCard.ActionIcon>
+                                    <tkc:SettingsCard.ActionIcon>
                                         <FontIcon Glyph="&#xE8A7;"/>
-                                    </tk:SettingsCard.ActionIcon>
-                                </tk:SettingsCard>
+                                    </tkc:SettingsCard.ActionIcon>
+                                </tkc:SettingsCard>
 
-                                <tk:SettingsCard>
-                                    <tk:SettingsCard.Header>
+                                <tkc:SettingsCard>
+                                    <tkc:SettingsCard.Header>
                                         <StackPanel Spacing="3">
                                             <TextBlock>Dependencies and references</TextBlock>
                                             <HyperlinkButton NavigateUri="https://aka.ms/windowsappsdk">Windows App SDK 1.3, Windows App Runtime</HyperlinkButton>
@@ -119,10 +199,10 @@
                                             <HyperlinkButton NavigateUri="https://aka.ms/toolkit/windows">Windows Community Toolkit</HyperlinkButton>
                                             <HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">Newtonsoft JSON Library</HyperlinkButton>
                                         </StackPanel>
-                                    </tk:SettingsCard.Header>
-                                </tk:SettingsCard>
-                            </tk:SettingsExpander.Items>
-                        </tk:SettingsExpander>
+                                    </tkc:SettingsCard.Header>
+                                </tkc:SettingsCard>
+                            </tkc:SettingsExpander.Items>
+                        </tkc:SettingsExpander>
                     </StackPanel>
                 </Grid>
             </StackPanel>

@@ -17,6 +17,7 @@ using DeepSeekChat.Models;
 using System.Threading.Tasks;
 using Windows.UI;
 using System.Diagnostics;
+using DeepSeekChat.Service;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -110,7 +111,7 @@ namespace DeepSeekChat.Views
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ((FrameworkElement)MainWindow.Current.Content).RequestedTheme = (ElementTheme)int.Parse(Helper.SettingHelper.Read("ApplicationTheme", "0"));
+            ((FrameworkElement)MainWindow.Current.Content).RequestedTheme = (ElementTheme)int.Parse(App.Current.GetService<SettingService>().Read("ApplicationTheme", "0"));
         }
     }
 }

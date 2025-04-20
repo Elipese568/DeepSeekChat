@@ -65,10 +65,20 @@ namespace DeepSeekChat
             m_ioc.ConfigureServices(
                 new ServiceCollection()
                 .AddSingleton<DiscussionItemService>()
+                .AddSingleton<SettingService>()
+                .AddSingleton<ModelsManagerService>()
                 .BuildServiceProvider()
             );
 
             Current = this;
+
+            AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+            {
+                foreach (var handler in m_exitProcess)
+                {
+                    handler?.Invoke(this, EventArgs.Empty);
+                }
+            };
         }
 
         /// <summary>
@@ -88,6 +98,19 @@ namespace DeepSeekChat
 
         private Window? m_window;
         private readonly Ioc m_ioc;
+
+        private List<EventHandler> m_exitProcess = new();
+        public event EventHandler ExitProcess
+        {
+            add
+            {
+                m_exitProcess.Add(value);
+            }
+            remove
+            {
+                m_exitProcess.Remove(value);
+            }
+        }
 
         public static new App Current { get; private set; }
     }
