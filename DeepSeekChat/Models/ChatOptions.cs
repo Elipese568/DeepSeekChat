@@ -3,7 +3,7 @@ using System;
 
 namespace DeepSeekChat.Models;
 
-public partial class ChatOptions : ObservableObject
+public class ChatOptions
 {
     public string SystemPrompt { get; set; } = "现在你是一个名为\"Deepseek R1\"的通用大语言推理模型，请使用 Markdown 格式回答用户的 Prompt";
 

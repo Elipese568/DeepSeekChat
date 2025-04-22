@@ -47,9 +47,20 @@ public class JsonSeriailizingServiceBase<TData>
         App.Current.ExitProcess += (s, e) =>
         {
             var serializedStream = _storage.OpenStreamForWriteAsync().GetAwaiter().GetResult();
-            JsonSerializer.Serialize(serializedStream, _data);
-            serializedStream.Flush();
-            serializedStream.Close();
+            try
+            {
+                JsonSerializer.Serialize(serializedStream, _data);
+            }
+            catch(Exception ex)
+            {
+                // Handle serialization exception if needed
+                System.Diagnostics.Debug.WriteLine($"Serialization error: {ex.Message}");
+            }
+            finally
+            {
+                serializedStream.Flush();
+                serializedStream.Close();
+            }
         };
     }
 }

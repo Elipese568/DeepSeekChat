@@ -79,4 +79,9 @@ public class SettingViewModel : ObservableRecipient
         var model = _modelsManagerService.CreateNewModel(name, description, modelID);
         AiModelViewModels.Add(new(model));
     }
+
+    public AiModelViewModel GetModelViewModel(Guid modelUniqueID)
+    {
+        return AiModelViewModels.FirstOrDefault(x => x.UniqueID == modelUniqueID);
+    }
 }

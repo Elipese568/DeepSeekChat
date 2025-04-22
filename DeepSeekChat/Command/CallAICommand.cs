@@ -24,7 +24,7 @@ public enum UpdateType
 public record ChatResponseReceivedEventArgs(string ContentUpdate, UpdateType Type, TokenUsage TokenUsage);
 public record ChatResponseCompletedEventArgs(ProgressStatus Status);
 
-public record ChatCompletionMetadata(string Id, DateTime TimeCreated, ChatOptions Options);
+public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options);
 
 public class CallAICommand : ICommand
 {
@@ -53,8 +53,8 @@ public class CallAICommand : ICommand
 
     public void Configure(string apiKey, string model)
     {
-        _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-        _model = model ?? throw new ArgumentNullException(nameof(model));
+        _apiKey = apiKey ?? "";
+        _model = model ?? "";
         _client = new OpenAIClient(
                 new ApiKeyCredential(apiKey),
                 new OpenAIClientOptions { Endpoint = new Uri("https://api.siliconflow.cn/v1/") });
@@ -82,17 +82,19 @@ public class CallAICommand : ICommand
         catch (OperationCanceledException)
         {
             NotifyCompletion(ProgressStatus.Stoped);
+            IsRunning = false;
+            return;
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Chat processing failed: {ex}");
             NotifyCompletion(ProgressStatus.Failed);
-        }
-        finally
-        {
             IsRunning = false;
-            NotifyCompletion(ProgressStatus.Completed);
+            return;
         }
+
+        IsRunning = false;
+        NotifyCompletion(ProgressStatus.Completed);
     }
 
     private List<ChatMessage> BuildMessageThread(string currentPrompt)
@@ -186,7 +188,7 @@ public class CallAICommand : ICommand
 
         if (!isMetadataReceived)
         {
-            var metadata = new ChatCompletionMetadata(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _discussItem.ChatOptions);
+            var metadata = new ChatCompletionMetadata(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _model, _discussItem.ChatOptions);
             CompletionMetadataReceived?.Invoke(this, metadata);
             isMetadataReceived = true;
         }

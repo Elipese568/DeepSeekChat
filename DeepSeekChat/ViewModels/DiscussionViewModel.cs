@@ -22,7 +22,8 @@ namespace DeepSeekChat.ViewModels;
 
 public partial class DiscussionViewModel : ObservableRecipient
 {
-    public readonly CallAICommand _sendCommand;
+    private readonly CallAICommand _sendCommand;
+    private readonly SettingService _settingService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendCommand))]
@@ -34,23 +35,33 @@ public partial class DiscussionViewModel : ObservableRecipient
     public DiscussionViewModel(DiscussionItemViewModel item)
     {
         SelectedDiscussItemViewModel = item;
+        _settingService = App.Current.GetService<SettingService>();
+
         _sendCommand = new CallAICommand(item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
+        if(!string.IsNullOrWhiteSpace(_settingService.Read(SettingService.SETTING_APIKEY)))
+        {
+            try
+            {
+                _sendCommand.Configure(_settingService.Read(SettingService.SETTING_APIKEY), App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL))).ModelID);
+            }
+            catch { }
+        }
 
-        App.Current.GetService<SettingService>().SettingChanged += OnSettingChanged;
+        _settingService.SettingChanged += OnSettingChanged;
     }
 
     private void OnSettingChanged(object? sender, SettingChangedEventArgs e)
     {
-        if(e.Name != SettingService.SETTING_APIKEY)
+        if(e.Name is not SettingService.SETTING_APIKEY and not SettingService.SETTING_SELECTED_MODEL)
             return;
 
         if (string.IsNullOrWhiteSpace(e.Value))
             return;
 
-        _sendCommand.Configure(e.Value, "deepseek-ai/DeepSeek-R1");
+        _sendCommand.Configure(_settingService.Read(SettingService.SETTING_APIKEY), App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL))).ModelID);
     }
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)

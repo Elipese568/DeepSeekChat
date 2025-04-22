@@ -29,8 +29,8 @@
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="306"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid RowSpacing="4" Grid.Column="0">
@@ -43,13 +43,13 @@
                 <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
                 <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch">Go Setting</Button>
             </StackPanel>
-            <Grid Grid.Row="0" HorizontalAlignment="Center">
+            <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Image Source="ms-appx:///Assets/AppIconLight.png" VerticalAlignment="Center" Grid.Column="0" Width="48"/>
-                <StackPanel Grid.Column="1" Padding="16" Spacing="4">
+                <StackPanel Grid.Column="1" Padding="0">
                     <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">DeepSeekChat</TextBlock>
                     <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}">Your helpful AI assistant.</TextBlock>
                 </StackPanel>

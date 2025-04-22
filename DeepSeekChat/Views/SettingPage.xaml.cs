@@ -1,3 +1,5 @@
+using DeepSeekChat.Models;
+using DeepSeekChat.Service;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -46,13 +48,9 @@ namespace DeepSeekChat.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(string.IsNullOrEmpty(ModelNameTextBox.Text) || string.IsNullOrEmpty(ModelIDTextBox.Text))
-            {
-                ArgWrongTip.IsOpen = true;
-                return;
-            }
             ViewModel.AddModel(ModelNameTextBox.Text, ModelDescriptionTextBox.Text, ModelIDTextBox.Text);
             ClearAddModelInfo();
+            AddModelFlyout.Hide();
         }
 
         private void ClearAddModelInfo()
@@ -89,6 +87,120 @@ namespace DeepSeekChat.Views
             }
 
             ViewModel.RemoveModel(ViewModel.SelectedModel);
+        }
+
+        private async void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            var modelManager = App.Current.GetService<ModelsManagerService>();
+            if (ViewModel.SelectedModel.ToString().ToUpper() is "545B7456-BCF5-4E19-9E23-6C08AD3A90A3" or "F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37")
+            {
+                ContentDialog contentDialog = new();
+                contentDialog.XamlRoot = this.XamlRoot;
+                contentDialog.Title = "Unexpected Operation";
+                contentDialog.Content = "Cannot modify infomation of default model.";
+                contentDialog.CloseButtonText = "OK";
+                contentDialog.CloseButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
+                contentDialog.RequestedTheme = RequestedTheme;
+                await contentDialog.ShowAsync();
+                return;
+            }
+
+            AiModel model = modelManager.GetModelById(ViewModel.SelectedModel);
+
+            ContentDialog modifyContentDialog = new();
+            modifyContentDialog.XamlRoot = this.XamlRoot;
+            modifyContentDialog.Title = "Modify Options";
+            modifyContentDialog.PrimaryButtonText = "Confirm";
+            modifyContentDialog.CloseButtonText = "Cancel";
+            modifyContentDialog.PrimaryButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
+            modifyContentDialog.RequestedTheme = RequestedTheme;
+
+            StackPanel content = new()
+            {
+                Spacing = 16,
+                Orientation = Orientation.Vertical,
+                MinWidth = 300
+            };
+
+            var ModelNameChangeTextBox = new TextBox()
+            {
+                Header = "Model Name",
+                Text = model.Name,
+                PlaceholderText = "Enter a name of the model",
+                Name = "ModelNameChangeTextBox",
+            };
+
+            var ErrorBar = new InfoBar()
+            {
+                IsOpen = false,
+                Visibility = Visibility.Collapsed,
+                IsClosable = false,
+                Severity = InfoBarSeverity.Error,
+                Title = "Error",
+                Message = "Name of model cannot be empty or white space"
+            };
+
+            ModelNameChangeTextBox.TextChanged += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(ModelNameChangeTextBox.Text))
+                {
+                    modifyContentDialog.IsPrimaryButtonEnabled = false;
+                    ErrorBar.Visibility = Visibility.Visible;
+                    ErrorBar.IsOpen = true;
+                }
+                else if(!string.IsNullOrWhiteSpace(ModelNameChangeTextBox.Text) && ErrorBar.IsOpen == true)
+                {
+                    ErrorBar.IsOpen = false;
+                    ErrorBar.Visibility = Visibility.Collapsed;
+                    modifyContentDialog.IsPrimaryButtonEnabled = true;
+                }
+            };
+            var ModelDescriptionChangeTextBox = new TextBox()
+            {
+                Header = "Model Description",
+                Text = model.Description,
+                PlaceholderText = "Enter a description of the model",
+                Name = "ModelDescriptionChangeTextBox"
+            };
+
+            content.Children.Add(ModelNameChangeTextBox);
+            content.Children.Add(ErrorBar);
+            content.Children.Add(ModelDescriptionChangeTextBox);
+            content.Children.Add(new TextBox()
+            {
+                Header = "Model ID",
+                Text = model.ModelID,
+                IsEnabled = false
+            });
+
+            modifyContentDialog.Content = content;
+
+            var result = await modifyContentDialog.ShowAsync();
+
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            var vm = ViewModel.GetModelViewModel(ViewModel.SelectedModel);
+
+            vm.Name = ModelNameChangeTextBox.Text;
+            vm.Description = ModelDescriptionChangeTextBox.Text;
+            return;
+        }
+
+        private void ModelNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ModelNameTextBox.Text) || string.IsNullOrWhiteSpace(ModelIDTextBox.Text))
+            {
+                ArgWrongTip.Visibility = Visibility.Visible;
+                AddButton.IsEnabled = false;
+            }
+            else if(ArgWrongTip.Visibility == Visibility.Visible)
+            {
+                ArgWrongTip.Visibility = Visibility.Collapsed;
+                AddButton.IsEnabled = true;
+            }
         }
     }
 }

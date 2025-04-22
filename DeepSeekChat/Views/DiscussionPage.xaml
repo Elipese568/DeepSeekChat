@@ -171,6 +171,13 @@
                                                                         <TextBlock Text="{Binding Metadata.TimeCreated}"/>
                                                                     </StackPanel>
                                                                     <MenuFlyoutSeparator Margin="-12" />
+                                                                    <StackPanel Spacing="8">
+                                                                        <TextBlock VerticalAlignment="Center"
+                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                   Text="Model"/>
+                                                                        <TextBlock Text="{Binding Metadata.Model}"/>
+                                                                    </StackPanel>
+                                                                    <MenuFlyoutSeparator Margin="-12" />
                                                                     <Grid RowSpacing="12" Margin="-16,-16,-16,-16" Padding="16"  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
                                                                         <Grid.RowDefinitions>
                                                                             <RowDefinition/>

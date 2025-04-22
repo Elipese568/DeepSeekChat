@@ -41,4 +41,18 @@ public class ModelsManagerService : JsonSeriailizingServiceBase<AiModelStorage>
             _data.AiModels.Remove(aiModel);
         }
     }
+
+    public AiModel GetModelById(Guid id)
+    {
+        return _data.AiModels.FirstOrDefault(x => x.UniqueID == id);
+    }
+
+    public void SelectModel(Guid id)
+    {
+        var aiModel = _data.AiModels.FirstOrDefault(x => x.UniqueID == id);
+        if (aiModel != null)
+        {
+            _data.SelectedModel = aiModel.UniqueID;
+        }
+    }
 }
