@@ -1,3 +1,4 @@
+using DeepSeekChat.Helper;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.ViewModels;
@@ -75,14 +76,14 @@ namespace DeepSeekChat.Views
         {
             if (ViewModel.SelectedModel.ToString().ToUpper() is "545B7456-BCF5-4E19-9E23-6C08AD3A90A3" or "F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37")
             {
-                ContentDialog contentDialog = new();
-                contentDialog.XamlRoot = this.XamlRoot;
-                contentDialog.Title = "Unexpected Operation";
-                contentDialog.Content = "Cannot remove default model.";
-                contentDialog.CloseButtonText = "OK";
-                contentDialog.CloseButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
-                contentDialog.RequestedTheme = RequestedTheme;
-                await contentDialog.ShowAsync();
+                await ContentDialogHelper.ShowMessageDialog(
+                    "Unexpected Operation",
+                    "Cannot remove default model.",
+                    null,
+                    "OK",
+                    null,
+                    ContentDialogButton.Close,
+                    this.XamlRoot);
                 return;
             }
 
@@ -107,13 +108,14 @@ namespace DeepSeekChat.Views
 
             AiModel model = modelManager.GetModelById(ViewModel.SelectedModel);
 
-            ContentDialog modifyContentDialog = new();
-            modifyContentDialog.XamlRoot = this.XamlRoot;
-            modifyContentDialog.Title = "Modify Options";
-            modifyContentDialog.PrimaryButtonText = "Confirm";
-            modifyContentDialog.CloseButtonText = "Cancel";
-            modifyContentDialog.PrimaryButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
-            modifyContentDialog.RequestedTheme = RequestedTheme;
+            var modifyContentDialog = ContentDialogHelper.CreateContentDialog(
+                "Modify Options",
+                null,
+                "Confirm",
+                "Cancel",
+                null,
+                ContentDialogButton.Primary,
+                this.XamlRoot);
 
             StackPanel content = new()
             {
@@ -175,7 +177,7 @@ namespace DeepSeekChat.Views
 
             modifyContentDialog.Content = content;
 
-            var result = await modifyContentDialog.ShowAsync();
+            var result = await ContentDialogHelper.ShowContentDialog(modifyContentDialog);
 
             if (result != ContentDialogResult.Primary)
             {

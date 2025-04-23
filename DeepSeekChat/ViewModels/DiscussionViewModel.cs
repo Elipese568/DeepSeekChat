@@ -93,11 +93,6 @@ public partial class DiscussionViewModel : ObservableRecipient
     [RelayCommand]
     public async Task DetailEditSystemPrompt()
     {
-        ContentDialog contentDialog = new();
-        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
-        contentDialog.Title = "Edit System Prompt";
-        contentDialog.PrimaryButtonText = "Confirm";
-        contentDialog.SecondaryButtonText = "Cancel";
         TextBox textBox = new()
         {
             MaxLength = int.MaxValue,
@@ -108,8 +103,14 @@ public partial class DiscussionViewModel : ObservableRecipient
         };
         ScrollViewer.SetVerticalScrollBarVisibility(textBox, ScrollBarVisibility.Visible);
         textBox.Text = SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt;
-        contentDialog.Content = textBox;
-        contentDialog.XamlRoot = MainPage.Current.Content.XamlRoot;
+        var contentDialog = ContentDialogHelper.CreateContentDialog(
+            "Edit System Prompt",
+            textBox,
+            "Confirm",
+            "Cancel",
+            null,
+            ContentDialogButton.Primary,
+            MainPage.Current.Content.XamlRoot);
         if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
         {
             SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt = textBox.Text;

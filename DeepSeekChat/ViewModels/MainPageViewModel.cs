@@ -66,66 +66,65 @@ public partial class MainPageViewModel : ObservableRecipient
     public async Task ChangeDiscussionTitle()
     {
         int operatingIndex = _discussionItems.IndexOf(x => x.Id == OperatingItem.Id);
-        ContentDialog contentDialog = new();
-        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
-        contentDialog.Title = "Change Title";
-        contentDialog.PrimaryButtonText = "Confirm";
-        contentDialog.SecondaryButtonText = "Cancel";
         TextBox textBox = new()
         {
             Header = "Title",
             PlaceholderText = "Enter the new title of the discussion",
             MaxLength = 32
         };
-        contentDialog.Content = textBox;
-        contentDialog.PrimaryButtonClick += async (s, e) =>
-        {
-            if (textBox.Text.Length == 0)
+        await ContentDialogHelper.ShowContentDialog(
+            "Change Title",
+            textBox,
+            "Confirm",
+            "Cancel",
+            null,
+            ContentDialogButton.Primary,
+            Parent.Content.XamlRoot,
+            async (s, e) =>
             {
-                e.Cancel = true;
-            }
-            else
-            {
-                DiscussionItemViewModels[operatingIndex].Title = textBox.Text;
-            }
-        };
-        contentDialog.DefaultButton = ContentDialogButton.Primary;
-        contentDialog.XamlRoot = Parent.Content.XamlRoot;
-        await contentDialog.ShowAsync();
+                if (textBox?.Text.Length == 0)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    DiscussionItemViewModels[operatingIndex].Title = textBox.Text;
+                }
+            });
     }
 
     [RelayCommand]
     public async Task AddDiscussion()
     {
-        ContentDialog contentDialog = new();
-        contentDialog.RequestedTheme = (MainWindow.Current.Content as FrameworkElement).RequestedTheme;
-        contentDialog.Title = "Add Discussion";
-        contentDialog.PrimaryButtonText = "Add";
-        contentDialog.SecondaryButtonText = "Cancel";
         TextBox textBox = new()
         {
             Header = "Title",
             PlaceholderText = "Enter the title of the discussion",
             MaxLength = 32
         };
-        contentDialog.Content = textBox;
-        contentDialog.PrimaryButtonClick += async (s, e) =>
-        {
-            if (textBox.Text.Length == 0)
+
+        await ContentDialogHelper.ShowContentDialog(
+            "Add Discussion",
+            textBox,
+            "Add",
+            "Cancel",
+            null,
+            ContentDialogButton.Primary,
+            Parent.Content.XamlRoot,
+            async (s, e) =>
             {
-                e.Cancel = true;
-            }
-            else
-            {
-                var current = _discussionItemService.CreateNewDiscussionItem(textBox.Text);
-                var ndVM = new DiscussionItemViewModel(current);
-                ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
-                DiscussionItemViewModels.Add(ndVM);
-            }
-        };
-        contentDialog.DefaultButton = ContentDialogButton.Primary;
-        contentDialog.XamlRoot = Parent.Content.XamlRoot;
-        await contentDialog.ShowAsync();
+                if (textBox.Text.Length == 0)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    var current = _discussionItemService.CreateNewDiscussionItem(textBox.Text);
+                    var ndVM = new DiscussionItemViewModel(current);
+                    ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
+                    DiscussionItemViewModels.Add(ndVM);
+                }
+            });
     }
 
     private void OnDiscussItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
