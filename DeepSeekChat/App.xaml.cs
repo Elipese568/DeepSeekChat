@@ -67,6 +67,7 @@ namespace DeepSeekChat
                 .AddSingleton<DiscussionItemService>()
                 .AddSingleton<SettingService>()
                 .AddSingleton<ModelsManagerService>()
+                .AddSingleton<ClientService>()
                 .BuildServiceProvider()
             );
 

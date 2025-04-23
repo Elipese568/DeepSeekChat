@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeepSeekChat.Helper;
+using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.Views;
 using Microsoft.UI.System;
@@ -48,7 +49,7 @@ public class SettingViewModel : ObservableRecipient
 
     public Guid SelectedModel
     {
-        get => Guid.Parse(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, "545B7456-BCF5-4E19-9E23-6C08AD3A90A3"));
+        get => Guid.Parse(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID));
         set
         {
             _settingService.Write(SettingService.SETTING_SELECTED_MODEL, value.ToString());
@@ -71,7 +72,7 @@ public class SettingViewModel : ObservableRecipient
             else
                 SelectedModel = AiModelViewModels[index].UniqueID;
         else
-            SelectedModel = new Guid("F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37");
+            SelectedModel = new Guid(AiModelStorage.DEEPSEEK_PRO_MODEL_GUID);
     }
 
     public void AddModel(string name, string description, string modelID)

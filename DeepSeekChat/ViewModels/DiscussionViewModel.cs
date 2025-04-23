@@ -41,27 +41,6 @@ public partial class DiscussionViewModel : ObservableRecipient
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
-        if(!string.IsNullOrWhiteSpace(_settingService.Read(SettingService.SETTING_APIKEY)))
-        {
-            try
-            {
-                _sendCommand.Configure(_settingService.Read(SettingService.SETTING_APIKEY), App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL))).ModelID);
-            }
-            catch { }
-        }
-
-        _settingService.SettingChanged += OnSettingChanged;
-    }
-
-    private void OnSettingChanged(object? sender, SettingChangedEventArgs e)
-    {
-        if(e.Name is not SettingService.SETTING_APIKEY and not SettingService.SETTING_SELECTED_MODEL)
-            return;
-
-        if (string.IsNullOrWhiteSpace(e.Value))
-            return;
-
-        _sendCommand.Configure(_settingService.Read(SettingService.SETTING_APIKEY), App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL))).ModelID);
     }
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)

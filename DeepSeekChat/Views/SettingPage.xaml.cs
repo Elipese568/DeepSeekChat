@@ -74,7 +74,7 @@ namespace DeepSeekChat.Views
 
         private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.SelectedModel.ToString().ToUpper() is "545B7456-BCF5-4E19-9E23-6C08AD3A90A3" or "F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37")
+            if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
                 await ContentDialogHelper.ShowMessageDialog(
                     "Unexpected Operation",
@@ -93,7 +93,7 @@ namespace DeepSeekChat.Views
         private async void Button_Click_3(object sender, RoutedEventArgs e)
         {
             var modelManager = App.Current.GetService<ModelsManagerService>();
-            if (ViewModel.SelectedModel.ToString().ToUpper() is "545B7456-BCF5-4E19-9E23-6C08AD3A90A3" or "F72AB0EC-37D3-43F8-BCC7-A04BBD9B2A37")
+            if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
                 ContentDialog contentDialog = new();
                 contentDialog.XamlRoot = this.XamlRoot;

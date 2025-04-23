@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DeepSeekChat.Models;
+using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
 using OpenAI;
 using OpenAI.Chat;
@@ -26,17 +27,22 @@ public record ChatResponseCompletedEventArgs(ProgressStatus Status);
 
 public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options);
 
+public class NoClientException : Exception
+{
+    public NoClientException(string message) : base(message)
+    {
+    }
+}
+
 public class CallAICommand : ICommand
 {
     private const string DoneMarker = "data: [DONE]";
 
     private readonly DiscussionItem _discussItem;
-    private string _apiKey;
-    private string _model;
-    private OpenAIClient _client;
-    private ChatClient _chatClient;
     private readonly DispatcherQueue _dispatcherQueue;
+    private readonly ClientService _clientService;
 
+    private ChatClient _chatClient;
     private CancellationTokenSource _cts;
     private bool _isRunning;
 
@@ -49,16 +55,13 @@ public class CallAICommand : ICommand
     {
         _discussItem = discussItem ?? throw new ArgumentNullException(nameof(discussItem));
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-    }
-
-    public void Configure(string apiKey, string model)
-    {
-        _apiKey = apiKey ?? "";
-        _model = model ?? "";
-        _client = new OpenAIClient(
-                new ApiKeyCredential(apiKey),
-                new OpenAIClientOptions { Endpoint = new Uri("https://api.siliconflow.cn/v1/") });
-        _chatClient = _client.GetChatClient(model);
+        _clientService = App.Current.GetService<ClientService>();
+        _chatClient = _clientService.GetChatClient();
+        
+        _clientService.ClientUpdate += (s, e) =>
+        {
+            _chatClient = e.ChatClient;
+        };
     }
 
     public bool CanExecute(object parameter) => !_isRunning;
@@ -134,6 +137,11 @@ public class CallAICommand : ICommand
 
     private async Task ProcessChatStreamAsync(List<ChatMessage> messages, ChatCompletionOptions options)
     {
+        if(_chatClient == null)
+        {
+            throw new NoClientException("Client is not set or invaild.");
+        }
+
         var responseStream = _chatClient.CompleteChatStreamingAsync(
             messages,
             options,
@@ -188,7 +196,7 @@ public class CallAICommand : ICommand
 
         if (!isMetadataReceived)
         {
-            var metadata = new ChatCompletionMetadata(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _model, _discussItem.ChatOptions);
+            var metadata = new ChatCompletionMetadata(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, App.Current.GetService<ClientService>().Model, _discussItem.ChatOptions);
             CompletionMetadataReceived?.Invoke(this, metadata);
             isMetadataReceived = true;
         }

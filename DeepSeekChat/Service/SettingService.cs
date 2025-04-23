@@ -14,7 +14,8 @@ public sealed class SettingChangedEventArgs : EventArgs
 }
 class SettingService
 {
-    private static ApplicationData _innerApplicationDataInstance;
+    private ApplicationData _innerApplicationDataInstance;
+    private List<EventHandler<SettingChangedEventArgs>> _settingChangedHandlers = new();
 
     public SettingService()
     {
@@ -34,10 +35,25 @@ class SettingService
         if (!_innerApplicationDataInstance.LocalSettings.Values.TryAdd(key, value))
             _innerApplicationDataInstance.LocalSettings.Values[key] = value;
 
-        SettingChanged?.Invoke(this, new SettingChangedEventArgs { Name = key, Value = value });
+        foreach(var handler in _settingChangedHandlers)
+        {
+            handler.Invoke(this, new() { Name = key, Value = value });
+        }
     }
 
-    public event EventHandler<SettingChangedEventArgs> SettingChanged;
+    public event EventHandler<SettingChangedEventArgs> SettingChanged
+    {
+        add
+        {
+            if (!_settingChangedHandlers.Contains(value))
+                _settingChangedHandlers.Add(value);
+        }
+        remove
+        {
+            if (_settingChangedHandlers.Contains(value))
+                _settingChangedHandlers.Remove(value);
+        }
+    }
 
     public const string SETTING_THEME = "ApplicationTheme";
     public const string SETTING_APIKEY = "ApiKey";
