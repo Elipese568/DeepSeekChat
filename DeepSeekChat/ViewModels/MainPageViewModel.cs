@@ -41,6 +41,12 @@ public partial class MainPageViewModel : ObservableRecipient
     [ObservableProperty]
     private Page _contentPage;
 
+    [ObservableProperty]
+    private bool _isApiKeyEmpty = false;
+
+    [ObservableProperty]
+    private bool _isClientAvailable = true;
+
     public event EventHandler<DiscussionViewStatusChangedEventArgs> DiscussionViewStatusChanged;
 
     public MainPage Parent { get; set; }
@@ -52,6 +58,29 @@ public partial class MainPageViewModel : ObservableRecipient
         _discussionItems = _discussionItemService.GetStroragedDiscussionItems();
         DiscussionItemViewModels = new( _discussionItems.Select(x => new DiscussionItemViewModel(x)));
 
+        SettingStatusToDisplay(null, null);
+        App.Current.GetService<SettingService>().SettingChanged += SettingStatusToDisplay;
+    }
+
+    public async void SettingStatusToDisplay(object sender, SettingChangedEventArgs e)
+    {
+        if (App.Current.GetService<SettingService>().Read(SettingService.SETTING_APIKEY) is string apikey && !string.IsNullOrWhiteSpace(apikey))
+        {
+            IsApiKeyEmpty = false;
+            if (await App.Current.GetService<ClientService>().IsApiKeyVaildAsync(apikey))
+            {
+                IsClientAvailable = true;
+            }
+            else
+            {
+                IsClientAvailable = false;
+            }
+        }
+        else
+        {
+            IsApiKeyEmpty = true;
+            IsClientAvailable = false;
+        }
     }
 
     [RelayCommand]

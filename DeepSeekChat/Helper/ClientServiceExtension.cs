@@ -15,7 +15,7 @@ public static class ClientServiceExtension
         var settingService = App.Current.GetService<SettingService>();
         if (settingService == null)
             return clientService;
-        clientService.ConfigureAll(
+        clientService.ConfigureAllAsync(
             new("https://api.siliconflow.cn/v1/"), // TODO: Replace with a setting after this option is unlocked
             settingService.Read(SettingService.SETTING_APIKEY, string.Empty),
             App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID))).ModelID);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DeepSeekChat.Service;
@@ -35,7 +36,7 @@ class SettingService
         if (!_innerApplicationDataInstance.LocalSettings.Values.TryAdd(key, value))
             _innerApplicationDataInstance.LocalSettings.Values[key] = value;
 
-        foreach(var handler in _settingChangedHandlers)
+        foreach (var handler in _settingChangedHandlers)
         {
             handler.Invoke(this, new() { Name = key, Value = value });
         }

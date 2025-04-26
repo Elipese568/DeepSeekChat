@@ -41,7 +41,6 @@ namespace DeepSeekChat.Views
             ViewModel.DiscussionItemViewModels.CollectionChanged += DiscussItems_CollectionChanged;
             ViewModel.DiscussionViewStatusChanged += ViewModel_DiscussionViewStatusChanged;
             Current = this;
-
             this.InitializeComponent();
         }
 
@@ -104,9 +103,9 @@ namespace DeepSeekChat.Views
             DiscussList.SelectedIndex = -1;
         }
 
-        public static Visibility Transparent2Visibility(Color color)
+        public bool ReverseBool(bool value)
         {
-            return color.A > 0 ? Visibility.Visible : Visibility.Collapsed;
+            return !value;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

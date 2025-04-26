@@ -22,7 +22,7 @@ namespace DeepSeekChat.ViewModels;
 
 public partial class DiscussionViewModel : ObservableRecipient
 {
-    private readonly CallAICommand _sendCommand;
+    private readonly ExecuteAICommand _sendCommand;
     private readonly SettingService _settingService;
 
     [ObservableProperty]
@@ -37,7 +37,7 @@ public partial class DiscussionViewModel : ObservableRecipient
         SelectedDiscussItemViewModel = item;
         _settingService = App.Current.GetService<SettingService>();
 
-        _sendCommand = new CallAICommand(item.InnerObject);
+        _sendCommand = new ExecuteAICommand(item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
@@ -96,7 +96,8 @@ public partial class DiscussionViewModel : ObservableRecipient
         }
     }
 
-    private bool CanSend() => !string.IsNullOrWhiteSpace(InputingPrompt) && !_sendCommand.IsRunning;
+
+    private bool CanSend() => !string.IsNullOrWhiteSpace(InputingPrompt) && _sendCommand.CanExecute(null);
 
     [RelayCommand]
     public void RandomSeed()

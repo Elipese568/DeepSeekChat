@@ -49,6 +49,7 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 		set
 		{
 			_innerObject.CurrentMessageMetadata = value;
+			OnPropertyChanged();
 		}
 	}
 	public string Id

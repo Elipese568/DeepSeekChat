@@ -36,10 +36,11 @@
         <Grid RowSpacing="4" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="2" Padding="8" Spacing="8">
+            <StackPanel Grid.Row="3" Padding="8" Spacing="8">
                 <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
                 <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch">Go Setting</Button>
             </StackPanel>
@@ -54,9 +55,19 @@
                     <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}">Your helpful AI assistant.</TextBlock>
                 </StackPanel>
             </Grid>
+
+            <StackPanel Grid.Row="1" Padding="16, 4" Spacing="4">
+                <InfoBar Severity="Error"
+                         Title="Error"
+                         Message="You haven't set ApiKey. You need to set ApiKey before request AI."
+                         IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False"/>
+                <InfoBar Severity="Error"
+                         Title="Error"
+                         Message="Your ApiKey is invaild. You need to set a correct ApiKey to connect AI."
+                         IsOpen="{x:Bind ReverseBool(ViewModel.IsClientAvailable), Mode=OneWay}" IsClosable="False"/>    
+            </StackPanel>
             
-            
-            <ScrollViewer Grid.Row="1" Padding="0,0,0,16">
+            <ScrollViewer Grid.Row="2" Padding="0,0,0,16">
                 <Grid>
                     <ListView x:Name="DiscussList" Grid.Row="1" SelectionChanged="DiscussList_SelectionChanged" ItemClick="DiscussList_ItemClick" ItemsSource="{x:Bind ViewModel.DiscussionItemViewModels}">
                         <ListView.ItemTemplate>
@@ -80,7 +91,7 @@
                                                 Height="16" 
                                                 Margin="0, 8"
                                                 Background="{Binding LeastStatus, Converter={StaticResource ProgressStatusToColorConverter}}"
-                                                Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=TwoWay}"
+                                                Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
                                                 Name="StatusSelector">
                                             <TextBlock HorizontalAlignment="Center" Visibility="{Binding Background,ElementName=StatusSelector,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="10" Foreground="{ThemeResource TextOnAccentFillColorPrimary}">New</TextBlock>
                                         </Border>
