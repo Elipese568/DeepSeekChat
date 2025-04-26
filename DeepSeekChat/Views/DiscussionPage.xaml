@@ -23,7 +23,6 @@
         <Grid RowSpacing="16" Padding="36,40">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="120"/>
             </Grid.RowDefinitions>
@@ -40,7 +39,7 @@
                 <TextBlock HorizontalAlignment="Center" Style="{ThemeResource SubtitleTextBlockStyle}">No Messages</TextBlock>
                 <TextBlock HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}">Please input a prompt and click <Run FontFamily="{StaticResource SymbolThemeFontFamily}" Text=" &#xE725; "/> to start</TextBlock>
             </StackPanel>-->
-            <ListView SelectionMode="None" Grid.Row="2" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels, Mode=TwoWay}">
+            <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels, Mode=TwoWay}">
                 <!-- The ItemsStackPanel must be edited to update the following two properties -->
                 <!-- These properties allow the list to grow from the bottom -->
                 <ListView.ItemsPanel>
