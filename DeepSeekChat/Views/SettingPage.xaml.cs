@@ -36,6 +36,16 @@ namespace DeepSeekChat.Views
             this.InitializeComponent();
         }
 
+        public SettingPage(bool tipApiKeyOption)
+        {
+            ViewModel = new();
+            this.InitializeComponent();
+            if (tipApiKeyOption)
+            {
+                ApiKeyTip.IsOpen = true;
+            }
+        }
+
         private void SettingsCard_Click(object sender, RoutedEventArgs e)
         {
             Launcher.LaunchUriAsync(new("https://github.com/Elipese568/DeepSeekChat/issues"));

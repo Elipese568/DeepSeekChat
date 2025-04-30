@@ -58,9 +58,10 @@
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE8D7;"/>
                             </tkc:SettingsCard.HeaderIcon>
-
-                            <TextBox MinWidth="333" Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay}" TextAlignment="Left" PlaceholderText="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-
+                            <Grid>
+                                <TextBox Name="ApiKeyInput" MinWidth="333" Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay}" TextAlignment="Left" PlaceholderText="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TeachingTip PreferredPlacement="Left" Name="ApiKeyTip" Target="{Binding ElementName=ApiKeyInput}" IsLightDismissEnabled="True" Title="Set correctly" Subtitle="Set a correct ApiKey to connect to AI."/>
+                            </Grid>
                         </tkc:SettingsCard>
                         <tkc:SettingsCard Header="Model" Description="Set model to chat">
                             <tkc:SettingsCard.HeaderIcon>

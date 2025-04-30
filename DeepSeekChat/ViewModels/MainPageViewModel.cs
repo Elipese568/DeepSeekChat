@@ -166,11 +166,17 @@ public partial class MainPageViewModel : ObservableRecipient
             });
     }
 
+    private bool _isOutDestory = false;
+
     private Dictionary<string, Page> _pages = new();
     private string _currentPageId = string.Empty;
     public string CurrentPageId => _currentPageId;
-    public void TryNavigate(string pageId, Func<Page> addPageFactory)
+    public void TryNavigate(string pageId, Func<Page> buildPageFactory, bool shouldOutDestroy = false)
     {
+        if (_isOutDestory)
+        {
+            _pages.Remove(CurrentPageId);
+        }
         if (_pages.TryGetValue(pageId, out Page page))
         {
             page.RequestedTheme = Parent.RequestedTheme;
@@ -178,12 +184,13 @@ public partial class MainPageViewModel : ObservableRecipient
         }
         else
         {
-            Page newPage = addPageFactory();
+            Page newPage = buildPageFactory();
             newPage.RequestedTheme = Parent.RequestedTheme;
             _pages.Add(pageId, newPage);
             ContentPage = newPage;
         }
         _currentPageId = pageId;
+        _isOutDestory = shouldOutDestroy;
         GC.Collect();
     }
 

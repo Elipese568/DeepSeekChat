@@ -103,6 +103,12 @@ namespace DeepSeekChat.Views
             DiscussList.SelectedIndex = -1;
         }
 
+        private void SetApiKeyButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.TryNavigate("SettingTipApiKey", () => new SettingPage(true), true);
+            DiscussList.SelectedIndex = -1;
+        }
+
         public bool ReverseBool(bool value)
         {
             return !value;

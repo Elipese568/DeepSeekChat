@@ -56,15 +56,25 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Grid.Row="1" Padding="16, 4" Spacing="4">
+            <StackPanel Grid.Row="1" Padding="16,4" Spacing="4">
                 <InfoBar Severity="Error"
                          Title="Error"
                          Message="You haven't set ApiKey. You need to set ApiKey before request AI."
-                         IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False"/>
+                         IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False">
+                    <InfoBar.ActionButton>
+                        <HyperlinkButton HorizontalAlignment="Right"
+                                         Click="SetApiKeyButton_Click">Set</HyperlinkButton>
+                    </InfoBar.ActionButton>
+                </InfoBar>
                 <InfoBar Severity="Error"
                          Title="Error"
                          Message="Your ApiKey is invaild. You need to set a correct ApiKey to connect AI."
-                         IsOpen="{x:Bind ReverseBool(ViewModel.IsClientAvailable), Mode=OneWay}" IsClosable="False"/>    
+                         IsOpen="{x:Bind ReverseBool(ViewModel.IsClientAvailable), Mode=OneWay}" IsClosable="False">
+                    <InfoBar.ActionButton>
+                        <HyperlinkButton HorizontalAlignment="Right"
+                                         Click="SetApiKeyButton_Click">Set</HyperlinkButton>
+                    </InfoBar.ActionButton>
+                </InfoBar>
             </StackPanel>
             
             <ScrollViewer Grid.Row="2" Padding="0,0,0,16">
