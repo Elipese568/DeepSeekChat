@@ -148,14 +148,7 @@ public class ExecuteAICommand : ICommand
         Temperature = options.Temperature,
         TopP = options.TopP,
         FrequencyPenalty = options.FrequencyPenalty,
-        Seed = new Func<long?>(() =>
-        {
-            if (options.SeedAutoRefresh)
-            {
-                options.Seed = Random.Shared.Next();
-            }
-            return options.Seed;
-        })()
+        Seed = options.Seed
     };
 
     private void RaiseStreamEvent(string content, UpdateType type, TokenUsage usage)

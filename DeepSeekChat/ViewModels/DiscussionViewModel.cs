@@ -66,6 +66,9 @@ public partial class DiscussionViewModel : ObservableRecipient
             ProgressStatus = ProgressStatus.InProgress
         });
 
+        if (SelectedDiscussItemViewModel.ChatOptionsViewModel.SeedAutoRefresh)
+            RandomSeed();
+
         _sendCommand.Execute(prompt);
     }
 
