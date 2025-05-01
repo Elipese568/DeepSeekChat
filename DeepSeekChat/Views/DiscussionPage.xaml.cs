@@ -52,7 +52,6 @@ namespace DeepSeekChat.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.SelectedDiscussItemViewModel.IsViewed = false;
             OptionPane.IsPaneOpen = !OptionPane.IsPaneOpen;
         }
 
