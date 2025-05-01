@@ -86,14 +86,7 @@ namespace DeepSeekChat.Views
         {
             if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
-                await ContentDialogHelper.ShowMessageDialog(
-                    "Unexpected Operation",
-                    "Cannot remove default model.",
-                    null,
-                    "OK",
-                    null,
-                    ContentDialogButton.Close,
-                    this.XamlRoot);
+                await ContentDialogHelper.ShowNoActionMessageDialog("Unexpected Operation", "Cannot remove default model.", XamlRoot);
                 return;
             }
 
@@ -105,14 +98,7 @@ namespace DeepSeekChat.Views
             var modelManager = App.Current.GetService<ModelsManagerService>();
             if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
-                ContentDialog contentDialog = new();
-                contentDialog.XamlRoot = this.XamlRoot;
-                contentDialog.Title = "Unexpected Operation";
-                contentDialog.Content = "Cannot modify infomation of default model.";
-                contentDialog.CloseButtonText = "OK";
-                contentDialog.CloseButtonStyle = (Style)App.Current.Resources["AccentButtonStyle"];
-                contentDialog.RequestedTheme = RequestedTheme;
-                await contentDialog.ShowAsync();
+                await ContentDialogHelper.ShowNoActionMessageDialog("Unexpected Operation", "Cannot modify infomation of default model.", XamlRoot);
                 return;
             }
 

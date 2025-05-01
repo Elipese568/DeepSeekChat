@@ -132,4 +132,12 @@ public class ContentDialogHelper
             defaultButton,
             xamlRoot));
     }
+
+    public static ContentDialog CreateNoActionMessageDialog(string title, string message, XamlRoot xamlRoot, string buttonText = "OK")
+    {
+        return CreateMessageDialog(title, message, buttonText, "", "", defaultButton: ContentDialogButton.Close, xamlRoot: xamlRoot);
+    }
+
+    public static async Task<ContentDialogResult> ShowNoActionMessageDialog(string title, string message, XamlRoot xamlRoot, string buttonText = "OK")
+        => await ShowContentDialog(CreateNoActionMessageDialog(title, message, xamlRoot, buttonText));
 }
