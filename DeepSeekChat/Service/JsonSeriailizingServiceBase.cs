@@ -19,12 +19,12 @@ public class JsonStorageFileAttribute : Attribute
     }
 }
 
-public class JsonSeriailizingServiceBase<TData>
+public class JsonSeriailizingServiceBase<TData> : ImplementationLifetimeServiceBase
 {
     private StorageFile _storage;
     protected TData _data;
 
-    public JsonSeriailizingServiceBase()
+    protected override void OnInitialize()
     {
         _storage = ApplicationData.Current.LocalFolder.CreateFileAsync(GetType().GetCustomAttribute<JsonStorageFileAttribute>().FileName, CreationCollisionOption.OpenIfExists).GetAwaiter().GetResult();
         using var readStream = _storage.OpenStreamForReadAsync().GetAwaiter().GetResult();
@@ -43,24 +43,26 @@ public class JsonSeriailizingServiceBase<TData>
                 _data = Activator.CreateInstance<TData>();
             }
         }
+        base.OnInitialize();
+    }
 
-        App.Current.ExitProcess += (s, e) =>
+    protected override void OnDispose()
+    {
+        var serializedStream = _storage.OpenStreamForWriteAsync().GetAwaiter().GetResult();
+        try
         {
-            var serializedStream = _storage.OpenStreamForWriteAsync().GetAwaiter().GetResult();
-            try
-            {
-                JsonSerializer.Serialize(serializedStream, _data);
-            }
-            catch(Exception ex)
-            {
-                // Handle serialization exception if needed
-                System.Diagnostics.Debug.WriteLine($"Serialization error: {ex.Message}");
-            }
-            finally
-            {
-                serializedStream.Flush();
-                serializedStream.Close();
-            }
-        };
+            JsonSerializer.Serialize(serializedStream, _data);
+        }
+        catch (Exception ex)
+        {
+            // Handle serialization exception if needed
+            System.Diagnostics.Debug.WriteLine($"Serialization error: {ex.Message}");
+        }
+        finally
+        {
+            serializedStream.Flush();
+            serializedStream.Close();
+        }
+        base.OnDispose();
     }
 }

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-public abstract class WrapperViewModelBase<TWarp> : ObservableRecipient
+public abstract class WrapperViewModelBase<TWrap> : ObservableRecipient
 {
-    protected TWarp _innerObject;
-    public WrapperViewModelBase(TWarp wrapped)
+    protected TWrap _innerObject;
+    public WrapperViewModelBase(TWrap wrapped)
     {
         _innerObject = wrapped;
         InnerObject = wrapped;
     }
 
-    public readonly TWarp InnerObject;
+    public readonly TWrap InnerObject;
 }

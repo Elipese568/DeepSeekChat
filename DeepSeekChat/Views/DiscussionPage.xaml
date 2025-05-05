@@ -82,7 +82,7 @@
                                                    Text="{Binding UserPrompt}"/>
                                     </Grid>
                                     <PersonPicture Grid.Column="1" 
-                                                   ProfilePicture="ms-appx:///Assets/User.png" 
+                                                   ProfilePicture="ms-appx:///Assets/Avatars/Default/UserDefault.png" 
                                                    Height="32" 
                                                    Width="32" 
                                                    VerticalAlignment="Top" 
@@ -283,7 +283,7 @@
                                         </Grid>
                                     </StackPanel>
                                     <PersonPicture Grid.Column="0" 
-                                                   ProfilePicture="ms-appx:///Assets/AI.png" 
+                                                   ProfilePicture="ms-appx:///Assets/Avatars/Default/AiDefault.png" 
                                                    Height="32" 
                                                    Width="32" 
                                                    VerticalAlignment="Top" 

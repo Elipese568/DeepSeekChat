@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using DeepSeekChat.Foundation;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
@@ -72,13 +74,23 @@ namespace DeepSeekChat
             );
 
             Current = this;
+            m_exitProcess = EventHandlerWrapper<EventHandler>.Create();
+
+            HeaderAdjustableList<int> a = new();
+            a.Add(1);
+            a.Add(2);
+            a.Add(3);
+            int av1 = a[0];
+            a.RaiseToHead(2);
+            av1 = a[0];
+            foreach (var item in a)
+            {
+                Debug.WriteLine(item);
+            }
 
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
-                foreach (var handler in m_exitProcess)
-                {
-                    handler?.Invoke(this, EventArgs.Empty);
-                }
+                m_exitProcess.Invoke(this, EventArgs.Empty);
             };
         }
 
@@ -100,16 +112,16 @@ namespace DeepSeekChat
         private Window? m_window;
         private readonly Ioc m_ioc;
 
-        private List<EventHandler> m_exitProcess = new();
+        private EventHandlerWrapper<EventHandler> m_exitProcess;
         public event EventHandler ExitProcess
         {
             add
             {
-                m_exitProcess.Add(value);
+                m_exitProcess.AddHandler(value);
             }
             remove
             {
-                m_exitProcess.Remove(value);
+                m_exitProcess.RemoveHandler(value);
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using DeepSeekChat.Command;
-using DeepSeekChat.Helper;
+using DeepSeekChat.Foundation;
 using DeepSeekChat.Models;
 using OpenAI;
 using OpenAI.Assistants;
@@ -84,7 +84,7 @@ public class ClientService
     private string _model;
     private string _apikey;
     private Uri _aiServerEndPoint;
-    private List<EventHandler<ClientUpdateEventArgs>> _clientUpdateHandlers = new();
+    private EventHandlerWrapper<EventHandler<ClientUpdateEventArgs>> _clientUpdateHandlers;
 
     public string ApiKey => _apikey;
     public string Model => _model;
@@ -93,19 +93,18 @@ public class ClientService
     {
         add
         {
-            if (!_clientUpdateHandlers.Contains(value))
-                _clientUpdateHandlers.Add(value);
+            _clientUpdateHandlers.AddHandler(value);
         }
         remove
         {
-            if (_clientUpdateHandlers.Contains(value))
-                _clientUpdateHandlers.Remove(value);
+            _clientUpdateHandlers.RemoveHandler(value);
         }
     }
 
     public ClientService()
     {
         _settingService = App.Current.GetService<SettingService>();
+        _clientUpdateHandlers = EventHandlerWrapper<EventHandler<ClientUpdateEventArgs>>.Create();
 
         if (!string.IsNullOrWhiteSpace(_settingService.Read(SettingService.SETTING_APIKEY, string.Empty)))
             ConfigureAllAsync(
@@ -152,10 +151,7 @@ public class ClientService
             ServerEndpoint = _aiServerEndPoint,
             ChatClient = _chatClient
         };
-        foreach (var handler in _clientUpdateHandlers)
-        {
-            handler(this, args);
-        }
+        _clientUpdateHandlers.Invoke(this, args);
     }
 
     public async void UpdateApiKeyAsync(string apikey)

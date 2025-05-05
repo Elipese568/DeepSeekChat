@@ -200,5 +200,15 @@ namespace DeepSeekChat.Views
                 AddButton.IsEnabled = true;
             }
         }
+
+        private void Image_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            (sender as Image).Opacity = 1;
+        }
+
+        private void Image_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            (sender as Image).Opacity = 0;
+        }
     }
 }

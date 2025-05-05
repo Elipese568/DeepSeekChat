@@ -45,7 +45,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">AI Service</TextBlock>
-                    <StackPanel Grid.Row="1" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="4">
                         <tkc:SettingsCard Header="Server Endpoint" Description="Set AI Server endpoint">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE968;"/>
@@ -141,8 +141,81 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">Personal</TextBlock>
+                    <StackPanel Grid.Row="1" Spacing="4">
+                        <tkc:SettingsCard Header="User avatar" Description="Pick an image which your avater to display in right place">
+                            <tkc:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE77B;" />
+                            </tkc:SettingsCard.HeaderIcon>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" RowSpacing="4" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Height="60" Width="60" Grid.Row="0" CornerRadius="30">
+                                        <Image Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/UserDefault.png" Grid.Row="0"/>
+                                    </Border>
+                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/UserDefault.png" Grid.Column="0" Opacity="0">
+                                        <Image.OpacityTransition>
+                                            <ScalarTransition/>
+                                        </Image.OpacityTransition>
+                                    </Image>
+                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                        Hover it to see the full of the image
+                                    </TextBlock>
+                                </Grid>
+                                <StackPanel Spacing="4" Grid.Column="1">
+                                    <Button Style="{ThemeResource AccentButtonStyle}">Pick New</Button>
+                                    <Button>Reset</Button>
+                                </StackPanel>
+                            </Grid>
+                        </tkc:SettingsCard>
+                        <tkc:SettingsCard Header="AI avatar" Description="Pick an image which the AI avater to display in left place">
+                            <tkc:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xEFA9;" />
+                            </tkc:SettingsCard.HeaderIcon>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" RowSpacing="4" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Height="60" Width="60" Grid.Row="0" CornerRadius="30">
+                                        <Image Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/AiDefault.png" Grid.Row="0"/>
+                                    </Border>
+                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/AiDefault.png" Grid.Column="0" Opacity="0">
+                                        <Image.OpacityTransition>
+                                            <ScalarTransition/>
+                                        </Image.OpacityTransition>
+                                    </Image>
+                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                        Hover it to see the full of the image
+                                    </TextBlock>
+                                </Grid>
+                                <StackPanel Spacing="4" Grid.Column="1">
+                                    <Button Style="{ThemeResource AccentButtonStyle}">Pick New</Button>
+                                    <Button>Reset</Button>
+                                </StackPanel>
+                            </Grid>
+                        </tkc:SettingsCard>
+                    </StackPanel>
+                </Grid>
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">General</TextBlock>
-                    <StackPanel Grid.Row="1" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="4">
                         <tkc:SettingsCard Header="App theme" Description="Select which app theme to display">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE790;"/>
@@ -166,7 +239,7 @@
                         </tkc:SettingsCard>
                         <tkc:SettingsCard Header="Display language" Description="Select which language to display">
                             <tkc:SettingsCard.HeaderIcon>
-                                <FontIcon Glyph="&#xE790;"/>
+                                <FontIcon Glyph="&#xE909;" />
                             </tkc:SettingsCard.HeaderIcon>
 
                             <ComboBox SelectedIndex="0" IsEnabled="False">
@@ -183,7 +256,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">About</TextBlock>
-                    <StackPanel Grid.Row="1" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="4">
                         <tkc:SettingsExpander Header="DeepSeekChat" Description="© 2025 Elipese. All rights reversed.">
                             <tkc:SettingsExpander.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///Assets/AppIconLight.png" Width="24"/>
