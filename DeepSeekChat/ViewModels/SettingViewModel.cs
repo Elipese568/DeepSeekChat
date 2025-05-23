@@ -140,6 +140,9 @@ public partial class SettingViewModel : ObservableRecipient
             Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0))
         };
 
+        if (ava == null)
+            return;
+
         await imageCropper.LoadImageFromFile(ava);
         var result = await ContentDialogHelper.ShowContentDialog("Selected Avatar", imageCropper, "OK", "Cancel", null, ContentDialogButton.Primary, _settingPage.XamlRoot);
         if(result != ContentDialogResult.Primary)
