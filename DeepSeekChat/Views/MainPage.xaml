@@ -14,7 +14,7 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
-        <MenuFlyout  x:Name="RightClickCommands">
+        <MenuFlyout x:Name="RightClickCommands">
             <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}">
                 Remove
             </MenuFlyoutItem>
@@ -41,8 +41,8 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="3" Padding="8" Spacing="8">
-                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch">Add Discussion</Button>
-                <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch">Go Setting</Button>
+                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///MainPage/AddDiscussionButton"/>
+                <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///MainPage/GoSettingButton"/>
             </StackPanel>
             <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
@@ -52,27 +52,29 @@
                 <Image Source="ms-appx:///Assets/AppIconLight.png" VerticalAlignment="Center" Grid.Column="0" Width="48"/>
                 <StackPanel Grid.Column="1" Padding="0">
                     <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">DeepSeekChat</TextBlock>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}">Your helpful AI assistant.</TextBlock>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///MainPage/ApplicationSubtitle"/>
                 </StackPanel>
             </Grid>
 
             <StackPanel Grid.Row="1" Padding="16,4" Spacing="4">
                 <InfoBar Severity="Error"
                          Title="Error"
-                         Message="You haven't set ApiKey. You need to set ApiKey before request AI."
+                         x:Uid="ms-resource:///MainPage/ApiKeyEmptyErrorInfoBar"
                          IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False">
                     <InfoBar.ActionButton>
                         <HyperlinkButton HorizontalAlignment="Right"
-                                         Click="SetApiKeyButton_Click">Set</HyperlinkButton>
+                                         x:Uid="ms-resource:///MainPage/SetApiKeyActionButton"
+                                         Click="SetApiKeyButton_Click"/>
                     </InfoBar.ActionButton>
                 </InfoBar>
                 <InfoBar Severity="Error"
                          Title="Error"
-                         Message="Your ApiKey is invaild. You need to set a correct ApiKey to connect AI."
+                         x:Uid="ms-resource:///MainPage/ApiKeyInvaildErrorInfoBar"
                          IsOpen="{x:Bind ReverseBool(ViewModel.IsClientAvailable), Mode=OneWay}" IsClosable="False">
                     <InfoBar.ActionButton>
                         <HyperlinkButton HorizontalAlignment="Right"
-                                         Click="SetApiKeyButton_Click">Set</HyperlinkButton>
+                                         Click="SetApiKeyButton_Click"
+                                         x:Uid="ms-resource:///MainPage/SetApiKeyActionButton"/>
                     </InfoBar.ActionButton>
                 </InfoBar>
             </StackPanel>

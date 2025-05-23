@@ -36,7 +36,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Margin="36,40,36,0" Style="{ThemeResource TitleTextBlockStyle}" Grid.Row="0">Setting</TextBlock>
+        <TextBlock Margin="36,40,36,0" Style="{ThemeResource TitleTextBlockStyle}" Grid.Row="0" x:Uid="ms-resource:///SettingPage/SettingPageTitle"/>
         <ScrollViewer Grid.Row="1">
             <StackPanel Spacing="36" Padding="36,0,36,40">
                 <Grid RowSpacing="8">
@@ -44,9 +44,9 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">AI Service</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///SettingPage/AiServiceSettingHeader"/>
                     <StackPanel Grid.Row="1" Spacing="4">
-                        <tkc:SettingsCard Header="Server Endpoint" Description="Set AI Server endpoint">
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/ServerEndpointSettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE968;"/>
                             </tkc:SettingsCard.HeaderIcon>
@@ -54,16 +54,16 @@
                             <TextBox MinWidth="106" TextAlignment="Left" HorizontalAlignment="Right" IsEnabled="False" VerticalAlignment="Center" Text="https://api.siliconflow.cn/v1/"></TextBox>
 
                         </tkc:SettingsCard>
-                        <tkc:SettingsCard Header="API Key" Description="Set up API-Key to use AI">
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/ApiKeySettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE8D7;"/>
                             </tkc:SettingsCard.HeaderIcon>
                             <Grid>
                                 <TextBox Name="ApiKeyInput" MinWidth="333" Text="{x:Bind ViewModel.ApiKey, Mode=TwoWay}" TextAlignment="Left" PlaceholderText="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                <TeachingTip PreferredPlacement="Left" Name="ApiKeyTip" Target="{Binding ElementName=ApiKeyInput}" IsLightDismissEnabled="True" Title="Set correctly" Subtitle="Set a correct ApiKey to connect to AI."/>
+                                <TeachingTip PreferredPlacement="Left" x:Name="ApiKeyTip" Target="{Binding ElementName=ApiKeyInput}" IsLightDismissEnabled="True"  x:Uid="ms-resource:///SettingPage/ApiKeyTipFlyout"/>
                             </Grid>
                         </tkc:SettingsCard>
-                        <tkc:SettingsCard Header="Model" Description="Set model to chat">
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/ModelSettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE8F2;" />
                             </tkc:SettingsCard.HeaderIcon>
@@ -108,29 +108,29 @@
                                                     </Grid.RowDefinitions>
                                                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Grid.Row="0">Add Model</TextBlock>
                                                     <StackPanel Grid.Row="1" Spacing="16" Margin="0,-8,0,0">
-                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelNameTextBox" TextChanged="ModelNameTextBox_TextChanged"  Header="Model Name" TextAlignment="Left" HorizontalAlignment="Stretch"/>
-                                                        <TextBox MinWidth="200" MaxWidth="400" TextWrapping="Wrap" AcceptsReturn="True" x:Name="ModelDescriptionTextBox" Header="Model Description" TextAlignment="Left" HorizontalAlignment="Stretch"/>
-                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelIDTextBox" Header="Model ID" TextAlignment="Left" TextChanged="ModelNameTextBox_TextChanged" HorizontalAlignment="Stretch"/>
+                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelNameTextBox" x:Uid="ms-resource:///SettingPage/ModelNameTextBox" TextChanged="ModelNameTextBox_TextChanged"  Header="Model Name" TextAlignment="Left" HorizontalAlignment="Stretch"/>
+                                                        <TextBox MinWidth="200" MaxWidth="400" TextWrapping="Wrap" AcceptsReturn="True" x:Name="ModelDescriptionTextBox" x:Uid="ms-resource:///SettingPage/ModelDescriptionTextBox" Header="Model Description" TextAlignment="Left" HorizontalAlignment="Stretch"/>
+                                                        <TextBox MinWidth="200" MaxWidth="400" x:Name="ModelIDTextBox" x:Uid="ms-resource:///SettingPage/ModelIDTextBox" Header="Model ID" TextAlignment="Left" TextChanged="ModelNameTextBox_TextChanged" HorizontalAlignment="Stretch"/>
                                                     </StackPanel>
 
                                                     <StackPanel Spacing="4" Grid.Row="2" Margin="0,-8,0,0">
-                                                        <TextBlock x:Name="ArgWrongTip" Foreground="{ThemeResource SystemFillColorCriticalBrush}" Visibility="Collapsed" Style="{ThemeResource CaptionTextBlockStyle}">Name and ID cannot be empty or white space</TextBlock>
+                                                        <TextBlock x:Uid="ms-resource:///SettingPage/ArgWrongTip" x:Name="ArgWrongTip" Foreground="{ThemeResource SystemFillColorCriticalBrush}" Visibility="Collapsed" Style="{ThemeResource CaptionTextBlockStyle}"/>
                                                         <Grid ColumnSpacing="4">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="*" />
                                                             </Grid.ColumnDefinitions>
-                                                            <Button x:Name="AddButton" Grid.Column="0" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" Click="Button_Click">Add</Button>
-                                                            <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="Button_Click_1">Cancel</Button>
+                                                            <Button x:Name="AddButton" x:Uid="ms-resource:///SettingPage/AddButton" Grid.Column="0" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" Click="Button_Click"/>
+                                                            <Button x:Uid="ms-resource:///SettingPage/CancelButton" Grid.Column="1" HorizontalAlignment="Stretch" Click="Button_Click_1">Cancel</Button>
                                                         </Grid>
                                                     </StackPanel>
                                                 </Grid>
                                             </Flyout>
                                         </Button.Flyout>
-                                        <TextBlock>Add Model</TextBlock>
+                                        <TextBlock x:Uid="ms-resource:///SettingPage/AddModelLabel"/>
                                     </Button>
-                                    <Button Click="Button_Click_3">Options</Button>
-                                    <Button Click="Button_Click_2">Remove Model</Button>
+                                    <Button Click="Button_Click_3" x:Uid="ms-resource:///SettingPage/OptionsButton"/>
+                                    <Button Click="Button_Click_2" x:Uid="ms-resource:///SettingPage/RemoveModelButton"/>
                                 </StackPanel>
                             </Grid>
                         </tkc:SettingsCard>
@@ -141,9 +141,9 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">Personal</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///SettingPage/PersonalitySettingHeader"/>
                     <StackPanel Grid.Row="1" Spacing="4">
-                        <tkc:SettingsCard Header="User avatar" Description="Pick an image which your avater to display in right place">
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/UserAvatarSettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE77B;" />
                             </tkc:SettingsCard.HeaderIcon>
@@ -165,27 +165,23 @@
                                             <ScalarTransition/>
                                         </Image.OpacityTransition>
                                     </Image>
-                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                                        Hover it to see the full of the image
-                                    </TextBlock>
+                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///SettingPage/HoverImageTip"/>
                                 </Grid>
                                 <StackPanel Spacing="4" Grid.Column="1">
-                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}">
+                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}" x:Uid="ms-resource:///SettingPage/PickNewButton">
                                         <Button.CommandParameter>
                                             <x:Int32>1</x:Int32>
                                         </Button.CommandParameter>
-                                        Pick New
                                     </Button>
-                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}">
+                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}" x:Uid="ms-resource:///SettingPage/ResetButton">
                                         <Button.CommandParameter>
                                             <x:Int32>1</x:Int32>
                                         </Button.CommandParameter>
-                                        Reset
                                     </Button>
                                 </StackPanel>
                             </Grid>
                         </tkc:SettingsCard>
-                        <tkc:SettingsCard Header="AI avatar" Description="Pick an image which the AI avater to display in left place">
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/AiAvatarSettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xEFA9;" />
                             </tkc:SettingsCard.HeaderIcon>
@@ -207,22 +203,18 @@
                                             <ScalarTransition/>
                                         </Image.OpacityTransition>
                                     </Image>
-                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                                        Hover it to see the full of the image
-                                    </TextBlock>
+                                    <TextBlock Grid.Row="1" Width="120" TextAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///SettingPage/HoverImageTip"/>
                                 </Grid>
                                 <StackPanel Spacing="4" Grid.Column="1">
-                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}">
+                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}" x:Uid="ms-resource:///SettingPage/PickNewButton">
                                         <Button.CommandParameter>
                                             <x:Int32>2</x:Int32>
                                         </Button.CommandParameter>
-                                        Pick New
                                     </Button>
-                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}">
+                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}" x:Uid="ms-resource:///SettingPage/ResetButton">
                                         <Button.CommandParameter>
                                             <x:Int32>2</x:Int32>
                                         </Button.CommandParameter>
-                                        Reset
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -234,9 +226,9 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">General</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///SettingPage/GeneralSettingHeader"/>
                     <StackPanel Grid.Row="1" Spacing="4">
-                        <tkc:SettingsCard Header="App theme" Description="Select which app theme to display">
+                        <!--<tkc:SettingsCard Header="App theme" Description="Select which app theme to display">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE790;"/>
                             </tkc:SettingsCard.HeaderIcon>
@@ -256,8 +248,8 @@
                                     <ComboBoxItem>Dark</ComboBoxItem>
                                 </ComboBox>
                             </Grid>
-                        </tkc:SettingsCard>
-                        <tkc:SettingsCard Header="Display language" Description="Select which language to display">
+                        </tkc:SettingsCard>-->
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/DisplayLanguageSettingCard">
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE909;" />
                             </tkc:SettingsCard.HeaderIcon>
@@ -275,7 +267,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}">About</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///SettingPage/AboutSettingHeader"/>
                     <StackPanel Grid.Row="1" Spacing="4">
                         <tkc:SettingsExpander Header="DeepSeekChat" Description="© 2025 Elipese. All rights reversed.">
                             <tkc:SettingsExpander.HeaderIcon>

@@ -53,8 +53,8 @@ namespace DeepSeekChat.Views
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if((e.AddedItems[0] as ComboBoxItem).Content.Equals("Light"))
-                ThemeTeachingTip.IsOpen = true;
+            //if((e.AddedItems[0] as ComboBoxItem).Content.Equals("Light"))
+            //    ThemeTeachingTip.IsOpen = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

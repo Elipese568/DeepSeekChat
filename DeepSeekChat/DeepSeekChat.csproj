@@ -217,5 +217,6 @@
     <PublishAot>False</PublishAot>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <DefaultLanguage>en-us</DefaultLanguage>
   </PropertyGroup>
 </Project>
