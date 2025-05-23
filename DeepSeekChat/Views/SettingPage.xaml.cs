@@ -59,6 +59,12 @@ namespace DeepSeekChat.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if(string.IsNullOrWhiteSpace(ModelNameTextBox.Text) || string.IsNullOrWhiteSpace(ModelIDTextBox.Text))
+            {
+                ArgWrongTip.Visibility = Visibility.Visible;
+                AddButton.IsEnabled = false;
+                return;
+            }
             ViewModel.AddModel(ModelNameTextBox.Text, ModelDescriptionTextBox.Text, ModelIDTextBox.Text);
             ClearAddModelInfo();
             AddModelFlyout.Hide();
