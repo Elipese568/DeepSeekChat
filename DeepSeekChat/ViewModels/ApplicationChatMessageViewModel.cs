@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DeepSeekChat.Service;
+using Microsoft.UI.Xaml.Media;
 
 namespace DeepSeekChat.ViewModels;
 
@@ -13,7 +15,13 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 	public ApplicationChatMessageViewModel(ApplicationChatMessage message) : base(message)
 	{
 		AiChatCompletion = new AiChatCompletionViewModel(message.AiChatCompletion);
-	}
+		App.Current.GetService<AvatarManagerService>().SelectedUserAvatarChanged += (s, e) =>
+		{
+			OnPropertyChanged(e.Type.HasFlag(AvatarType.User) ? nameof(UserAvatar) : nameof(AiAvatar));
+		};
+        OnPropertyChanged(nameof(UserAvatar));
+        OnPropertyChanged(nameof(AiAvatar));
+    }
 
 	public TokenUsage TokenUsage
 	{
@@ -69,4 +77,7 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 			OnPropertyChanged();
 		}
 	}
+
+	public ImageSource AiAvatar => App.Current.GetService<AvatarManagerService>().GetSelectedAiAvatarViewModel().ImageSource;
+    public ImageSource UserAvatar => App.Current.GetService<AvatarManagerService>().GetSelectedUserAvatarViewModel().ImageSource;
 }

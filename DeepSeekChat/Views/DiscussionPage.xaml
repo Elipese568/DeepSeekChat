@@ -11,8 +11,9 @@
     xmlns:com="using:System.Collections.ObjectModel"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
+    x:Name="PageObj"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance Type=local:MainPage}">
+    d:DataContext="{d:DesignInstance Type=local:DiscussionPage}">
     <Page.Resources>
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
         <conv:IntyConverter x:Key="IntyConverter"/>
@@ -82,13 +83,12 @@
                                                    Text="{Binding UserPrompt}"/>
                                     </Grid>
                                     <PersonPicture Grid.Column="1" 
-                                                   ProfilePicture="ms-appx:///Assets/Avatars/Default/UserDefault.png" 
+                                                   ProfilePicture="{Binding UserAvatar}" 
                                                    Height="32" 
                                                    Width="32" 
                                                    VerticalAlignment="Top" 
                                                    HorizontalAlignment="Center" 
-                                                   BorderThickness="1" 
-                                                   BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                                                   BorderThickness="1" />
                                 </Grid>
                                 <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
@@ -283,13 +283,12 @@
                                         </Grid>
                                     </StackPanel>
                                     <PersonPicture Grid.Column="0" 
-                                                   ProfilePicture="ms-appx:///Assets/Avatars/Default/AiDefault.png" 
+                                                   ProfilePicture="{Binding AiAvatar}" 
                                                    Height="32" 
                                                    Width="32" 
                                                    VerticalAlignment="Top" 
                                                    HorizontalAlignment="Center" 
-                                                   BorderThickness="1" 
-                                                   BorderBrush="{ThemeResource CardStrokeColorDefaultSolidBrush}"/>
+                                                   BorderThickness="1" />
                                 </Grid>
                             </Grid>
                         </ListViewItem>

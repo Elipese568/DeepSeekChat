@@ -70,23 +70,12 @@ namespace DeepSeekChat
                 .AddSingleton<SettingService>()
                 .AddSingleton<ModelsManagerService>()
                 .AddSingleton<ClientService>()
+                .AddSingleton<AvatarManagerService>()
                 .BuildServiceProvider()
             );
 
             Current = this;
             m_exitProcess = EventHandlerWrapper<EventHandler>.Create();
-
-            HeaderAdjustableList<int> a = new();
-            a.Add(1);
-            a.Add(2);
-            a.Add(3);
-            int av1 = a[0];
-            a.RaiseToHead(2);
-            av1 = a[0];
-            foreach (var item in a)
-            {
-                Debug.WriteLine(item);
-            }
 
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {

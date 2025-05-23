@@ -24,11 +24,16 @@ public partial class DiscussionViewModel : ObservableRecipient
 {
     private readonly ExecuteAICommand _sendCommand;
     private readonly SettingService _settingService;
+    private readonly AvatarManagerService _avatarManagerService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     private string _inputingPrompt;
-    
+
+    [ObservableProperty]
+    private AvatarDataViewModel _userAvatarDataViewModel;
+    [ObservableProperty]
+    private AvatarDataViewModel _aiAvatarDataViewModel;
 
     public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
@@ -36,11 +41,23 @@ public partial class DiscussionViewModel : ObservableRecipient
     {
         SelectedDiscussItemViewModel = item;
         _settingService = App.Current.GetService<SettingService>();
+        _avatarManagerService = App.Current.GetService<AvatarManagerService>();
 
         _sendCommand = new ExecuteAICommand(item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
+
+        UserAvatarDataViewModel = _avatarManagerService.GetSelectedUserAvatarViewModel();
+        AiAvatarDataViewModel = _avatarManagerService.GetSelectedAiAvatarViewModel();
+
+        _avatarManagerService.SelectedUserAvatarChanged += (s, e) =>
+        {
+            if (e.Type.HasFlag(AvatarType.User))
+                UserAvatarDataViewModel = e.ViewModel;
+            else
+                AiAvatarDataViewModel = e.ViewModel;
+        };
     }
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)

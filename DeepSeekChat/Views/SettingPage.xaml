@@ -158,9 +158,9 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Border Height="60" Width="60" Grid.Row="0" CornerRadius="30">
-                                        <Image Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/UserDefault.png" Grid.Row="0"/>
+                                        <Image Height="60" Width="60" Source="{x:Bind ViewModel.SelectedUserAvatar.ImageSource,Mode=OneWay}" Grid.Row="0"/>
                                     </Border>
-                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/UserDefault.png" Grid.Column="0" Opacity="0">
+                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="{x:Bind ViewModel.SelectedUserAvatar.ImageSource,Mode=OneWay}" Grid.Column="0" Opacity="0">
                                         <Image.OpacityTransition>
                                             <ScalarTransition/>
                                         </Image.OpacityTransition>
@@ -170,8 +170,18 @@
                                     </TextBlock>
                                 </Grid>
                                 <StackPanel Spacing="4" Grid.Column="1">
-                                    <Button Style="{ThemeResource AccentButtonStyle}">Pick New</Button>
-                                    <Button>Reset</Button>
+                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}">
+                                        <Button.CommandParameter>
+                                            <x:Int32>1</x:Int32>
+                                        </Button.CommandParameter>
+                                        Pick New
+                                    </Button>
+                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}">
+                                        <Button.CommandParameter>
+                                            <x:Int32>1</x:Int32>
+                                        </Button.CommandParameter>
+                                        Reset
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </tkc:SettingsCard>
@@ -190,9 +200,9 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Border Height="60" Width="60" Grid.Row="0" CornerRadius="30">
-                                        <Image Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/AiDefault.png" Grid.Row="0"/>
+                                        <Image Height="60" Width="60" Source="{x:Bind ViewModel.SelectedAiAvatar.ImageSource,Mode=OneWay}" Grid.Row="0"/>
                                     </Border>
-                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="ms-appx:///Assets/Avatars/Default/AiDefault.png" Grid.Column="0" Opacity="0">
+                                    <Image PointerEntered="Image_PointerEntered" PointerExited="Image_PointerExited" Height="60" Width="60" Source="{x:Bind ViewModel.SelectedAiAvatar.ImageSource,Mode=OneWay}" Grid.Column="0" Opacity="0">
                                         <Image.OpacityTransition>
                                             <ScalarTransition/>
                                         </Image.OpacityTransition>
@@ -202,8 +212,18 @@
                                     </TextBlock>
                                 </Grid>
                                 <StackPanel Spacing="4" Grid.Column="1">
-                                    <Button Style="{ThemeResource AccentButtonStyle}">Pick New</Button>
-                                    <Button>Reset</Button>
+                                    <Button Style="{ThemeResource AccentButtonStyle}" Command="{x:Bind ViewModel.SelectAvatarCommand}">
+                                        <Button.CommandParameter>
+                                            <x:Int32>2</x:Int32>
+                                        </Button.CommandParameter>
+                                        Pick New
+                                    </Button>
+                                    <Button Command="{x:Bind ViewModel.ResetAvatarCommand}">
+                                        <Button.CommandParameter>
+                                            <x:Int32>2</x:Int32>
+                                        </Button.CommandParameter>
+                                        Reset
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </tkc:SettingsCard>

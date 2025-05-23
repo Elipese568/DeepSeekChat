@@ -32,13 +32,13 @@ namespace DeepSeekChat.Views
 
         public SettingPage()
         {
-            ViewModel = new();
+            ViewModel = new(this);
             this.InitializeComponent();
         }
 
         public SettingPage(bool tipApiKeyOption)
         {
-            ViewModel = new();
+            ViewModel = new(this);
             this.InitializeComponent();
             if (tipApiKeyOption)
             {
