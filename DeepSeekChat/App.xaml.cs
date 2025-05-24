@@ -92,7 +92,6 @@ namespace DeepSeekChat
         {
             m_window = new MainWindow();
             m_window.Activate();
-            ResourceExtension.Initialize();
         }
 
         public T? GetService<T>()
