@@ -92,7 +92,7 @@ namespace DeepSeekChat.Views
         {
             if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
-                await ContentDialogHelper.ShowNoActionMessageDialog("Unexpected Operation", "Cannot remove default model.", XamlRoot);
+                await ContentDialogHelper.ShowNoActionMessageDialog("UnexpectedOperationText".GetLocalized(), "InvaildRemoveDefaultModelMessage".GetLocalized("SettingPage"), XamlRoot);
                 return;
             }
 
@@ -104,17 +104,17 @@ namespace DeepSeekChat.Views
             var modelManager = App.Current.GetService<ModelsManagerService>();
             if (ViewModel.SelectedModel.ToString().ToUpper() is AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID or AiModelStorage.DEEPSEEK_PRO_MODEL_GUID)
             {
-                await ContentDialogHelper.ShowNoActionMessageDialog("Unexpected Operation", "Cannot modify infomation of default model.", XamlRoot);
+                await ContentDialogHelper.ShowNoActionMessageDialog("UnexpectedOperationText".GetLocalized(), "InvaildModifyDefaultModelInformationMessage".GetLocalized("SettingPage"), XamlRoot);
                 return;
             }
 
             AiModel model = modelManager.GetModelById(ViewModel.SelectedModel);
 
             var modifyContentDialog = ContentDialogHelper.CreateContentDialog(
-                "Modify Options",
+                "ModifyModelOptionsDialogTitle".GetLocalized("SettingPage"),
                 null,
-                "Confirm",
-                "Cancel",
+                "ConfirmText".GetLocalized(),
+                "CancelText".GetLocalized(),
                 null,
                 ContentDialogButton.Primary,
                 this.XamlRoot);
@@ -128,9 +128,9 @@ namespace DeepSeekChat.Views
 
             var ModelNameChangeTextBox = new TextBox()
             {
-                Header = "Model Name",
+                Header = "ModelNameTextBox.Header".GetLocalized("SettingPage"),
                 Text = model.Name,
-                PlaceholderText = "Enter a name of the model",
+                PlaceholderText = "ModelNameTextBox.PlaceholderText".GetLocalized("SettingPage"),
                 Name = "ModelNameChangeTextBox",
             };
 
@@ -141,8 +141,9 @@ namespace DeepSeekChat.Views
                 IsClosable = false,
                 Severity = InfoBarSeverity.Error,
                 Title = "Error",
-                Message = "Name of model cannot be empty or white space"
+                Message = "ArgWrongTip.Text".GetLocalized("SettingPage")
             };
+
 
             ModelNameChangeTextBox.TextChanged += (s, e) =>
             {
@@ -161,9 +162,9 @@ namespace DeepSeekChat.Views
             };
             var ModelDescriptionChangeTextBox = new TextBox()
             {
-                Header = "Model Description",
+                Header = "ModelDescriptionTextBox.Header".GetLocalized("SettingPage"),
                 Text = model.Description,
-                PlaceholderText = "Enter a description of the model",
+                PlaceholderText = "ModelDescriptionTextBox.PlaceholderText".GetLocalized("SettingPage"),
                 Name = "ModelDescriptionChangeTextBox"
             };
 
@@ -172,7 +173,7 @@ namespace DeepSeekChat.Views
             content.Children.Add(ModelDescriptionChangeTextBox);
             content.Children.Add(new TextBox()
             {
-                Header = "Model ID",
+                Header = "ModelIdTextBox.Header".GetLocalized("SettingPage"),
                 Text = model.ModelID,
                 IsEnabled = false
             });

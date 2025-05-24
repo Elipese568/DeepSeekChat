@@ -103,10 +103,10 @@ public partial class DiscussionViewModel : ObservableRecipient
         ScrollViewer.SetVerticalScrollBarVisibility(textBox, ScrollBarVisibility.Visible);
         textBox.Text = SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt;
         var contentDialog = ContentDialogHelper.CreateContentDialog(
-            "Edit System Prompt",
+            "EditSystemPromptDialogHeader".GetLocalized("DiscussionPage"),
             textBox,
-            "Confirm",
-            "Cancel",
+            "ConfirmText".GetLocalized(),
+            "CancelText".GetLocalized(),
             null,
             ContentDialogButton.Primary,
             MainPage.Current.Content.XamlRoot);

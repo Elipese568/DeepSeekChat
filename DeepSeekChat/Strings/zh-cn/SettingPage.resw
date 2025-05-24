@@ -165,20 +165,38 @@
   <data name="HoverImageTip.Text" xml:space="preserve">
     <value>将鼠标放置在图片上方以查看完整头像</value>
   </data>
+  <data name="InvaildModifyDefaultModelInformationMessage" xml:space="preserve">
+    <value>不可修改默认模型的信息</value>
+  </data>
+  <data name="InvaildRemoveDefaultModelMessage" xml:space="preserve">
+    <value>不可删除默认模型</value>
+  </data>
   <data name="ModelDescriptionTextBox.Header" xml:space="preserve">
     <value>模型描述</value>
+  </data>
+  <data name="ModelDescriptionTextBox.PlaceholderText" xml:space="preserve">
+    <value>输入这个模型的描述</value>
   </data>
   <data name="ModelIdTextBox.Header" xml:space="preserve">
     <value>模型ID</value>
   </data>
+  <data name="ModelIdTextBox.PlaceholderText" xml:space="preserve">
+    <value>输入这个模型的ID</value>
+  </data>
   <data name="ModelNameTextBox.Header" xml:space="preserve">
     <value>模型名称</value>
+  </data>
+  <data name="ModelNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>为这个模型命名</value>
   </data>
   <data name="ModelSettingCard.Description" xml:space="preserve">
     <value>选择一个模型以与AI对话</value>
   </data>
   <data name="ModelSettingCard.Header" xml:space="preserve">
     <value>模型</value>
+  </data>
+  <data name="ModifyModelOptionsDialogTitle" xml:space="preserve">
+    <value>修改信息</value>
   </data>
   <data name="OptionsButton.Content" xml:space="preserve">
     <value>选项设置</value>

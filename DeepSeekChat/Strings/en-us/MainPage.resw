@@ -129,8 +129,20 @@
   <data name="ApplicationSubtitle.Text" xml:space="preserve">
     <value>Your helpful AI Assistant</value>
   </data>
+  <data name="ChangeTitleMenuItem.Text" xml:space="preserve">
+    <value>Change Title</value>
+  </data>
   <data name="GoSettingButton.Content" xml:space="preserve">
     <value>Go Setting</value>
+  </data>
+  <data name="InputTitleTextBox.Header" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="InputTitleTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter a title for the discussion</value>
+  </data>
+  <data name="RemoveMenuItem.Text" xml:space="preserve">
+    <value>Remove</value>
   </data>
   <data name="SetApiKeyActionButton.Content" xml:space="preserve">
     <value>Set</value>

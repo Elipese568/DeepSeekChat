@@ -117,4 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddText" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="CancelText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConfirmText" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="UnexpectedOperationText" xml:space="preserve">
+    <value>Unexpected Operation</value>
+  </data>
 </root>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DeepSeekChat.Foundation;
+using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
@@ -91,6 +92,7 @@ namespace DeepSeekChat
         {
             m_window = new MainWindow();
             m_window.Activate();
+            ResourceExtension.Initialize();
         }
 
         public T? GetService<T>()

@@ -171,4 +171,10 @@
   <data name="TokenUsageHeader.Text" xml:space="preserve">
     <value>Token使用量</value>
   </data>
+  <data name="EditSystemPromptDialogHeader" xml:space="preserve">
+    <value>编辑基本提示词</value>
+  </data>
+  <data name="DetailEditSystemPromptButton.Content" xml:space="preserve">
+    <value>详细编辑</value>
+  </data>
 </root>

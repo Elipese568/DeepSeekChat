@@ -159,6 +159,12 @@
   <data name="DisplayLanguageSettingCard.Header" xml:space="preserve">
     <value>Display Language</value>
   </data>
+  <data name="ModelDescriptionTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter a description for the model</value>
+  </data>
+  <data name="ModelNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter a name for the model</value>
+  </data>
   <data name="GeneralSettingHeader.Text" xml:space="preserve">
     <value>General</value>
   </data>
@@ -209,5 +215,14 @@
   </data>
   <data name="UserAvatarSettingCard.Header" xml:space="preserve">
     <value>User Avatar</value>
+  </data>
+  <data name="ModelIdTextBox.PlaceholderText" xml:space="preserve">
+    <value>Enter id of the model</value>
+  </data>
+  <data name="InvaildRemoveDefaultModelMessage" xml:space="preserve">
+    <value>Cannot remove default model</value>
+  </data>
+  <data name="InvaildModifyDefaultModelInformationMessage" xml:space="preserve">
+    <value>Cannot modify information of default model</value>
   </data>
 </root>

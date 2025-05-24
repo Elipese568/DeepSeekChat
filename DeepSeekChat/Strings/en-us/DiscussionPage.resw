@@ -171,4 +171,10 @@
   <data name="TokenUsageHeader.Text" xml:space="preserve">
     <value>Token Usage:</value>
   </data>
+  <data name="EditSystemPromptDialogHeader" xml:space="preserve">
+    <value>Edit System Prompt</value>
+  </data>
+  <data name="DetailEditSystemPromptButton.Content" xml:space="preserve">
+    <value>Detail Edit</value>
+  </data>
 </root>

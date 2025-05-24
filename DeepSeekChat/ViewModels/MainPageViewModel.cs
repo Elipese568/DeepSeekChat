@@ -97,15 +97,17 @@ public partial class MainPageViewModel : ObservableRecipient
         int operatingIndex = _discussionItems.IndexOf(x => x.Id == OperatingItem.Id);
         TextBox textBox = new()
         {
-            Header = "Title",
-            PlaceholderText = "Enter the new title of the discussion",
-            MaxLength = 32
+            Header = "InputTitleTextBox.Header".GetLocalized("MainPage"),
+            PlaceholderText = "InputTitleTextBox.PlaceholderText".GetLocalized("MainPage"),
+            MaxLength = 32,
+            Text = DiscussionItemViewModels[operatingIndex].Title,
+            SelectionStart = DiscussionItemViewModels[operatingIndex].Title.Length
         };
         await ContentDialogHelper.ShowContentDialog(
-            "Change Title",
+            "ChangeTitleMenuItem.Text".GetLocalized("MainPage"),
             textBox,
-            "Confirm",
-            "Cancel",
+            "ConfirmText".GetLocalized(),
+            "CancelText".GetLocalized(),
             null,
             ContentDialogButton.Primary,
             Parent.Content.XamlRoot,
@@ -127,16 +129,16 @@ public partial class MainPageViewModel : ObservableRecipient
     {
         TextBox textBox = new()
         {
-            Header = "Title",
-            PlaceholderText = "Enter the title of the discussion",
+            Header = "InputTitleTextBox.Header".GetLocalized("MainPage"),
+            PlaceholderText = "InputTitleTextBox.PlaceholderText".GetLocalized("MainPage"),
             MaxLength = 32
         };
 
         await ContentDialogHelper.ShowContentDialog(
-            "Add Discussion",
+            "AddDiscussionButton.Content".GetLocalized("MainPage"),
             textBox,
-            "Add",
-            "Cancel",
+            "AddText".GetLocalized(),
+            "CancelText".GetLocalized(),
             null,
             ContentDialogButton.Primary,
             Parent.Content.XamlRoot,

@@ -135,8 +135,20 @@
   <data name="ApplicationSubtitle.Text" xml:space="preserve">
     <value>您强而有力的AI帮手</value>
   </data>
+  <data name="ChangeTitleMenuItem.Text" xml:space="preserve">
+    <value>更改标题</value>
+  </data>
   <data name="GoSettingButton.Content" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="InputTitleTextBox.Header" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="InputTitleTextBox.PlaceholderText" xml:space="preserve">
+    <value>为这个对话起个标题</value>
+  </data>
+  <data name="RemoveMenuItem.Text" xml:space="preserve">
+    <value>删除</value>
   </data>
   <data name="SetApiKeyActionButton.Content" xml:space="preserve">
     <value>设置密钥</value>

@@ -319,7 +319,7 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" x:Uid="ms-resource:///DiscussionPage/SystemPromptArgumentFlyoutHeader"/>
-                                    <Button HorizontalAlignment="Right" Command="{x:Bind ViewModel.DetailEditSystemPromptCommand}">Detail</Button>
+                                    <Button HorizontalAlignment="Right" Command="{x:Bind ViewModel.DetailEditSystemPromptCommand}" x:Uid="ms-resource:///DiscussionPage/DetailEditSystemPromptButton"/>
                                     <TextBox MaxHeight="200" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt, Mode=TwoWay}" TextWrapping="Wrap" Grid.Row="1" AcceptsReturn="True" MinHeight="70"/>
                                 </Grid>
                                 <Grid Height="Auto" RowSpacing="12">
