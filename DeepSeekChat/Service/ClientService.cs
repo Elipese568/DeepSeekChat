@@ -110,7 +110,7 @@ public class ClientService
             ConfigureAllAsync(
                 new("https://api.siliconflow.cn/v1/"), // TODO: Replace with a setting after this option is unlocked
                 _settingService.Read(SettingService.SETTING_APIKEY, string.Empty),
-                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID))).ModelID);
+                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID)))?.ModelID?? AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID);
         _settingService.SettingChanged += OnSettingChanged;
     }
 
@@ -120,7 +120,7 @@ public class ClientService
             ConfigureAllAsync(
                 new("https://api.siliconflow.cn/v1/"), // TODO: Replace with a setting after this option is unlocked
                 _settingService.Read(SettingService.SETTING_APIKEY, string.Empty),
-                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID))).ModelID);
+                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID)))?.ModelID?? AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID);
     }
 
     public async Task<bool> IsApiKeyVaildAsync(string apiKey)
