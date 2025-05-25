@@ -78,6 +78,8 @@ namespace DeepSeekChat
             Current = this;
             m_exitProcess = EventHandlerWrapper<EventHandler>.Create();
 
+
+
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
                 m_exitProcess.Invoke(this, EventArgs.Empty);
@@ -90,6 +92,9 @@ namespace DeepSeekChat
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            Debug.WriteLine(GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, ""));
+            Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
             m_window = new MainWindow();
             m_window.Activate();
         }

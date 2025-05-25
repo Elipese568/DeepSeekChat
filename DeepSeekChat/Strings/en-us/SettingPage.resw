@@ -225,4 +225,7 @@
   <data name="InvaildModifyDefaultModelInformationMessage" xml:space="preserve">
     <value>Cannot modify information of default model</value>
   </data>
+  <data name="ModifyModelOptionsDialogTitle" xml:space="preserve">
+    <value>Modify Model Information</value>
+  </data>
 </root>

@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -78,6 +79,31 @@ public partial class SettingViewModel : ObservableRecipient
         set
         {
             _settingService.Write(SettingService.SETTING_SELECTED_MODEL, value.ToString());
+            OnPropertyChanged();
+        }
+    }
+
+    public int ChooseLanguage
+    {
+        get =>
+            _settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-hans-cn").ToLower() switch
+            {
+                "zh-hans-cn" => 0,
+                "zh-cn" => 0, // Simplified Chinese
+                "en-us" => 1,
+                _ => 0 // Default to Chinese if not recognized
+            };
+        set
+        {
+            var settingCulture = value switch
+            {
+                0 => "zh-Hans-CN",
+                1 => "en-US",
+                _ => "zh-Hans-CN" // Default to Chinese if not recognized
+            };
+            Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = settingCulture;
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = settingCulture;
+            _settingService.Write(SettingService.SETTING_DISPLAY_LANGUAGE, settingCulture);
             OnPropertyChanged();
         }
     }

@@ -60,4 +60,5 @@ class SettingService
     public const string SETTING_THEME = "ApplicationTheme";
     public const string SETTING_APIKEY = "ApiKey";
     public const string SETTING_SELECTED_MODEL = "SelectedModel";
+    public const string SETTING_DISPLAY_LANGUAGE = "DisplayLanguage";
 }

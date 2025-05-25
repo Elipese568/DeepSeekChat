@@ -254,9 +254,9 @@
                                 <FontIcon Glyph="&#xE909;" />
                             </tkc:SettingsCard.HeaderIcon>
 
-                            <ComboBox SelectedIndex="0" IsEnabled="False">
-                                <ComboBoxItem>English</ComboBoxItem>
-                                <ComboBoxItem>简体中文</ComboBoxItem>
+                            <ComboBox SelectedIndex="{x:Bind ViewModel.ChooseLanguage, Mode=TwoWay}">
+                                <ComboBoxItem>中文（简体）</ComboBoxItem>
+                                <ComboBoxItem>English (United State)</ComboBoxItem>
                             </ComboBox>
 
                         </tkc:SettingsCard>
