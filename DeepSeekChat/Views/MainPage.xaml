@@ -15,9 +15,9 @@
     mc:Ignorable="d">
     <Page.Resources>
         <MenuFlyout x:Name="RightClickCommands">
-            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" x:Uid="ms-resource:///MainPage/RemoveMenuItem">
+            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" Text="{h:I18N Key=RemoveMenuItem.Text,Map=MainPage}">
             </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" x:Uid="ms-resource:///MainPage/ChangeTitleMenuItem">
+            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" Text="{h:I18N Key=ChangeTitleMenuItem.Text,Map=MainPage}">
             </MenuFlyoutItem>
         </MenuFlyout>
         <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>

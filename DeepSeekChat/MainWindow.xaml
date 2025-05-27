@@ -13,16 +13,18 @@
         <MicaBackdrop/>
     </Window.SystemBackdrop>
     <Grid Height="Auto">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <TitleBar Title="DeepSeekChat"  Subtitle="Preview" x:Name="MyTitleBar" IsBackButtonVisible="True">
-            <TitleBar.IconSource>
-                <ImageIconSource ImageSource="ms-appx:///Assets/AppIconLight.png"/>
-            </TitleBar.IconSource>
-        </TitleBar>
-        <Frame Grid.Row="1" x:Name="ContentFrame" SourcePageType="v:MainPage"/>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TitleBar Title="DeepSeekChat" x:Name="MyTitleBar" IsBackButtonVisible="True">
+                <TitleBar.IconSource>
+                    <ImageIconSource ImageSource="ms-appx:///Assets/AppIconLight.png"/>
+                </TitleBar.IconSource>
+            </TitleBar>
+            <Frame Grid.Row="1" x:Name="ContentFrame" SourcePageType="v:MainPage"/>
+        </Grid>
     </Grid>
     
 </Window>

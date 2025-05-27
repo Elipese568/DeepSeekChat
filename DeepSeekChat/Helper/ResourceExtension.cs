@@ -10,10 +10,10 @@ namespace DeepSeekChat.Helper;
 public static class ResourceExtension
 {
     public static void Initialize() { }
-    public static string GetLocalized(this string resourceKey, string culture = "General") 
+    public static string GetLocalized(this string resourceKey, string map = "General") 
     {
-        return new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), culture).GetString(resourceKey.Replace(".","/"));
+        return new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), map).GetString(resourceKey.Replace(".","/"));
     }
 
-    //public static ResourceCandidate GetLocalizedRaw(this string resourceKey, string culture = "Resources") => _resources[culture + "/" + resourceKey];
+    //public static ResourceCandidate GetLocalizedRaw(this string resourceKey, string map = "Resources") => _resources[map + "/" + resourceKey];
 }

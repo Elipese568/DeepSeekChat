@@ -2,18 +2,21 @@ using DeepSeekChat.Helper;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.ViewModels;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
@@ -29,11 +32,86 @@ namespace DeepSeekChat.Views
     public sealed partial class SettingPage : Page
     {
         public SettingViewModel ViewModel { get; set; }
-
+        private readonly ResourceContext _defaultContextForCurrentView;
         public SettingPage()
         {
             ViewModel = new(this);
             this.InitializeComponent();
+
+            _defaultContextForCurrentView = ResourceManager.Current.DefaultContext;
+            _defaultContextForCurrentView.QualifierValues.MapChanged += async (s, m) =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    //UNSUPPORTED: Dynamic switch language
+                    _contentLoaded = false;
+                    InitializeComponent();
+                    UpdateLayout();
+                    Bindings.Update();
+                    GC.Collect();
+                });
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    Grid grid = new();
+                    grid.Background = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];
+
+                    int w = (int)MainWindow.Current.Bounds.Width, h = (int)MainWindow.Current.Bounds.Height;
+                    grid.Height = MainWindow.Current.Bounds.Height;
+                    grid.Width = MainWindow.Current.Bounds.Width;
+
+                    grid.Children.Add(new TextBlock()
+                    {
+                        Text = "ChangingLanguageDisplayText".GetLocalized(),
+                        Foreground = (SolidColorBrush)Application.Current.Resources["TextOnAccentFillColorPrimaryBrush"],
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"]
+                    });
+
+                    Storyboard sb = new();
+                    DoubleAnimationUsingKeyFrames kfs = new();
+                    kfs.KeyFrames.Add(new DiscreteDoubleKeyFrame()
+                    {
+                        Value = 0,
+                        KeyTime = TimeSpan.FromSeconds(0),
+                    });
+                    kfs.KeyFrames.Add(new EasingDoubleKeyFrame()
+                    {
+                        Value = 1,
+                        KeyTime = TimeSpan.FromSeconds(0.35),
+                        EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseOut }
+                    });
+                    kfs.KeyFrames.Add(new DiscreteDoubleKeyFrame()
+                    {
+                        Value = 1,
+                        KeyTime = TimeSpan.FromSeconds(1)
+                    });
+                    kfs.KeyFrames.Add(new EasingDoubleKeyFrame()
+                    {
+                        Value = 0,
+                        KeyTime = TimeSpan.FromSeconds(1.35),
+                        EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseIn }
+                    });
+
+                    Storyboard.SetTargetProperty(kfs, "Opacity");
+                    Storyboard.SetTarget(kfs, grid);
+
+                    sb.Children.Add(kfs);
+
+
+                    ((Grid)MainWindow.Current.Content).Children.Add(grid);
+
+                    sb.Begin();
+
+                    sb.Completed += (s, e) =>
+                    {
+                        ((Grid)MainWindow.Current.Content).Children.Remove(grid);
+                        grid = null;
+                        GC.Collect();
+                    };
+                });
+            };
         }
 
         public SettingPage(bool tipApiKeyOption)

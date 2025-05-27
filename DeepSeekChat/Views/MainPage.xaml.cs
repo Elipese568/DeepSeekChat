@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 using Windows.UI;
 using System.Diagnostics;
 using DeepSeekChat.Service;
+using Windows.ApplicationModel.Resources.Core;
+using Windows.ApplicationModel.Resources;
+using DeepSeekChat.Helper;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -42,9 +45,39 @@ namespace DeepSeekChat.Views
             ViewModel.DiscussionViewStatusChanged += ViewModel_DiscussionViewStatusChanged;
             Current = this;
             this.InitializeComponent();
-        }
 
-        private bool _self_set_property_no_process_flag_dont_remove = false;
+            _settingService = App.Current.GetService<SettingService>();
+
+            //UNSUPPORTED: Dynamic switch language
+            _defaultContextForCurrentView = ResourceManager.Current.DefaultContext;
+
+            _defaultContextForCurrentView.QualifierValues.MapChanged += async (s, m) =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    RemoveDiscussionMenuItem.Text = "RemoveMenuItem.Text".GetLocalized("MainPage");
+                    ChangeDiscussionTitleMenuItem.Text = "ChangeTitleMenuItem.Text".GetLocalized("MainPage");
+                    RemoveDiscussionMenuItem.Language = _settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
+                    ChangeDiscussionTitleMenuItem.Language = _settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
+                    _contentLoaded = false;
+                    InitializeComponent();
+
+                    var MainPage_obj1_Bindings__Connect = DynamicCall.GetVoidInvoker<IMainPage_Bindings, int, object>(Bindings, "Connect");
+                    MainPage_obj1_Bindings__Connect(3, RemoveDiscussionMenuItem);
+                    MainPage_obj1_Bindings__Connect(4, ChangeDiscussionTitleMenuItem);
+
+                    UpdateLayout();
+                    Bindings.Update();
+
+                    
+                    GC.Collect();
+                });
+
+            };
+        }
+        private readonly ResourceContext _defaultContextForCurrentView;
+        private readonly SettingService _settingService;
+
         private void ViewModel_DiscussionViewStatusChanged(object? sender, DiscussionViewStatusChangedEventArgs e)
         {
             //if(_self_set_property_no_process_flag_dont_remove)

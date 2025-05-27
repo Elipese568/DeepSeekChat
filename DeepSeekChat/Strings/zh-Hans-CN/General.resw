@@ -123,6 +123,9 @@
   <data name="CancelText" xml:space="preserve">
     <value>取消</value>
   </data>
+  <data name="ChangingLanguageDisplayText" xml:space="preserve">
+    <value>切换语言中....</value>
+  </data>
   <data name="ConfirmText" xml:space="preserve">
     <value>确认</value>
   </data>
