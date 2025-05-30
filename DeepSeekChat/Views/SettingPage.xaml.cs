@@ -114,7 +114,7 @@ namespace DeepSeekChat.Views
             };
         }
 
-        public SettingPage(bool tipApiKeyOption)
+        public SettingPage(bool tipApiKeyOption) : this()
         {
             ViewModel = new(this);
             this.InitializeComponent();
