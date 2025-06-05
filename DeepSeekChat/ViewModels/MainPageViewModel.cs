@@ -208,4 +208,11 @@ public partial class MainPageViewModel : ObservableRecipient
             _pages.Remove(pageId);
         }
     }
+
+    public void ClearOtherPages(Predicate<(string, Page)> predicate)
+    {
+        _pages = _pages.Where(item => !predicate((item.Key, item.Value)) || item.Key == _currentPageId).ToDictionary();
+        _isOutDestory = false;
+        GC.Collect();
+    }
 }

@@ -126,8 +126,23 @@
   <data name="ChangingLanguageDisplayText" xml:space="preserve">
     <value>切换语言中....</value>
   </data>
+  <data name="CompletedText" xml:space="preserve">
+    <value>完成</value>
+  </data>
   <data name="ConfirmText" xml:space="preserve">
     <value>确认</value>
+  </data>
+  <data name="FailedText" xml:space="preserve">
+    <value>请求失败</value>
+  </data>
+  <data name="InProgressText" xml:space="preserve">
+    <value>处理中</value>
+  </data>
+  <data name="LengthTerminatedText" xml:space="preserve">
+    <value>长度截断</value>
+  </data>
+  <data name="StopedText" xml:space="preserve">
+    <value>已停止</value>
   </data>
   <data name="UnexpectedOperationText" xml:space="preserve">
     <value>意外的操作</value>

@@ -11,17 +11,17 @@ namespace DeepSeekChat.Helper.Converters;
 
 public partial class ProgressStatusToTextConverter : IValueConverter
 {
-    public readonly static Dictionary<ProgressStatus, string> ProgressStatusToTextTable = new()
+    public readonly static Dictionary<ProgressStatus, Func<string>> ProgressStatusToTextTable = new()
     {
-        [ProgressStatus.InProgress] = "In Progress",
-        [ProgressStatus.Completed] = "Completed",
-        [ProgressStatus.Stoped] = "Stoped",
-        [ProgressStatus.TooLongExited] = "Length Terminated",
-        [ProgressStatus.Failed] = "Failed",
+        [ProgressStatus.InProgress] = "InProgressText".GetLocalized,
+        [ProgressStatus.Completed] = "CompletedText".GetLocalized,
+        [ProgressStatus.Stoped] = "StopedText".GetLocalized,
+        [ProgressStatus.LengthTerminated] = "LengthTerminatedText".GetLocalized,
+        [ProgressStatus.Failed] = "FailedText".GetLocalized,
     };
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return ProgressStatusToTextTable[(ProgressStatus)value];
+        return ProgressStatusToTextTable[(ProgressStatus)value]();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

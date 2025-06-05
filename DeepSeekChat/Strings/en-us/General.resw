@@ -126,8 +126,23 @@
   <data name="ChangingLanguageDisplayText" xml:space="preserve">
     <value>Changing language...</value>
   </data>
+  <data name="CompletedText" xml:space="preserve">
+    <value>Completed</value>
+  </data>
   <data name="ConfirmText" xml:space="preserve">
     <value>Confirm</value>
+  </data>
+  <data name="FailedText" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="InProgressText" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="LengthTerminatedText" xml:space="preserve">
+    <value>Length Terminated</value>
+  </data>
+  <data name="StopedText" xml:space="preserve">
+    <value>Stoped</value>
   </data>
   <data name="UnexpectedOperationText" xml:space="preserve">
     <value>Unexpected Operation</value>

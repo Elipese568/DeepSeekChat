@@ -16,7 +16,7 @@ public partial class ProgressStatusToColorConverter : IValueConverter
         [ProgressStatus.InProgress] = (SolidColorBrush)App.Current.Resources["SystemFillColorSuccessBrush"],
         [ProgressStatus.Completed] = (SolidColorBrush)App.Current.Resources["SystemFillColorAttentionBrush"],
         [ProgressStatus.Stoped] = (SolidColorBrush)App.Current.Resources["SystemFillColorNeutralBrush"],
-        [ProgressStatus.TooLongExited] = (SolidColorBrush)App.Current.Resources["SystemFillColorCautionBrush"],
+        [ProgressStatus.LengthTerminated] = (SolidColorBrush)App.Current.Resources["SystemFillColorCautionBrush"],
         [ProgressStatus.Failed] = (SolidColorBrush)App.Current.Resources["SystemFillColorCriticalBrush"],
     };
     public object Convert(object value, Type targetType, object parameter, string language)

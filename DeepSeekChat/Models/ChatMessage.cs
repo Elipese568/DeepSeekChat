@@ -19,7 +19,7 @@ public enum ProgressStatus
     InProgress,
     Completed,
     Stoped,
-    TooLongExited,
+    LengthTerminated,
     Failed,
     None = -1
 }

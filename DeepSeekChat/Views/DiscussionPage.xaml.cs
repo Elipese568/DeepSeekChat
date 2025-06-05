@@ -42,7 +42,7 @@ namespace DeepSeekChat.Views
         {
             ViewModel = new DiscussionViewModel(item); // 传递item到ViewModel
             this.InitializeComponent();
-
+            
             // 确保消息更新时自动滚动到底部
             ViewModel.ScrollToBottomRequested += (s, e) =>
             {

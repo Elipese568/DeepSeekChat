@@ -53,6 +53,10 @@ namespace DeepSeekChat.Views
 
                 DispatcherQueue.TryEnqueue(() =>
                 {
+                    MainPage.Current.ViewModel.ClearOtherPages(x =>
+                    {
+                        return x.Item2 is DiscussionPage;
+                    });
                     Grid grid = new();
                     grid.Background = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];
 
