@@ -228,4 +228,10 @@
   <data name="ModifyModelOptionsDialogTitle" xml:space="preserve">
     <value>Modify Model Information</value>
   </data>
+  <data name="IsUseDisplayAnswerSettingCard.Header" xml:space="preserve">
+    <value>Answer in Display Language</value>
+  </data>
+  <data name="IsUseDisplayAnswerSettingCard.Description" xml:space="preserve">
+    <value>Set the AI's response language to match the display language for a smooth, consistent experience.</value>
+  </data>
 </root>

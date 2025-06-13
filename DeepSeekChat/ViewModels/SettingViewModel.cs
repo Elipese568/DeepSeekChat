@@ -83,10 +83,20 @@ public partial class SettingViewModel : ObservableRecipient
         }
     }
 
+    public bool IsUseDisplayLanguageAnswer
+    {
+        get => bool.Parse(_settingService.Read(SettingService.SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER, "true"));
+        set
+        {
+            _settingService.Write(SettingService.SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER, value.ToString());
+            OnPropertyChanged();
+        }
+    }
+
     public int ChooseLanguage
     {
         get =>
-            _settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-hans-cn").ToLower() switch
+            _settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-hans-cn") .ToLower() switch
             {
                 "zh-hans-cn" => 0,
                 "zh-cn" => 0, // Simplified Chinese

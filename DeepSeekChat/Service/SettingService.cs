@@ -61,4 +61,5 @@ class SettingService
     public const string SETTING_APIKEY = "ApiKey";
     public const string SETTING_SELECTED_MODEL = "SelectedModel";
     public const string SETTING_DISPLAY_LANGUAGE = "DisplayLanguage";
+    public const string SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER = "IsUseDisplayLanguageAnswer";
 }

@@ -134,6 +134,14 @@
                                 </StackPanel>
                             </Grid>
                         </tkc:SettingsCard>
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/IsUseDisplayAnswerSettingCard">
+                            <tkc:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xF2B7;"/>
+                            </tkc:SettingsCard.HeaderIcon>
+
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.IsUseDisplayLanguageAnswer, Mode=TwoWay}" />
+
+                        </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
                 <Grid RowSpacing="8">

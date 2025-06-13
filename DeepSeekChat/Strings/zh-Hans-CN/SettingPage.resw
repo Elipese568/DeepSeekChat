@@ -171,6 +171,12 @@
   <data name="InvaildRemoveDefaultModelMessage" xml:space="preserve">
     <value>不可删除默认模型</value>
   </data>
+  <data name="IsUseDisplayAnswerSettingCard.Description" xml:space="preserve">
+    <value>设定AI回答语言，以便于显示语言与回答内容的语言无缝衔接体验</value>
+  </data>
+  <data name="IsUseDisplayAnswerSettingCard.Header" xml:space="preserve">
+    <value>回答匹配显示语言</value>
+  </data>
   <data name="ModelDescriptionTextBox.Header" xml:space="preserve">
     <value>模型描述</value>
   </data>
