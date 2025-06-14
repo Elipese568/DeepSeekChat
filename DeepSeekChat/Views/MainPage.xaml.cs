@@ -21,6 +21,8 @@ using DeepSeekChat.Service;
 using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel.Resources;
 using DeepSeekChat.Helper;
+using System.Threading;
+using Microsoft.UI.Dispatching;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -130,10 +132,42 @@ namespace DeepSeekChat.Views
 
             }
         }
+
+        int _goSettingButtonContinuousClickCount = 0;
+        CancellationTokenSource _goSettingButtonContinousCts = null;
+        Stopwatch _advanceOperationPagenavigatedWatch = new();
         private void GoSettingButton_Click(object sender, RoutedEventArgs e)
         {
+            if (ViewModel.CurrentPageId == "AdvanceOperation" && _advanceOperationPagenavigatedWatch.ElapsedMilliseconds < 2000)
+            {
+                return;
+            }
+            _advanceOperationPagenavigatedWatch.Reset();
+            _goSettingButtonContinuousClickCount++;
             ViewModel.TryNavigate("Setting", () => new SettingPage());
             DiscussList.SelectedIndex = -1;
+            if(_goSettingButtonContinousCts == null)
+            {
+                _goSettingButtonContinousCts = new CancellationTokenSource();
+                Task.Run(() =>
+                {
+                    while (!_goSettingButtonContinousCts.IsCancellationRequested)
+                    {
+                        if(_goSettingButtonContinuousClickCount == 10)
+                        {
+                            DispatcherQueue.TryEnqueue(() =>
+                            {
+                                Current.ViewModel.TryNavigate("AdvanceOperation", () => new AdvanceOperationPage(), true);
+                                _advanceOperationPagenavigatedWatch.Start();
+                            });
+                            _goSettingButtonContinuousClickCount = 0;
+                            _goSettingButtonContinousCts.Cancel();
+                        }
+                    }
+                    _goSettingButtonContinousCts = null;
+                }, _goSettingButtonContinousCts.Token);
+                _goSettingButtonContinousCts?.CancelAfter(2000);
+            }
         }
 
         private void SetApiKeyButton_Click(object sender, RoutedEventArgs e)

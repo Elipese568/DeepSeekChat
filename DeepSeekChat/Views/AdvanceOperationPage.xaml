@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeepSeekChat.Views.AdvanceOperationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeepSeekChat.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tkc="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Margin="36,40,36,0">
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <tkc:SettingsCard Header="Open Chat Messages Storage File" 
+                              x:Name="OpenChatMessagesStorageFile" 
+                              Click="OpenChatMessagesStorageFile_Click"
+                              IsClickEnabled="True">
+                <tkc:SettingsCard.ActionIcon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </tkc:SettingsCard.ActionIcon>
+            </tkc:SettingsCard>
+            <tkc:SettingsCard Header="Create Chat Message Backup and Reset Messages"
+                              x:Name="CreateChatMessageBackupResetMessages"
+                              Click="CreateChatMessageBackupResetMessages_Click"
+                              IsClickEnabled="True">
+                <tkc:SettingsCard.ActionIcon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </tkc:SettingsCard.ActionIcon>
+            </tkc:SettingsCard>
+        </StackPanel>
+    </Grid>
+</Page>

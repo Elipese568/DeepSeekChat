@@ -13,8 +13,7 @@ public abstract class WrapperViewModelBase<TWrap> : ObservableRecipient
     public WrapperViewModelBase(TWrap wrapped)
     {
         _innerObject = wrapped;
-        InnerObject = wrapped;
     }
 
-    public readonly TWrap InnerObject;
+    public TWrap InnerObject => _innerObject;
 }

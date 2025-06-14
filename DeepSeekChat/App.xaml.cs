@@ -78,8 +78,6 @@ namespace DeepSeekChat
             Current = this;
             m_exitProcess = EventHandlerWrapper<EventHandler>.Create();
 
-
-
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
                 m_exitProcess.Invoke(this, EventArgs.Empty);

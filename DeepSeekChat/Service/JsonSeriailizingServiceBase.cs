@@ -65,4 +65,9 @@ public class JsonSeriailizingServiceBase<TData> : ImplementationLifetimeServiceB
         }
         base.OnDispose();
     }
+
+    public string GetStorageFilePath()
+    {
+        return _storage.Path;
+    }
 }

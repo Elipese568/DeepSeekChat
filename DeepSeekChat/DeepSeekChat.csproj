@@ -134,6 +134,7 @@
     <None Remove="Assets\Wide310x150Logo.scale-400.png" />
     <None Remove="MainPage.xaml" />
     <None Remove="Styles\Text.xaml" />
+    <None Remove="Views\AdvanceOperationPage.xaml" />
     <None Remove="Views\DiscussionPage.xaml" />
     <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
@@ -159,6 +160,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.6.0-preview.1.25310.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.3.25171.5" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
@@ -196,6 +198,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\AdvanceOperationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

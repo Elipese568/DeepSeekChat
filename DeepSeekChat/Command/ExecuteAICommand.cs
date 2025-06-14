@@ -11,7 +11,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
-using OpenAI;
 using OpenAI.Chat;
 
 namespace DeepSeekChat.Command;
@@ -42,7 +41,6 @@ public class ExecuteAICommand : ICommand
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly ClientService _clientService;
 
-    private ChatClient _chatClient;
     private CancellationTokenSource _cts;
     private bool _isRunning;
 
@@ -59,15 +57,9 @@ public class ExecuteAICommand : ICommand
 
         
         _clientService = App.Current.GetService<ClientService>();
-        _chatClient = _clientService.GetChatClient();
-        
-        _clientService.ClientUpdate += (s, e) =>
-        {
-            _chatClient = e.ChatClient;
-        };
     }
 
-    public bool CanExecute(object? parameter) => !_isRunning && _chatClient != null;
+    public bool CanExecute(object? parameter) => !_isRunning && _clientService.GetChatClient() != null;
 
     public async void Execute(object parameter)
     {

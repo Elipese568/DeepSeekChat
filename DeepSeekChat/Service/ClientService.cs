@@ -106,21 +106,17 @@ public class ClientService
         _settingService = App.Current.GetService<SettingService>();
         _clientUpdateHandlers = EventHandlerWrapper<EventHandler<ClientUpdateEventArgs>>.Create();
 
-        if (!string.IsNullOrWhiteSpace(_settingService.Read(SettingService.SETTING_APIKEY, string.Empty)))
-            ConfigureAllAsync(
-                new("https://api.siliconflow.cn/v1/"), // TODO: Replace with a setting after this option is unlocked
-                _settingService.Read(SettingService.SETTING_APIKEY, string.Empty),
-                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID)))?.ModelID?? AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID);
-        _settingService.SettingChanged += OnSettingChanged;
+        ApplySettingChanges();
+        _settingService.SettingChanged += (_, _) => ApplySettingChanges();
     }
 
-    private void OnSettingChanged(object? sender, SettingChangedEventArgs e)
+    private void ApplySettingChanges()
     {
         if (!string.IsNullOrWhiteSpace(_settingService.Read(SettingService.SETTING_APIKEY, string.Empty)))
             ConfigureAllAsync(
                 new("https://api.siliconflow.cn/v1/"), // TODO: Replace with a setting after this option is unlocked
                 _settingService.Read(SettingService.SETTING_APIKEY, string.Empty),
-                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID)))?.ModelID?? AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID);
+                App.Current.GetService<ModelsManagerService>().GetModelById(new Guid(_settingService.Read(SettingService.SETTING_SELECTED_MODEL, AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID)))?.ModelID ?? AiModelStorage.DEEPSEEK_DEFAULT_MODEL_GUID);
     }
 
     public async Task<bool> IsApiKeyVaildAsync(string apiKey)
@@ -222,6 +218,8 @@ public class ClientService
 
     public async Task<DeepSeekStreamingChatCompletionUpdateAsyncEnumerable> CompleteChatStreamingAsync(List<ChatMessage> messages, ChatCompletionOptions options, CancellationTokenSource cancellationTokenSource)
     {
+        if(bool.Parse(_settingService.Read(SettingService.SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER, "true")))
+            messages.Insert(0, SystemChatMessage.CreateSystemMessage($"!!IMPORTANTS: Use language '{_settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN")}' to answer and reply user's prompts!!"));
         var responseStream = _chatClient.CompleteChatStreamingAsync(
             messages,
             options,

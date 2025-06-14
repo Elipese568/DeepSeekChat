@@ -56,10 +56,17 @@ public partial class MainPageViewModel : ObservableRecipient
         Parent = page;
         _discussionItemService = App.Current.GetService<DiscussionItemService>();
         _discussionItems = _discussionItemService.GetStroragedDiscussionItems();
-        DiscussionItemViewModels = new( _discussionItems.Select(x => new DiscussionItemViewModel(x)));
+        DiscussionItemViewModels = new(_discussionItems.Select(x => new DiscussionItemViewModel(x)));
 
         SettingStatusToDisplay(null, null);
         App.Current.GetService<SettingService>().SettingChanged += SettingStatusToDisplay;
+        _discussionItemService.ItemChanged += (s, e) =>
+        {
+            if (e.Operation == ChangeOperation.Remove)
+            {
+                RemoveDiscussionItem(e.Item);
+            }
+        };
     }
 
     public async void SettingStatusToDisplay(object sender, SettingChangedEventArgs e)
@@ -83,12 +90,16 @@ public partial class MainPageViewModel : ObservableRecipient
         }
     }
 
+    private void RemoveDiscussionItem(DiscussionItem item)
+    {
+        DiscussionItemViewModels.Remove(DiscussionItemViewModels.FirstOrDefault(x => x.Id == item.Id));
+        TryRemovePage(item.Id.ToString());
+    }
+
     [RelayCommand]
     public void RemoveDiscussion()
     {
-        _discussionItemService.RemoveDiscussionItem(OperatingItem.Id);
-        DiscussionItemViewModels.Remove(DiscussionItemViewModels.FirstOrDefault(x => x.Id == OperatingItem.Id));
-        TryRemovePage(OperatingItem.Id.ToString());
+        _discussionItemService.RemoveDiscussionItem(OperatingItem.InnerObject.Id);
     }
 
     [RelayCommand]

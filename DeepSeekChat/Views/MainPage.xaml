@@ -12,6 +12,7 @@
     xmlns:h="using:DeepSeekChat.Helper"
     xmlns:vm="using:DeepSeekChat.ViewModels" d:DataContext="{d:DesignInstance Type=local:MainPage}"
     Loaded="Page_Loaded"
+    x:Name="MainPage_obj"
     mc:Ignorable="d">
     <Page.Resources>
         <MenuFlyout x:Name="RightClickCommands">
@@ -39,8 +40,14 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="3" Padding="8" Spacing="8">
-                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///MainPage/AddDiscussionButton"/>
-                <Button x:Name="GoSettingButton" Click="GoSettingButton_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///MainPage/GoSettingButton"/>
+                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" 
+                        HorizontalAlignment="Stretch" 
+                        x:Uid="ms-resource:///MainPage/AddDiscussionButton"/>
+                <Button x:Name="GoSettingButton" 
+                        Click="GoSettingButton_Click" 
+                        Style="{ThemeResource AccentButtonStyle}" 
+                        HorizontalAlignment="Stretch" 
+                        x:Uid="ms-resource:///MainPage/GoSettingButton"/>
             </StackPanel>
             <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
