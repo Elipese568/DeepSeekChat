@@ -1,9 +1,4 @@
 ﻿using DeepSeekChat.Command;
-using DeepSeekChat.Foundation;
-using DeepSeekChat.Models;
-using OpenAI;
-using OpenAI.Assistants;
-using OpenAI.Chat;
 using System;
 using System.ClientModel;
 using System.Collections.Generic;
@@ -14,6 +9,11 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.AI;
+using OpenAI;
+using OpenAI.Responses;
+using DeepSeekChat.Core.Models;
+using DeepSeekChat.Core;
 
 namespace DeepSeekChat.Service;
 
@@ -22,56 +22,43 @@ public class ClientUpdateEventArgs : EventArgs
     public string ApiKey { get; set; }
     public string Model { get; set; }
     public Uri ServerEndpoint { get; set; }
-    public ChatClient ChatClient { get; set; }
+    public IChatClient ChatClient { get; set; }
     public bool IsClientAvailable => ChatClient != null;
 }
 
-public class DeepSeekStreamingChatCompletionUpdateAsyncEnumerable : IAsyncEnumerable<StreamingChatCompletionChunk>
+public class DeepSeekStreamingChatCompletionUpdateAsyncEnumerable : IAsyncEnumerable<StreamingChatCompletionChunkModel>
 {
-    private readonly ClientResult _clientResult;
+    private readonly IAsyncEnumerable<ChatResponseUpdate> _clientResult;
     private const string DoneMarker = "data: [DONE]";
     private readonly CancellationTokenSource _cts;
 
-    public DeepSeekStreamingChatCompletionUpdateAsyncEnumerable(ClientResult clientResult, CancellationTokenSource cancellationTokenSource)
+    public DeepSeekStreamingChatCompletionUpdateAsyncEnumerable(IAsyncEnumerable<ChatResponseUpdate> clientResult, CancellationTokenSource cancellationTokenSource)
     {
         _clientResult = clientResult;
         _cts = cancellationTokenSource;
     }
 
-    public async IAsyncEnumerator<StreamingChatCompletionChunk> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+    public async IAsyncEnumerator<StreamingChatCompletionChunkModel> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         if(_cts != null)
         {
             cancellationToken = _cts.Token;
         }
-        using var streamReader = new StreamReader(
-            _clientResult.GetRawResponse().ContentStream,
-            Encoding.UTF8);
 
-        try
+        await foreach(var update in _clientResult)
         {
-            while (await streamReader.ReadLineAsync(cancellationToken) is { } responseString)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                Debug.Write(responseString);
+            cancellationToken.ThrowIfCancellationRequested();
+            Debug.Write(update.Text);
 
-                if (responseString == DoneMarker)
-                    break;
+            if (update.Text == DoneMarker)
+                break;
+            //var chunk = StreamingChatCompletionChunk.FromMaiResponse(update);
+            //if(chunk.Choices.Count == 0)
+            //    continue;
 
-                if (!string.IsNullOrEmpty(responseString))
-                {
-                    var chunk = await Task.Run(() => StreamingChatCompletionChunk.FromJson(responseString.Replace("data: ", "")));
-                    if(chunk.Choices.Count == 0)
-                        continue;
-
-                    yield return chunk;
-                }
-            }
+            //yield return chunk;
         }
-        finally
-        {
-            streamReader.Dispose();
-        }
+        yield return null;
     }
 }
 
@@ -80,7 +67,7 @@ public class ClientService
     private readonly SettingService _settingService;
 
     private OpenAIClient _client;
-    private ChatClient _chatClient;
+    private IChatClient _chatClient;
     private string _model;
     private string _apikey;
     private Uri _aiServerEndPoint;
@@ -166,14 +153,14 @@ public class ClientService
         {
             Endpoint = _aiServerEndPoint
         });
-        _chatClient = _client.GetChatClient(_model);
+        _chatClient = _client.GetChatClient(_model).AsIChatClient();
         NoticeUpdate();
     }
 
     public void UpdateModel(string model)
     {
         _model = model;
-        _chatClient = _client.GetChatClient(_model);
+        _chatClient = _client.GetChatClient(_model).AsIChatClient();
         NoticeUpdate();
     }
 
@@ -185,7 +172,7 @@ public class ClientService
         {
             Endpoint = _aiServerEndPoint
         });
-        _chatClient = _client.GetChatClient(_model);
+        _chatClient = _client.GetChatClient(_model).AsIChatClient();
         NoticeUpdate();
     }
 
@@ -207,28 +194,24 @@ public class ClientService
         {
             Endpoint = _aiServerEndPoint
         });
-        _chatClient = _client.GetChatClient(_model);
+        _chatClient = _client.GetChatClient(_model).AsIChatClient();
         NoticeUpdate();
     }
 
-    public ChatClient GetChatClient()
+    public IChatClient GetChatClient()
     {
         return _chatClient;
     }
 
-    public async Task<DeepSeekStreamingChatCompletionUpdateAsyncEnumerable> CompleteChatStreamingAsync(List<ChatMessage> messages, ChatCompletionOptions options, CancellationTokenSource cancellationTokenSource)
+    public async Task<DeepSeekStreamingChatCompletionUpdateAsyncEnumerable> CompleteChatStreamingAsync(List<ChatMessage> messages, Microsoft.Extensions.AI.ChatOptions options, CancellationTokenSource cancellationTokenSource)
     {
         if(bool.Parse(_settingService.Read(SettingService.SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER, "true")))
-            messages.Insert(0, SystemChatMessage.CreateSystemMessage($"!!IMPORTANTS: Use language '{_settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN")}' to answer and reply user's prompts!!"));
-        var responseStream = _chatClient.CompleteChatStreamingAsync(
+            messages.Insert(0, new ChatMessage(ChatRole.System, $"!!IMPORTANTS: Use language '{_settingService.Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN")}' to answer and reply user's prompts!!"));
+        var responseStream = _chatClient.GetStreamingResponseAsync(
             messages,
             options,
             cancellationTokenSource.Token);
 
-        await foreach (var response in responseStream.GetRawPagesAsync())
-        {
-            return new DeepSeekStreamingChatCompletionUpdateAsyncEnumerable(response, cancellationTokenSource);
-        }
-        return null;
+        return new DeepSeekStreamingChatCompletionUpdateAsyncEnumerable(responseStream, cancellationTokenSource);
     }
 }

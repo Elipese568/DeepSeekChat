@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-public class ChatOptionsViewModel : WrapperViewModelBase<ChatOptions>
+public class ChatOptionsViewModel : WrapperViewModelBase<ChatOptionsModel>
 {
-    public ChatOptionsViewModel(ChatOptions wrapped) : base(wrapped)
+    public ChatOptionsViewModel(ChatOptionsModel wrapped) : base(wrapped)
     {
 
     }
@@ -76,4 +76,25 @@ public class ChatOptionsViewModel : WrapperViewModelBase<ChatOptions>
             OnPropertyChanged();
         }
     }
+
+    public int TopK
+    {
+        get { return _innerObject.TopK; }
+        set
+        {
+            _innerObject.TopK = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ThinkingBudget
+    {
+        get { return _innerObject.ThinkingBudget; }
+        set
+        {
+            _innerObject.ThinkingBudget = value;
+            OnPropertyChanged();
+        }
+    }
+
 }

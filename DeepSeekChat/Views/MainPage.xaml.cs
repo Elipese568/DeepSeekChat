@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using DeepSeekChat.ViewModels;
-using DeepSeekChat.Models;
 using System.Threading.Tasks;
 using Windows.UI;
 using System.Diagnostics;
@@ -23,6 +22,7 @@ using Windows.ApplicationModel.Resources;
 using DeepSeekChat.Helper;
 using System.Threading;
 using Microsoft.UI.Dispatching;
+using DeepSeekChat.Core.Models;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

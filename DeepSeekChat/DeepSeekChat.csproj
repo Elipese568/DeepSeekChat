@@ -180,6 +180,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+    <Folder Include="Foundation\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeepSeekChat.Core.AI\DeepSeekChat.Core.AI.csproj" />
+    <ProjectReference Include="..\DeepSeekChat.Core.Network\DeepSeekChat.Core.Network.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\DeepSeekingIconDarkMode.svg">

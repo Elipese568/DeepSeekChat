@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DeepSeekChat.Helper;
-using DeepSeekChat.Models;
 using DeepSeekChat.Views;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml;
@@ -15,18 +14,19 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.UI;
 using System.ComponentModel;
 using DeepSeekChat.Service;
+using DeepSeekChat.Core.Models;
 
 namespace DeepSeekChat.ViewModels;
 
 public class DiscussionViewStatusChangedEventArgs : EventArgs
 {
     public ProgressStatus Status { get; set; }
-    public DiscussionItem DiscussItem { get; set; }
+    public DiscussionItemModel DiscussItem { get; set; }
 }
 
 public partial class MainPageViewModel : ObservableRecipient
 {
-    private List<DiscussionItem> _discussionItems;
+    private List<DiscussionItemModel> _discussionItems;
     private DiscussionItemService _discussionItemService;
 
     [ObservableProperty]
@@ -90,7 +90,7 @@ public partial class MainPageViewModel : ObservableRecipient
         }
     }
 
-    private void RemoveDiscussionItem(DiscussionItem item)
+    private void RemoveDiscussionItem(DiscussionItemModel item)
     {
         DiscussionItemViewModels.Remove(DiscussionItemViewModels.FirstOrDefault(x => x.Id == item.Id));
         TryRemovePage(item.Id.ToString());

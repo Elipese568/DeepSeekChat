@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DeepSeekChat.Core.Network.Body.Attributes;
+
+[AttributeUsage(AttributeTargets.Class)]
+public class ResponsePropertyNamingPolicyAttribute : Attribute
+{
+    public ResponsePropertyNamingMode NamingPolicyMode { get; set; }
+    public Type OtherNamingPolicyType { get; set; }
+}

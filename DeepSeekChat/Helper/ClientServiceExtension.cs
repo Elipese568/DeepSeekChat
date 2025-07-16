@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core.Models;
 using DeepSeekChat.Service;
 using System;
 using System.Collections.Generic;

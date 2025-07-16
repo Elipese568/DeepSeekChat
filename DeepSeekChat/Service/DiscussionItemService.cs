@@ -1,5 +1,5 @@
-﻿using DeepSeekChat.Foundation;
-using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core;
+using DeepSeekChat.Core.Models;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -21,11 +21,11 @@ public enum ChangeOperation
 public sealed class DiscussionItemChangedEventArgs : EventArgs
 {
     public ChangeOperation Operation { get; set; }
-    public DiscussionItem Item { get; set; }
+    public DiscussionItemModel Item { get; set; }
 }
 
 [JsonStorageFile(FileName = "chatHistory.json")]
-public class DiscussionItemService : JsonSeriailizingServiceBase<List<DiscussionItem>>
+public class DiscussionItemService : JsonSeriailizingServiceBase<List<DiscussionItemModel>>
 {
     private EventHandlerWrapper<EventHandler<DiscussionItemChangedEventArgs>> _itemChangedHandler;
     public event EventHandler<DiscussionItemChangedEventArgs> ItemChanged
@@ -38,21 +38,21 @@ public class DiscussionItemService : JsonSeriailizingServiceBase<List<Discussion
     {
         _itemChangedHandler = EventHandlerWrapper<EventHandler<DiscussionItemChangedEventArgs>>.Create();
     }
-    public List<DiscussionItem> GetStroragedDiscussionItems()
+    public List<DiscussionItemModel> GetStroragedDiscussionItems()
     {
         return _data;
     }
 
-    public DiscussionItem CreateNewDiscussionItem(string name)
+    public DiscussionItemModel CreateNewDiscussionItem(string name)
     {
-        var discussionItem = new DiscussionItem()
+        var discussionItem = new DiscussionItemModel()
         {
             LeastStatus = ProgressStatus.None,
             ChatOptions = new(),
             Id = Guid.NewGuid(),
             CreationTime = DateTime.Now,
             IsViewed = true,
-            Messages = new List<ApplicationChatMessage>(),
+            Messages = new List<ApplicationChatMessageModel>(),
             Title = name
         };
         _data.Add(discussionItem);
@@ -65,7 +65,7 @@ public class DiscussionItemService : JsonSeriailizingServiceBase<List<Discussion
         return discussionItem;
     }
 
-    public DiscussionItem GetDiscussionItemById(Guid id)
+    public DiscussionItemModel GetDiscussionItemById(Guid id)
     {
         return _data.FirstOrDefault(x => x.Id == id);
     }

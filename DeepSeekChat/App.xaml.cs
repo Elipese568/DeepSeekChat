@@ -5,12 +5,17 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using DeepSeekChat.Foundation;
+using DeepSeekChat.Core;
+using DeepSeekChat.Core.AI.Internal.Request;
+using DeepSeekChat.Core.AI.Internal.Request.Primitives;
+using DeepSeekChat.Core.AI.Internal.Response;
+using DeepSeekChat.Core.Models;
+using DeepSeekChat.Core.Network.Body;
 using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
-using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -21,6 +26,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using RestSharp;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -50,7 +56,7 @@ namespace DeepSeekChat
 
             EmptyVisibilityConverter.RegisterHandler(typeof(List<>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<>), (value) => (value as ICollection).Count != 0);
-            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItem>), (value) => (value as ICollection).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItemModel>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ItemCollection), (value) => (value as ItemCollection).Count != 0);
 
             EmptyVisibilityConverter.RegisterHandler(typeof(SolidColorBrush), v => ((SolidColorBrush)v).Color.A > 0);

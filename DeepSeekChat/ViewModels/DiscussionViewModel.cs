@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DeepSeekChat.Command;
+using DeepSeekChat.Core.Models;
 using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
-using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.Views;
 using Microsoft.UI.Xaml;
@@ -60,7 +60,7 @@ public partial class DiscussionViewModel : ObservableRecipient
         };
     }
 
-    private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)
+    private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadataModel e)
     {
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].Metadata = e;
     }
@@ -71,7 +71,7 @@ public partial class DiscussionViewModel : ObservableRecipient
         if (string.IsNullOrWhiteSpace(InputingPrompt)) return;
 
         InputingPrompt = string.Empty;
-        SelectedDiscussItemViewModel.MessagesViewModel.Add(new ApplicationChatMessage
+        SelectedDiscussItemViewModel.MessagesViewModel.Add(new ApplicationChatMessageModel
         {
             UserPrompt = prompt,
             AiChatCompletion = new()

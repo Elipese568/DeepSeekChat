@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="DeepSeekChat.Views.DiscussionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -332,6 +331,16 @@
                                     <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}"/>
                                     <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}" Name="MaxTSlider" Grid.Row="1" Maximum="16384" Minimum="1"/>
                                 </Grid>
+                                <!--<Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/MaxThinkingBudgetArgumentFlyoutHeader"/>
+                                    <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.ThinkingBudget, Mode=TwoWay}"/>
+                                    <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.ThinkingBudget, Mode=TwoWay}" Name="MaxTBSlider" Grid.Row="1" Maximum="32767" Minimum="1"/>
+                                </Grid>-->
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -371,6 +380,16 @@
                                     <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
                                     <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopPSlider" TickFrequency="0.05" StepFrequency="0.05" TickPlacement="None" Maximum="1" Minimum="0.1"/>
                                 </Grid>
+                                <!--<Grid Height="Auto" RowSpacing="12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/TopKArgumentFlyoutHeader"/>
+                                    <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopK, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
+                                    <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopK, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopKSlider" Maximum="100" Minimum="0"/>
+                                </Grid>-->
                                 <Grid Height="Auto" RowSpacing="12">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>

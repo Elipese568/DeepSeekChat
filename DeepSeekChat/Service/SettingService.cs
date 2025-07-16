@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Foundation;
+﻿using DeepSeekChat.Core;
 using Microsoft.Windows.Storage;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core.Models;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;

@@ -1,5 +1,4 @@
-﻿using DeepSeekChat.Models;
-using DeepSeekChat.Command;
+﻿using DeepSeekChat.Command;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using DeepSeekChat.Service;
 using Microsoft.UI.Xaml.Media;
+using DeepSeekChat.Core.Models;
 
 namespace DeepSeekChat.ViewModels;
 
-public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationChatMessage>
+public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationChatMessageModel>
 {
-	public ApplicationChatMessageViewModel(ApplicationChatMessage message) : base(message)
+	public ApplicationChatMessageViewModel(ApplicationChatMessageModel message) : base(message)
 	{
 		AiChatCompletion = new AiChatCompletionViewModel(message.AiChatCompletion);
 		App.Current.GetService<AvatarManagerService>().SelectedUserAvatarChanged += (s, e) =>
@@ -23,7 +23,7 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
         OnPropertyChanged(nameof(AiAvatar));
     }
 
-	public TokenUsage TokenUsage
+	public TokenUsageModel TokenUsage
 	{
 		get { return _innerObject.TokenUsage; }
 		set
@@ -51,7 +51,7 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 	}
 
 
-	public ChatCompletionMetadata Metadata
+	public ChatCompletionMetadataModel Metadata
 	{
 		get { return _innerObject.CurrentMessageMetadata; }
 		set

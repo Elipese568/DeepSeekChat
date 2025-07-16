@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
-using OpenAI.Chat;
+using Microsoft.Extensions.AI;
+using DeepSeekChat.Core.Models;
 
 namespace DeepSeekChat.Command;
 
@@ -21,10 +21,8 @@ public enum UpdateType
     Content
 }
 
-public record ChatResponseReceivedEventArgs(string ContentUpdate, UpdateType Type, TokenUsage TokenUsage);
+public record ChatResponseReceivedEventArgs(string ContentUpdate, UpdateType Type, TokenUsageModel TokenUsage);
 public record ChatResponseCompletedEventArgs(ProgressStatus Status);
-
-public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options);
 
 public class NoClientException : Exception
 {
@@ -37,7 +35,7 @@ public class ExecuteAICommand : ICommand
 {
     private const string DoneMarker = "data: [DONE]";
 
-    private readonly DiscussionItem _discussItem;
+    private readonly DiscussionItemModel _discussItem;
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly ClientService _clientService;
 
@@ -47,9 +45,9 @@ public class ExecuteAICommand : ICommand
     public event EventHandler CanExecuteChanged;
     public event EventHandler<ChatResponseReceivedEventArgs> StreamResponseReceived;
     public event EventHandler<ChatResponseCompletedEventArgs> StreamCompleted;
-    public event EventHandler<ChatCompletionMetadata> CompletionMetadataReceived;
+    public event EventHandler<ChatCompletionMetadataModel> CompletionMetadataReceived;
 
-    public ExecuteAICommand(DiscussionItem discussItem)
+    public ExecuteAICommand(DiscussionItemModel discussItem)
     {
         _discussItem = discussItem ?? throw new ArgumentNullException(nameof(discussItem));
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -71,13 +69,25 @@ public class ExecuteAICommand : ICommand
                 var messages = BuildMessageThread();
                 var options = CreateChatOptions(_discussItem.ChatOptions);
                 bool isMetadataReported = false;
-                CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions));
+                CompletionMetadataReceived?.Invoke(this, new()
+                {
+                    Id = "No Received",
+                    TimeCreated = DateTime.Now,
+                    Model = _clientService.Model,
+                    Options = _discussItem.ChatOptions
+                });
 
                 await foreach (var chunk in await _clientService.CompleteChatStreamingAsync(messages, options, _cts))
                 {
                     if (!isMetadataReported)
                     {
-                        CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
+                        CompletionMetadataReceived?.Invoke(this, new()
+                        {
+                            Id = chunk.Id,
+                            TimeCreated = DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime,
+                            Model = _clientService.Model,
+                            Options = _discussItem.ChatOptions
+                        });
                         isMetadataReported = true;
                     }
 
@@ -118,32 +128,42 @@ public class ExecuteAICommand : ICommand
     private List<ChatMessage> BuildMessageThread()
     {
         var messages = new List<ChatMessage>();
-        messages.Add(SystemChatMessage.CreateSystemMessage(_discussItem.ChatOptions.SystemPrompt));
+        messages.Add(new(ChatRole.System, _discussItem.ChatOptions.SystemPrompt));
 
         foreach (var msg in _discussItem.Messages)
         {
             if (!string.IsNullOrEmpty(msg.UserPrompt))
             {
-                messages.Add(UserChatMessage.CreateUserMessage(msg.UserPrompt));
+                messages.Add(new(ChatRole.User, msg.UserPrompt));
             }
             if (!string.IsNullOrEmpty(msg.AiChatCompletion.Content))
             {
-                messages.Add(AssistantChatMessage.CreateAssistantMessage(msg.AiChatCompletion.Content));
+                messages.Add(new(ChatRole.Assistant, msg.AiChatCompletion.Content));
             }
         }
         return messages;
     }
 
-    private static ChatCompletionOptions CreateChatOptions(ChatOptions options) => new()
+    private static Microsoft.Extensions.AI.ChatOptions CreateChatOptions(Core.Models.ChatOptionsModel options)
     {
-        MaxOutputTokenCount = options.MaxTokens,
-        Temperature = options.Temperature,
-        TopP = options.TopP,
-        FrequencyPenalty = options.FrequencyPenalty,
-        Seed = options.Seed
-    };
+        var result = new Microsoft.Extensions.AI.ChatOptions()
+        {
+            MaxOutputTokens = options.MaxTokens,
+            Temperature = options.Temperature,
+            TopP = options.TopP,
+            FrequencyPenalty = options.FrequencyPenalty,
+            Seed = options.Seed,
+            TopK = options.TopK,
+        };
 
-    private void RaiseStreamEvent(string content, UpdateType type, TokenUsage usage)
+        result.AdditionalProperties = new()
+        {
+            ["thinking_budget"] = options.ThinkingBudget
+        };
+        return result;
+    }
+
+    private void RaiseStreamEvent(string content, UpdateType type, TokenUsageModel usage)
     {
         StreamResponseReceived?.Invoke(this, new(content, type, usage));
     }

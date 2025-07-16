@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletion>
+public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletionModel>
 {
-    public AiChatCompletionViewModel(AiChatCompletion wrapped) : base(wrapped) { }
+    public AiChatCompletionViewModel(AiChatCompletionModel wrapped) : base(wrapped) { }
 
 	public string ReasoningContent
 	{

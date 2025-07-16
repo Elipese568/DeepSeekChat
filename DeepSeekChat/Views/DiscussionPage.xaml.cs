@@ -1,4 +1,4 @@
-using DeepSeekChat.Models;
+using DeepSeekChat.Core.Models;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

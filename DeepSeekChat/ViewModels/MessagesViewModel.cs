@@ -1,4 +1,4 @@
-﻿using DeepSeekChat.Models;
+﻿using DeepSeekChat.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DeepSeekChat.ViewModels;
 
-public class MessagesViewModel : WrapperViewModelBase<List<ApplicationChatMessage>>
+public class MessagesViewModel : WrapperViewModelBase<List<ApplicationChatMessageModel>>
 {
-    public MessagesViewModel(List<ApplicationChatMessage> wrapped) : base(wrapped)
+    public MessagesViewModel(List<ApplicationChatMessageModel> wrapped) : base(wrapped)
     {
         MessageViewModels = new(wrapped.Select(x => new ApplicationChatMessageViewModel(x)));
     }
@@ -26,13 +26,13 @@ public class MessagesViewModel : WrapperViewModelBase<List<ApplicationChatMessag
         }
     }
 
-    public void Add(ApplicationChatMessage message)
+    public void Add(ApplicationChatMessageModel message)
     {
         _innerObject.Add(message);
         _wrapedViewModels.Add(new(message));
     }
 
-    public void Remove(ApplicationChatMessage message)
+    public void Remove(ApplicationChatMessageModel message)
     {
         _innerObject.Remove(message);
         _wrapedViewModels.Remove(_wrapedViewModels.FirstOrDefault(m => m.Id == message.Id));

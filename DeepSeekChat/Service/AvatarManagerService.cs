@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.WinUI.Controls;
-using DeepSeekChat.Foundation;
-using DeepSeekChat.Models;
+using DeepSeekChat.Core;
+using DeepSeekChat.Core.Models;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;

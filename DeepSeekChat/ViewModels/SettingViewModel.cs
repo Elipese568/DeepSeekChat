@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Controls;
+using DeepSeekChat.Core.Models;
 using DeepSeekChat.Helper;
-using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.Views;
 using Microsoft.UI.System;

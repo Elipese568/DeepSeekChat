@@ -1,5 +1,5 @@
+using DeepSeekChat.Core.Models;
 using DeepSeekChat.Helper;
-using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Composition;
