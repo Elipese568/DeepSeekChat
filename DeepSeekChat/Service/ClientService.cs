@@ -53,7 +53,7 @@ public class DeepSeekStreamingChatCompletionUpdateAsyncEnumerable : IAsyncEnumer
             while (await streamReader.ReadLineAsync(cancellationToken) is { } responseString)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                Debug.Write(responseString);
+                Debug.WriteLine(responseString);
 
                 if (responseString == DoneMarker)
                     break;

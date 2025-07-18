@@ -91,7 +91,7 @@
                                                    HorizontalAlignment="Center" 
                                                    BorderThickness="1" />
                                 </Grid>
-                                <Grid Grid.Row="1" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Left">
+                                <Grid Grid.Row="1" ColumnSpacing="8" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="32"/>
                                         <ColumnDefinition Width="*"/>
@@ -272,7 +272,12 @@
                                                 </StackPanel>
                                             </Expander.Header>
                                             <Expander.Content>
-                                                <tkcont:MarkdownTextBlock Background="Transparent" MaxWidth="800" TextWrapping="Wrap" HorizontalAlignment="Left" IsTextSelectionEnabled="True" Text="{Binding AiChatCompletion.ReasoningContent}"></tkcont:MarkdownTextBlock>
+                                                <tkcont:MarkdownTextBlock Background="Transparent" 
+                                                                          TextWrapping="Wrap" 
+                                                                          HorizontalAlignment="Left" 
+                                                                          IsTextSelectionEnabled="True" 
+                                                                          Text="{Binding AiChatCompletion.ReasoningContent}"
+                                                                          ParagraphLineHeight="16"/>
                                             </Expander.Content>
                                         </Expander>
                                         <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
@@ -281,7 +286,12 @@
                                               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                               Padding="12"
                                               Visibility="{Binding AiChatCompletion.Content, Converter={StaticResource EmptyVisibilityConverter}}">
-                                            <tkcont:MarkdownTextBlock Background="Transparent" MaxWidth="800" TextWrapping="Wrap" IsTextSelectionEnabled="True" Text="{Binding AiChatCompletion.Content}"></tkcont:MarkdownTextBlock>
+                                            <tkcont:MarkdownTextBlock Background="Transparent"
+                                                                      TextWrapping="Wrap" 
+                                                                      IsTextSelectionEnabled="True" 
+                                                                      ParagraphLineHeight="16"
+                                                                      Text="{Binding AiChatCompletion.Content}">
+                                            </tkcont:MarkdownTextBlock>
                                         </Grid>
                                     </StackPanel>
                                     <PersonPicture Grid.Column="0" 

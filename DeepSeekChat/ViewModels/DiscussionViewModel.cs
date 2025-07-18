@@ -138,7 +138,7 @@ public partial class DiscussionViewModel : ObservableRecipient
         }
         else
         {
-            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.Content += e.ContentUpdate.TrimStart('\n');
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.Content += e.ContentUpdate;
         }
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
