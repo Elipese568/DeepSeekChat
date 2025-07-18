@@ -44,7 +44,7 @@ public class ExecuteAICommand : ICommand
     private CancellationTokenSource _cts;
     private bool _isRunning;
 
-    public event EventHandler CanExecuteChanged;
+    public event EventHandler? CanExecuteChanged;
     public event EventHandler<ChatResponseReceivedEventArgs> StreamResponseReceived;
     public event EventHandler<ChatResponseCompletedEventArgs> StreamCompleted;
     public event EventHandler<ChatCompletionMetadata> CompletionMetadataReceived;
@@ -56,12 +56,12 @@ public class ExecuteAICommand : ICommand
         var settingService = App.Current.GetService<SettingService>();
 
         
-        _clientService = App.Current.GetService<ClientService>();
+        _clientService = App.Current.GetService<ClientService>()!;
     }
 
     public bool CanExecute(object? parameter) => !_isRunning && _clientService.GetChatClient() != null;
 
-    public async void Execute(object parameter)
+    public async void Execute(object? parameter)
     {
         try
         {
