@@ -34,9 +34,12 @@ public class EventHandlerWrapper<THandler>
 
     public void Invoke(params object[] parameters)
     {
-        foreach (var handler in _handlers)
+        lock(new object())
         {
-            handler.Method.Invoke(handler.Target, parameters);
+            foreach (var handler in _handlers)
+            {
+                handler.Method.Invoke(handler.Target, parameters);
+            }
         }
     }
 }

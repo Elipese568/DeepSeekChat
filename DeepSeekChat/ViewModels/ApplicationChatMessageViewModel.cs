@@ -60,6 +60,9 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 			OnPropertyChanged();
 		}
 	}
+
+	public event EventHandler Completed;
+
 	public string Id
 	{
 		get { return _innerObject.Id; }
@@ -75,7 +78,7 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 		{
 			_innerObject.ProgressStatus = value;
 			OnPropertyChanged();
-		}
+        }
 	}
 
 	public ImageSource AiAvatar => App.Current.GetService<AvatarManagerService>().GetSelectedAiAvatarViewModel().ImageSource;

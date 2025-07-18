@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.UI;
 using System.ComponentModel;
 using DeepSeekChat.Service;
+using Microsoft.UI.Dispatching;
 
 namespace DeepSeekChat.ViewModels;
 
@@ -148,7 +149,7 @@ public partial class MainPageViewModel : ObservableRecipient
         await ContentDialogHelper.ShowContentDialog(
             "AddDiscussionButton.Content".GetLocalized("MainPage"),
             textBox,
-            "AddText".GetLocalized(),
+            primaryButtonText: "AddText".GetLocalized(),
             "CancelText".GetLocalized(),
             null,
             ContentDialogButton.Primary,
@@ -179,14 +180,14 @@ public partial class MainPageViewModel : ObservableRecipient
             });
     }
 
-    private bool _isOutDestory = false;
+    private bool _doLeaveDestory = false;
 
     private Dictionary<string, Page> _pages = new();
     private string _currentPageId = string.Empty;
     public string CurrentPageId => _currentPageId;
-    public void TryNavigate(string pageId, Func<Page> buildPageFactory, bool shouldOutDestroy = false)
+    public void TryNavigate(string pageId, Func<Page> buildPageFactory, bool shouldLeaveDestroy = false)
     {
-        if (_isOutDestory)
+        if (_doLeaveDestory)
         {
             _pages.Remove(CurrentPageId);
         }
@@ -203,7 +204,7 @@ public partial class MainPageViewModel : ObservableRecipient
             ContentPage = newPage;
         }
         _currentPageId = pageId;
-        _isOutDestory = shouldOutDestroy;
+        _doLeaveDestory = shouldLeaveDestroy;
         GC.Collect();
     }
 
@@ -223,7 +224,7 @@ public partial class MainPageViewModel : ObservableRecipient
     public void ClearOtherPages(Predicate<(string, Page)> predicate)
     {
         _pages = _pages.Where(item => !predicate((item.Key, item.Value)) || item.Key == _currentPageId).ToDictionary();
-        _isOutDestory = false;
+        _doLeaveDestory = false;
         GC.Collect();
     }
 }

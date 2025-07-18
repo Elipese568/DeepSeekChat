@@ -9,7 +9,7 @@
 
   <Identity
     Name="40783714-d18b-474c-ae7c-70b19744c32e"
-    Publisher="CN=Admin"
+    Publisher="CN=DeepSeekChatProducer"
     Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="40783714-d18b-474c-ae7c-70b19744c32e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>

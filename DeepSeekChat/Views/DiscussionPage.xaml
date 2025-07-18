@@ -20,6 +20,8 @@
         <conv:IntyConverter x:Key="IntyConverter"/>
         <local:ProgressStatusVisibilityConverter x:Key="ProgressStatusVisibilityConverter"/>
         <tkconv:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
+        <local:ProgressStatusContentConverter x:Key="ProgressStatusContentConverter"/>
+        <tkconv:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter"/>
     </Page.Resources>
     <Grid x:Name="MainArea">
         <Grid RowSpacing="16" Padding="36,40">
@@ -62,6 +64,9 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="vm:ApplicationChatMessageViewModel">
                         <ListViewItem>
+                            <ListViewItem.Resources>
+                                <local:ReferenceValue Value="{Binding}" x:Key="Self"/>
+                            </ListViewItem.Resources>
                             <Grid RowSpacing="18">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
@@ -272,12 +277,28 @@
                                                 </StackPanel>
                                             </Expander.Header>
                                             <Expander.Content>
-                                                <tkcont:MarkdownTextBlock Background="Transparent" 
-                                                                          TextWrapping="Wrap" 
-                                                                          HorizontalAlignment="Left" 
-                                                                          IsTextSelectionEnabled="True" 
-                                                                          Text="{Binding AiChatCompletion.ReasoningContent}"
-                                                                          ParagraphLineHeight="16"/>
+                                                <Grid>
+                                                    <TextBlock TextWrapping="Wrap" 
+                                                               IsTextSelectionEnabled="True" 
+                                                               Text="{Binding AiChatCompletion.ReasoningContent}"
+                                                               Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}">
+                                                    </TextBlock>
+                                                    <tkcont:MarkdownTextBlock Background="Transparent" 
+                                                                              TextWrapping="Wrap" 
+                                                                              HorizontalAlignment="Left" 
+                                                                              IsTextSelectionEnabled="True" 
+                                                                              ParagraphLineHeight="16"
+                                                                              Opacity="0.0"
+                                                                              IsEnabled="{Binding ElementName=Content, Converter={StaticResource VisibilityToBoolConverter}}"
+                                                                              IsEnabledChanged="MarkdownTextBlock_IsEnabledChanged"
+                                                                              Text="{Binding ProgressStatus, Converter={StaticResource ProgressStatusContentConverter}, ConverterLanguage=11, ConverterParameter={StaticResource Self}}">
+                                                        <!-- Parameter 11 is a binary which meaning get reasoning content and reverse status -->
+                                                        <tkcont:MarkdownTextBlock.OpacityTransition>
+                                                            <ScalarTransition/>
+                                                        </tkcont:MarkdownTextBlock.OpacityTransition>
+                                                    </tkcont:MarkdownTextBlock>
+                                                </Grid>
+                                                
                                             </Expander.Content>
                                         </Expander>
                                         <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
@@ -290,8 +311,21 @@
                                                                       TextWrapping="Wrap" 
                                                                       IsTextSelectionEnabled="True" 
                                                                       ParagraphLineHeight="16"
-                                                                      Text="{Binding AiChatCompletion.Content}">
+                                                                      Opacity="0.0"
+                                                                      IsEnabled="{Binding ElementName=Content, Converter={StaticResource VisibilityToBoolConverter}}"
+                                                                      IsEnabledChanged="MarkdownTextBlock_IsEnabledChanged"
+                                                                      Text="{Binding ProgressStatus, Converter={StaticResource ProgressStatusContentConverter}, ConverterLanguage=01, ConverterParameter={StaticResource Self}}">
+                                                <!-- Parameter 01 is a binary which meaning get content and reverse status -->
+                                                <tkcont:MarkdownTextBlock.OpacityTransition>
+                                                    <ScalarTransition/>
+                                                </tkcont:MarkdownTextBlock.OpacityTransition>
                                             </tkcont:MarkdownTextBlock>
+                                            <TextBlock TextWrapping="Wrap" 
+                                                       IsTextSelectionEnabled="True" 
+                                                       Text="{Binding AiChatCompletion.Content}"
+                                                       Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}"
+                                                       Name="Content">
+                                            </TextBlock>
                                         </Grid>
                                     </StackPanel>
                                     <PersonPicture Grid.Column="0" 
