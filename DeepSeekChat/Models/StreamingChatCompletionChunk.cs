@@ -34,6 +34,42 @@ public class StreamingChatCompletionChunk
     }
 }
 
+public class FunctionCallingProperty
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("arguments")]
+    public Dictionary<string, object> Arguments { get; set; } = new();
+
+    public bool IsContent { get; set; }
+
+    public static FunctionCallingProperty FromJson(string? jsonString)
+    {
+        var result = JsonSerializer.Deserialize<FunctionCallingProperty>(jsonString);
+        return result;
+    }
+}
+
+public class FunctionCallingChatCompletionChunk : StreamingChatCompletionChunk
+{
+    public FunctionCallingProperty FunctionCalling { get; set; }
+
+    public static FunctionCallingChatCompletionChunk FromStreamingChunk(StreamingChatCompletionChunk chunk)
+    {
+        return new()
+        {
+            SystemFingerprint = chunk.SystemFingerprint,
+            Choices = chunk.Choices,
+            Created = chunk.Created,
+            Id = chunk.Id,
+            Model = chunk.Model,
+            ObjectType = chunk.ObjectType,
+            Usage = chunk.Usage
+        };
+    }
+}
+
 public class Choice
 {
     [JsonPropertyName("index")]

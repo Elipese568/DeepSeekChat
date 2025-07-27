@@ -64,11 +64,16 @@ namespace DeepSeekChat.Views
             var dialog = new ContentDialog
             {
                 Title = "Backup and Reset",
-                Content = "Chat messages have been backed up and reset successfully.",
+                Content = "Chat messages hava been backed up and reset successfully.",
                 CloseButtonText = "OK",
                 XamlRoot = window.Content.XamlRoot
             };
             await dialog.ShowAsync();
+        }
+
+        private void NavigateToStorageFolder_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder);
         }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
+using OpenAI.Files;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +18,8 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace DeepSeekChat.ViewModels;
 
@@ -25,6 +28,7 @@ public partial class DiscussionViewModel : ObservableRecipient
     private readonly ExecuteAICommand _sendCommand;
     private readonly SettingService _settingService;
     private readonly AvatarManagerService _avatarManagerService;
+    private readonly FileManagerService _fileManagerService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendCommand))]
@@ -35,6 +39,12 @@ public partial class DiscussionViewModel : ObservableRecipient
     [ObservableProperty]
     private AvatarDataViewModel _aiAvatarDataViewModel;
 
+    [ObservableProperty]
+    private FileViewModel? _previewFileViewModel = null;
+
+    public Visibility FileListVisibility => SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ContentVisibility => SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
+
     public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
     public DiscussionViewModel(DiscussionItemViewModel item)
@@ -42,10 +52,12 @@ public partial class DiscussionViewModel : ObservableRecipient
         SelectedDiscussItemViewModel = item;
         _settingService = App.Current.GetService<SettingService>();
         _avatarManagerService = App.Current.GetService<AvatarManagerService>();
+        _fileManagerService = App.Current.GetService<FileManagerService>();
 
         _sendCommand = new ExecuteAICommand(item.InnerObject);
         _sendCommand.StreamResponseReceived += OnStreamResponseReceived;
         _sendCommand.StreamCompleted += OnStreamCompleted;
+        _sendCommand.FunctionCallingResponseReceived += OnFunctionCalling;
         _sendCommand.CompletionMetadataReceived += OnCompletionMetadataReceived;
 
         UserAvatarDataViewModel = _avatarManagerService.GetSelectedUserAvatarViewModel();
@@ -58,6 +70,8 @@ public partial class DiscussionViewModel : ObservableRecipient
             else
                 AiAvatarDataViewModel = e.ViewModel;
         };
+
+        SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.CollectionChanged += (s, e) => OnPropertyChanged(nameof(FileListVisibility));
     }
 
     private void OnCompletionMetadataReceived(object? sender, ChatCompletionMetadata e)
@@ -76,8 +90,8 @@ public partial class DiscussionViewModel : ObservableRecipient
             UserPrompt = prompt,
             AiChatCompletion = new()
             {
-                ReasoningContent = "",
-                Content = ""
+                ReasoningContent = [],
+                Content = []
             },
             TokenUsage = new(),
             ProgressStatus = ProgressStatus.InProgress
@@ -125,20 +139,197 @@ public partial class DiscussionViewModel : ObservableRecipient
         SelectedDiscussItemViewModel.ChatOptionsViewModel.Seed = Random.Shared.Next();
     }
 
+    [RelayCommand]
+    public async Task AddFile(int nType)
+    {
+        FileType type = (FileType)nType;
+        var filePicker = new FileOpenPicker();
+        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, WinRT.Interop.WindowNative.GetWindowHandle(MainWindow.Current));
+
+        filePicker.FileTypeFilter.Add("*");
+        filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+        filePicker.ViewMode = type switch
+        {
+            FileType.Document => PickerViewMode.List,
+            FileType.Media => PickerViewMode.Thumbnail
+        };
+
+        var pickedFile = await filePicker.PickSingleFileAsync();
+        if(pickedFile == null)
+            return;
+
+        var fileModel = await _fileManagerService.CreateFileReferenceAsync(pickedFile, SelectedDiscussItemViewModel.Id.ToString(), type);
+        var realType = FileTypeChecker.GetFileType(pickedFile.Path);
+        var expectedType = type;
+
+        if (realType == CheckFileType.Unknown || type switch { FileType.Document => realType is not CheckFileType.Text and not CheckFileType.Unknown, FileType.Media => realType is not CheckFileType.Image})
+        {
+            var result = await ContentDialogHelper.ShowMessageDialog("未知的文件类型", $"当前正在添加{(type == FileType.Document ? ("文档/文本") : ("图片"))}文件，但当前文件非此格式，是否以{(type == FileType.Document ? ("图片") : ("文档/文本"))}格式上传？", "是", "取消", "我还是想这样上传", ContentDialogButton.Close, MainPage.Current.XamlRoot);
+            if(result == ContentDialogResult.Primary) 
+            {
+                expectedType = (FileType)(((int)expectedType + 1) % 2); // Toggle between Text and Image
+                fileModel.Type = expectedType;
+            }
+            else if(result != ContentDialogResult.Secondary)
+            {
+                return; // User chose to cancel
+            }
+        }
+
+        var fileVm = SelectedDiscussItemViewModel.FilesViewModel.Add(fileModel);
+        AnalyzingFileContent(fileVm, realType == CheckFileType.Unknown? expectedType switch { FileType.Document => CheckFileType.Text, FileType.Media => CheckFileType.Image } : realType);
+    }
+
+    private async Task AnalyzingFileContent(FileViewModel fileVm, CheckFileType fileType)
+    {
+        var fileInstance = await _fileManagerService.GetStorageFileAsync(SelectedDiscussItemViewModel.Id.ToString(), fileVm.Name);
+
+        if (fileType == CheckFileType.Text)
+        {
+            fileVm.Content = await FileIO.ReadTextAsync(fileInstance);
+            fileVm.Status = AnalyzeStatus.Already;
+            return;
+        }
+
+        if (fileType == CheckFileType.Document)
+        {
+            string mimeTypeString;
+            var mimeType = FileTypeChecker.GetFileMimeType(fileInstance.Path);
+            if (mimeType == null)
+            {
+                mimeTypeString = FileTypeChecker.GetMimeTypeByExtension(fileInstance.FileType);
+            }
+            else
+            {
+                mimeTypeString = mimeType.MimeType;
+            }
+
+            fileVm.Content = DocumentHelper.ExtractText(mimeTypeString, fileInstance.Path);
+            fileVm.Status = AnalyzeStatus.Already;
+            return;
+        }
+
+        if (fileType == CheckFileType.Image)
+        {
+            fileVm.Content = await App.Current.GetService<OcrService>().DelectTextAsync(fileInstance);
+            fileVm.Status = AnalyzeStatus.Already;
+            return;
+        }
+    }
+
+
+    public void RemoveFile(FileViewModel fileVm)
+    {
+        if (fileVm == null) return;
+        if (SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Contains(fileVm))
+        {
+            SelectedDiscussItemViewModel.FilesViewModel.Remove(fileVm.InnerObject);
+            _fileManagerService.RemoveFileReferenceAsync(SelectedDiscussItemViewModel.Id.ToString(),fileVm.InnerObject.Name);
+        }
+    }
+
     public void StopGenerating()
     {
         _sendCommand.Cancel();
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus = ProgressStatus.Stoped;
     }
-    private void OnStreamResponseReceived(object sender, ChatResponseReceivedEventArgs e)
+
+
+    private UpdateType? _currentResponseTypeStatusMachine = null;
+
+    private void OnFunctionCalling(object? sender, ChatResponseFunctionCallingReceivedEventArgs e)
     {
-        if (e.Type == UpdateType.Reasoning)
+        if (!(e.Type.HasFlag(UpdateType.FunctionCalling) || e.Type.HasFlag(UpdateType.ReturnValue)))
+            return;
+
+        bool isContent = ((FunctionCallingProperty)e.Data).IsContent;
+
+        if (_currentResponseTypeStatusMachine.Value.HasFlag(UpdateType.FunctionCalling))
         {
-            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContent += e.ContentUpdate;
+            if (isContent)
+            {
+                ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Result = e.Data.ToString();
+            }
+            else
+            {
+                ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContentViewModels[^1]).Result = e.Data.ToString();
+            }
+            return;
         }
         else
         {
-            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.Content += e.ContentUpdate;
+            FunctionCallingProperty property = (FunctionCallingProperty)e.Data;
+            if (isContent)
+            {
+                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
+                {
+                    Arguments = property.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value?.ToString()??"null")).ToDictionary(),
+                    Name = property.Name,
+                    Type = "tool_calling"
+                }));
+                _currentResponseTypeStatusMachine = UpdateType.Content | UpdateType.FunctionCalling;
+            }
+            else
+            {
+                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddReasoningContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
+                {
+                    Arguments = property.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value?.ToString() ?? "null")).ToDictionary(),
+                    Name = property.Name,
+                    Type = "tool_calling"
+                }));
+                _currentResponseTypeStatusMachine = UpdateType.Reasoning | UpdateType.FunctionCalling;
+            }
+        }
+
+        SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
+    }
+
+    private void OnStreamResponseReceived(object sender, ChatResponseReceivedEventArgs e)
+    {
+        if (_currentResponseTypeStatusMachine.HasValue && (int)_currentResponseTypeStatusMachine.Value < 2) // if now is chating and last response is not tool calling
+        {
+            if (e.Type == UpdateType.Reasoning && _currentResponseTypeStatusMachine == UpdateType.Reasoning) // if last response is reasoning and current response is reasoning, we need to append text into the last reasoning content part
+            {
+                ((TextContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContentViewModels[^1]).Text += e.ContentUpdate;
+            }
+            else // current response is not reasoning or last response is not reasoning(but current response is reasoning, although it's impossible, we still need process this case)
+            {
+                if (e.Type == UpdateType.Content && _currentResponseTypeStatusMachine == UpdateType.Content) // if last response is content and current response is content, we need to append text into the last content part
+                {
+                    ((TextContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Text += e.ContentUpdate;
+                }
+                else
+                {
+                    SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart()
+                    {
+                        Text = e.ContentUpdate,
+                        Type = "text"
+                    }));
+                    _currentResponseTypeStatusMachine = UpdateType.Content;
+                }
+            }
+        }
+        else // if chat begin or last response is tool calling, we need to add text content part into it
+        {
+            if (e.Type == UpdateType.Reasoning)
+            {
+                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddReasoningContentViewModel(new TextContentPartViewModel(new TextContentPart()
+                {
+                    Text = e.ContentUpdate,
+                    Type = "text"
+                }));
+                _currentResponseTypeStatusMachine = UpdateType.Reasoning;
+            }
+            else
+            {
+                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart()
+                {
+                    Text = e.ContentUpdate,
+                    Type = "text"
+                }));
+                _currentResponseTypeStatusMachine = UpdateType.Content;
+            }
+            
         }
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
@@ -152,6 +343,8 @@ public partial class DiscussionViewModel : ObservableRecipient
             SelectedDiscussItemViewModel.IsViewed = false;
         else
             SelectedDiscussItemViewModel.IsViewed = true;
+
+        _currentResponseTypeStatusMachine = null;
     }
 
     public event EventHandler ScrollToBottomRequested;

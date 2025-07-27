@@ -27,6 +27,14 @@
                     <FontIcon Glyph="&#xE76C;" />
                 </tkc:SettingsCard.ActionIcon>
             </tkc:SettingsCard>
+            <tkc:SettingsCard Header="Navigate To Storage Folder"
+                              x:Name="NavigateToStorageFolder"
+                              Click="NavigateToStorageFolder_Click"
+                              IsClickEnabled="True">
+                <tkc:SettingsCard.ActionIcon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </tkc:SettingsCard.ActionIcon>
+            </tkc:SettingsCard>
         </StackPanel>
     </Grid>
 </Page>

@@ -3,20 +3,13 @@ using DeepSeekChat.Models;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,7 +20,7 @@ namespace DeepSeekChat.Views
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return ((ProgressStatus)value == ProgressStatus.InProgress) ^ bool.Parse((string)parameter??"false") ? Visibility.Visible : Visibility.Collapsed;
+            return ((ProgressStatus)value == ProgressStatus.InProgress) ^ bool.Parse((string)parameter ?? "false") ? Visibility.Visible : Visibility.Collapsed;
         }
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
@@ -35,24 +28,33 @@ namespace DeepSeekChat.Views
         }
     }
 
-    public class ProgressStatusContentConverter : IValueConverter
+    public class AnalyzeStatusToVisibilityConverter : IValueConverter
     {
-        // parameter: a        b   (binary format)
-        //        reasoning reverse
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var divm = ((ProgressStatus)value);
-            var self = ((ReferenceValue)parameter).Value as ApplicationChatMessageViewModel;
-            var parameterint = int.Parse(language, System.Globalization.NumberStyles.BinaryNumber);
-            return
-                (divm == ProgressStatus.InProgress) ^ (parameterint is 0b01 or 0b11) ?
-                    parameterint is 0b10 or 0b11 ?
-                        self.AiChatCompletion.ReasoningContent // a is 1 meaning is getting reasoning
-                        :
-                        self.AiChatCompletion.Content          // a is 0 meaning is getting content
-                    :
-                    DependencyProperty.UnsetValue;                                                     // content isn't completed yet or is would hidden
+            return (((AnalyzeStatus)value) == AnalyzeStatus.Analyzing) ^ bool.Parse((string)parameter) ? Visibility.Visible : Visibility.Collapsed;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class FileTypeToGlyphConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is FileType fileType)
+            {
+                return fileType switch
+                {
+                    FileType.Document => "\uE8A5", // Document icon
+                    FileType.Media => "\uE91B",    // Media icon
+                    _ => "\uE8A5"                  // Default to Document icon
+                };
+            }
+            return DependencyProperty.UnsetValue;
         }
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
@@ -60,6 +62,18 @@ namespace DeepSeekChat.Views
         }
     }
 
+    public class HalfIntegerValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (double)value / 2;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class ReferenceValue : DependencyObject
     {
         public object Value
@@ -73,6 +87,25 @@ namespace DeepSeekChat.Views
             DependencyProperty.Register("Value", typeof(object), typeof(ReferenceValue), new PropertyMetadata(0));
     }
 
+    public class ContentPartTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate ContentTemplate { get; set; }
+        public DataTemplate ToolCallingTemplate { get; set; }
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+            if(item is ContentPartViewModel contentPart)
+            {
+                return contentPart switch
+                {
+                    TextContentPartViewModel => ContentTemplate,
+                    ToolCallingContentPartViewModel => ToolCallingTemplate,
+                    _ => ToolCallingTemplate
+                };
+            }
+            return base.SelectTemplateCore(item, container);
+        }
+    }
+
     public sealed partial class DiscussionPage : Page
     {
         public DiscussionViewModel ViewModel { get; set; }
@@ -81,7 +114,7 @@ namespace DeepSeekChat.Views
         {
             ViewModel = new DiscussionViewModel(item); // 传递item到ViewModel
             this.InitializeComponent();
-            
+
             // 确保消息更新时自动滚动到底部
             ViewModel.ScrollToBottomRequested += (s, e) =>
             {
@@ -101,10 +134,50 @@ namespace DeepSeekChat.Views
 
         private void MarkdownTextBlock_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if((bool)e.NewValue == false)
+            if ((bool)e.NewValue == false)
             {
                 ((MarkdownTextBlock)sender).Opacity = 1.0;
             }
+        }
+
+        private void TokenView_FileItemRemoving(object sender, CommunityToolkit.Labs.WinUI.TokenItemRemovingEventArgs e)
+        {
+            FileViewModel fileVm = e.Item as FileViewModel;
+            ViewModel.RemoveFile(fileVm);
+        }
+
+        private void FilePresent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            FileViewModel fileVm = ((Grid)sender).Tag as FileViewModel;
+
+            ViewModel.PreviewFileViewModel = fileVm;
+            FilePreviewArea.Visibility = Visibility.Visible;
+        }
+
+        private void ExitPreviewFile_Click(object sender, RoutedEventArgs e)
+        {
+            FilePreviewArea.Visibility = Visibility.Collapsed;
+        }
+
+        public string AsString(FileType type)
+            => type switch { FileType.Document => "Document", FileType.Media => "Media", _ => "Unknown" };
+
+        public string GetRawDataString(Uri fileUri)
+        {
+            return File.ReadAllText(fileUri.LocalPath);
+        }
+
+        public ImageSource GetRawImageSource(Uri fileUri)
+        {
+            return new BitmapImage(fileUri);
+        }
+
+        private void TokenView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+                (e.AddedItems[0] as FileViewModel).FileIsActive = true;
+            else
+                (e.RemovedItems[0] as FileViewModel).FileIsActive = false;
         }
     }
 }

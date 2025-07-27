@@ -24,4 +24,6 @@ public partial class DiscussionItem
     public ProgressStatus LeastStatus { get; set; }
 
     public bool IsViewed { get; set; }
+
+    public List<FileModel> Files { get; set; }
 }

@@ -11,6 +11,7 @@ using DeepSeekChat.Helper;
 using Microsoft.UI.Xaml.Media;
 using System.Text.Json.Serialization;
 using DeepSeekChat.Command;
+using System.Text.Json;
 
 namespace DeepSeekChat.Models;
 
@@ -24,11 +25,65 @@ public enum ProgressStatus
     None = -1
 }
 
+public class ContentPartConverter : JsonConverter<ContentPart>
+{
+    public override ContentPart? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("Expected start of object.");
+        }
+        using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
+        {
+            var root = doc.RootElement;
+            if (root.TryGetProperty("Type", out var typeProp))
+            {
+                string type = typeProp.GetString();
+                return type switch
+                {
+                    "text" => JsonSerializer.Deserialize<TextContentPart>(root.GetRawText(), options),
+                    "tool_calling" => JsonSerializer.Deserialize<ToolCallingContentPart>(root.GetRawText(), options),
+                    _ => throw new JsonException($"Unknown content part type: {type}")
+                };
+            }
+            else
+            {
+                throw new JsonException("Missing 'type' property in content part.");
+            }
+        }
+    }
+    public override void Write(Utf8JsonWriter writer, ContentPart value, JsonSerializerOptions options)
+    {
+        JsonSerializer.Serialize(writer, value, value.GetType(), options);
+    }
+}
+
+[JsonConverter(typeof(ContentPartConverter))]
+public class ContentPart
+{
+    // required: text, tool_calling
+    public string Type { get; set; }
+}
+
+
+public class TextContentPart : ContentPart
+{
+    public string Text { get; set; }
+}
+
+public class ToolCallingContentPart : ContentPart
+{
+    public string Name { get; set; }
+    public Dictionary<string, string> Arguments { get; set; }
+
+    public string Result { get; set; }
+}
+
 public partial class AiChatCompletion : ObservableObject
 {
-    public string ReasoningContent { get; set; }
+    public List<ContentPart> ReasoningContent { get; set; }
 
-    public string Content { get; set; }
+    public List<ContentPart> Content { get; set; }
 }
 
 public partial class ApplicationChatMessage : ObservableObject

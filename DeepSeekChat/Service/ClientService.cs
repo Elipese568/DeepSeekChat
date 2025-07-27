@@ -40,6 +40,7 @@ public class DeepSeekStreamingChatCompletionUpdateAsyncEnumerable : IAsyncEnumer
 
     public async IAsyncEnumerator<StreamingChatCompletionChunk> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
+        await Task.CompletedTask;
         if(_cts != null)
         {
             cancellationToken = _cts.Token;
@@ -60,9 +61,45 @@ public class DeepSeekStreamingChatCompletionUpdateAsyncEnumerable : IAsyncEnumer
 
                 if (!string.IsNullOrEmpty(responseString))
                 {
-                    var chunk = await Task.Run(() => StreamingChatCompletionChunk.FromJson(responseString.Replace("data: ", "")));
+                    var chunk = StreamingChatCompletionChunk.FromJson(responseString.Replace("data: ", ""));
                     if(chunk.Choices.Count == 0)
                         continue;
+
+                    if ((chunk.Choices[0].Delta.Content is string content && content == "json") || (chunk.Choices[0].Delta.ReasoningContent is string reasoningContent && reasoningContent == "<「tool_calling」>"))
+                    {
+                        bool isContent = chunk.Choices[0].Delta.Content is string content1 && content1 == "json";
+                        StreamingChatCompletionChunk lastChunk = new();
+                        StringBuilder functionCallingDetail = new();
+                        while (await streamReader.ReadLineAsync(cancellationToken) is { } functionCallingResponseString)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            if (functionCallingResponseString == DoneMarker)
+                                break;
+                            if (string.IsNullOrEmpty(functionCallingResponseString))
+                                continue;
+                            var functionCallingChunk = StreamingChatCompletionChunk.FromJson(functionCallingResponseString.Replace("data: ", ""));
+                            Debug.WriteLine(functionCallingResponseString);
+                            if (functionCallingChunk.Choices.Count == 0)
+                                continue;
+                            functionCallingDetail.Append(isContent ? functionCallingChunk.Choices[0].Delta.Content: functionCallingChunk.Choices[0].Delta.ReasoningContent);
+                            lastChunk = functionCallingChunk;
+                        }
+                        FunctionCallingChatCompletionChunk resultChunk = FunctionCallingChatCompletionChunk.FromStreamingChunk(lastChunk);
+                        resultChunk.FunctionCalling = FunctionCallingProperty.FromJson(functionCallingDetail.ToString());
+                        resultChunk.FunctionCalling.IsContent = isContent;
+
+                        //if(isContent)
+                        //{
+                        //    resultChunk.Choices[0].Delta.Content = $"[tool call: {resultChunk.FunctionCalling.CallingId}]";
+                        //}
+                        //else
+                        //{
+                        //    resultChunk.Choices[0].Delta.ReasoningContent = $"[tool call: {resultChunk.FunctionCalling.CallingId}]";
+                        //}
+
+                        yield return resultChunk;
+                        yield break;
+                    }
 
                     yield return chunk;
                 }

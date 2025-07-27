@@ -12,6 +12,7 @@ using DeepSeekChat.Helper;
 using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
+using DeepSeekChat.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -50,7 +51,9 @@ namespace DeepSeekChat
 
             EmptyVisibilityConverter.RegisterHandler(typeof(List<>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<>), (value) => (value as ICollection).Count != 0);
-            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItem>), (value) => (value as ICollection).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<ContentPartViewModel>), (value) => (value as ObservableCollection<ContentPartViewModel>).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItem>), (value) => (value as ObservableCollection<DiscussionItem>).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<FileViewModel>), (value) => (value as ObservableCollection<FileViewModel>).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ItemCollection), (value) => (value as ItemCollection).Count != 0);
 
             EmptyVisibilityConverter.RegisterHandler(typeof(SolidColorBrush), v => ((SolidColorBrush)v).Color.A > 0);
@@ -72,6 +75,8 @@ namespace DeepSeekChat
                 .AddSingleton<ModelsManagerService>()
                 .AddSingleton<ClientService>()
                 .AddSingleton<AvatarManagerService>()
+                .AddSingleton<FileManagerService>()
+                .AddSingleton<OcrService>()
                 .BuildServiceProvider()
             );
 
@@ -81,6 +86,11 @@ namespace DeepSeekChat
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
                 m_exitProcess.Invoke(this, EventArgs.Empty);
+            };
+
+            UnhandledException += (s, e) =>
+            {
+                e.Handled = true;
             };
         }
 

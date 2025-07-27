@@ -16,6 +16,7 @@ public class DiscussionItemViewModel : WrapperViewModelBase<DiscussionItem>
     {
         _chatOptionsViewModel = new ChatOptionsViewModel(wrapped.ChatOptions);
 		_messagesViewModel = new MessagesViewModel(wrapped.Messages);
+		_filesViewModel = new FilesViewModel((wrapped.Files ??= []));
     }
 
 	public string Title
@@ -36,8 +37,15 @@ public class DiscussionItemViewModel : WrapperViewModelBase<DiscussionItem>
 		set { _messagesViewModel = value; }
 	}
 
+	private FilesViewModel _filesViewModel;
 
-	public ProgressStatus LeastStatus
+	public FilesViewModel FilesViewModel
+	{
+		get { return _filesViewModel; }
+		set { _filesViewModel = value; }
+	}
+
+    public ProgressStatus LeastStatus
     {
 		get { return _innerObject.LeastStatus; }
 		set

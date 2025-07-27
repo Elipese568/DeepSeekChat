@@ -3,7 +3,9 @@ using System.ClientModel;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -15,10 +17,13 @@ using OpenAI.Chat;
 
 namespace DeepSeekChat.Command;
 
+[Flags]
 public enum UpdateType
 {
     Reasoning,
-    Content
+    Content,
+    FunctionCalling,
+    ReturnValue = 0b100
 }
 
 public record ChatResponseReceivedEventArgs(string ContentUpdate, UpdateType Type, TokenUsage TokenUsage);
@@ -26,11 +31,201 @@ public record ChatResponseCompletedEventArgs(ProgressStatus Status);
 
 public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options);
 
+public record ChatResponseFunctionCallingReceivedEventArgs(object Data, UpdateType Type, TokenUsage TokenUsage);
+
 public class NoClientException : Exception
 {
     public NoClientException(string message) : base(message)
     {
     }
+}
+
+public class ToolParameter
+{
+    public string Type { get; init; }
+    public string Description { get; set; }
+    public Dictionary<string, ToolParameter> Properties { get; set; } = new();
+
+    protected virtual void WriteJson(Utf8JsonWriter jsonWriter)
+    {
+        jsonWriter.WriteString("type", Type);
+        if(!string.IsNullOrEmpty(Description))
+            jsonWriter.WriteString("description", Description);
+        if (Properties.Count > 0)
+        {
+            jsonWriter.WriteStartObject("properties");
+            foreach (var property in Properties)
+            {
+                jsonWriter.WritePropertyName(property.Key);
+                jsonWriter.WriteRawValue(property.Value.ToString());
+            }
+            jsonWriter.WriteEndObject();
+        }
+    }
+
+    public override string ToString()
+    {
+        MemoryStream memoryStream = new();
+        Utf8JsonWriter jsonWriter = new(memoryStream);
+        jsonWriter.WriteStartObject();
+        WriteJson(jsonWriter);
+        jsonWriter.WriteEndObject();
+        jsonWriter.Flush();
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
+    }
+
+    public BinaryData ToBinaryData()
+    {
+        return new BinaryData(ToString());
+    }
+}
+
+public class ObjectStructuredToolParameter : ToolParameter
+{
+    private List<string> _required;
+
+    public IList<string> Required
+    {
+        get
+        {
+            return (_required ??= []);
+        }
+        set
+        {
+            _required = [.. value];
+        }
+    }
+
+    public bool AdditionalProperties { get; set; } = false;
+
+    protected override void WriteJson(Utf8JsonWriter jsonWriter)
+    {
+        base.WriteJson(jsonWriter);
+        if (_required != null && _required.Count > 0)
+        {
+            jsonWriter.WriteStartArray("required");
+            foreach (var item in _required)
+            {
+                jsonWriter.WriteStringValue(item);
+            }
+            jsonWriter.WriteEndArray();
+        }
+        jsonWriter.WriteBoolean("additionalProperties", AdditionalProperties);
+    }
+
+    public static ObjectStructuredToolParameter Create(Dictionary<string, ToolParameter> members, string[] required, string description = "", bool additionalProperties = false)
+    {
+        return new ObjectStructuredToolParameter
+        {
+            Type = "object",
+            Description = description,
+            Properties = members ?? new Dictionary<string, ToolParameter>(),
+            AdditionalProperties = additionalProperties,
+            Required = required
+        };
+    }
+}
+
+public enum ParameterType
+{
+    String,
+    Number,
+    Integer,
+    Boolean,
+    Array,
+    Object
+}
+
+public static class ParameterTypeExtension
+{
+    public static string GetString(this ParameterType type) => Enum.GetName(typeof(ParameterType), type)?.ToLowerInvariant() ?? "string";
+}
+
+public class ArrayToolParameter : ToolParameter
+{
+    public ParameterType ItemType { get; set; }
+
+    public static ArrayToolParameter Create(ParameterType itemType, string description = "")
+    {
+        return new ArrayToolParameter
+        {
+            Type = "array",
+            ItemType = itemType,
+            Description = description
+        };
+    }
+
+    protected override void WriteJson(Utf8JsonWriter jsonWriter)
+    {
+        base.WriteJson(jsonWriter);
+        jsonWriter.WriteStartObject("items");
+        jsonWriter.WriteString("type", ItemType.GetString());
+        jsonWriter.WriteEndObject();
+    }
+}
+
+public class ValueToolParameter : ToolParameter
+{
+    public static ValueToolParameter Create(ParameterType type, string description = "")
+    {
+        return new ValueToolParameter
+        {
+            Type = type.GetString(),
+            Description = description
+        };
+    }
+}
+
+public class EnumToolParameter : ValueToolParameter
+{
+    private List<string> _enum;
+
+    public IList<string> EnumValues
+    {
+        get
+        {
+            return (_enum ??= []);
+        }
+        set
+        {
+            _enum = [.. value];
+        }
+    }
+
+    public static EnumToolParameter Create(string description, params string[] enumValues)
+    {
+        var parameter = new EnumToolParameter
+        {
+            Type = "string",
+            Description = description
+        };
+
+        parameter.EnumValues = enumValues;
+
+        return parameter;
+    }
+
+    public static EnumToolParameter Create<TEnum>(string description)
+        where TEnum : Enum
+    {
+        var enumValues = Enum.GetNames(typeof(TEnum));
+        return Create(description, enumValues);
+    }
+
+    protected override void WriteJson(Utf8JsonWriter jsonWriter)
+    {
+        base.WriteJson(jsonWriter);
+        jsonWriter.WriteStartArray("enum");
+        foreach (var value in EnumValues)
+        {
+            jsonWriter.WriteStringValue(value);
+        }
+        jsonWriter.WriteEndArray();
+    }
+}
+
+public class FunctionToolParameter : ObjectStructuredToolParameter
+{
 }
 
 public class ExecuteAICommand : ICommand
@@ -48,6 +243,7 @@ public class ExecuteAICommand : ICommand
     public event EventHandler<ChatResponseReceivedEventArgs> StreamResponseReceived;
     public event EventHandler<ChatResponseCompletedEventArgs> StreamCompleted;
     public event EventHandler<ChatCompletionMetadata> CompletionMetadataReceived;
+    public event EventHandler<ChatResponseFunctionCallingReceivedEventArgs> FunctionCallingResponseReceived;
 
     public ExecuteAICommand(DiscussionItem discussItem)
     {
@@ -68,13 +264,48 @@ public class ExecuteAICommand : ICommand
             IsRunning = true;
             using (_cts = new CancellationTokenSource())
             {
-                var messages = BuildMessageThread();
-                var options = CreateChatOptions(_discussItem.ChatOptions);
+                var messages = BuildMessageThread(_discussItem);
+                var options = CreateChatOptions(_discussItem);
                 bool isMetadataReported = false;
                 CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions));
 
                 await foreach (var chunk in await _clientService.CompleteChatStreamingAsync(messages, options, _cts))
                 {
+                    if (chunk is FunctionCallingChatCompletionChunk fcChunk)
+                    {
+                        var property = fcChunk.FunctionCalling;
+                        var completionType = !string.IsNullOrEmpty(fcChunk.Choices[0].Delta.Content) ? UpdateType.Content : UpdateType.Reasoning;
+                        RaiseFunctionCallingEvent(property, completionType | UpdateType.FunctionCalling, fcChunk.Usage);
+
+                        switch (property.Name)
+                        {
+                            case "GetFile":
+                                if (property.Arguments.TryGetValue("fileName", out var fileNameObj) && fileNameObj is JsonElement fileName && fileName.ValueKind == JsonValueKind.String)
+                                {
+                                    var file = _discussItem.Files?.FirstOrDefault(f => f.Name.Equals(fileName.GetString(), StringComparison.OrdinalIgnoreCase));
+                                    if (file != null)
+                                    {
+                                        RaiseFunctionCallingEvent(file.Content, completionType | UpdateType.ReturnValue, fcChunk.Usage);
+                                    }
+                                    else
+                                    {
+                                        RaiseFunctionCallingEvent($"File '{fileName}' not found.", completionType | UpdateType.ReturnValue, fcChunk.Usage);
+                                    }
+                                }
+                                else
+                                {
+                                    RaiseFunctionCallingEvent("Invalid file name provided.", completionType | UpdateType.ReturnValue, fcChunk.Usage);
+                                }
+                                break;
+                            default:
+                                RaiseFunctionCallingEvent($"Unknown function call: {property.Name}", completionType | UpdateType.ReturnValue, fcChunk.Usage);
+                                break;
+                        }
+
+                        Execute(parameter);
+                        break;
+                    }
+
                     if (!isMetadataReported)
                     {
                         CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
@@ -88,6 +319,7 @@ public class ExecuteAICommand : ICommand
                     }
 
                     var delta = choice.Delta;
+
                     if (!string.IsNullOrEmpty(delta.ReasoningContent))
                     {
                         RaiseStreamEvent(delta.ReasoningContent, UpdateType.Reasoning, chunk.Usage);
@@ -115,37 +347,121 @@ public class ExecuteAICommand : ICommand
         }
     }
 
-    private List<ChatMessage> BuildMessageThread()
+    private List<ChatMessage> BuildMessageThread(DiscussionItem item)
     {
-        var messages = new List<ChatMessage>();
-        messages.Add(SystemChatMessage.CreateSystemMessage(_discussItem.ChatOptions.SystemPrompt));
+        return [
+            .. BuildFilesMessage(item), 
+            .. BuildUserAssistantMessage(item)
+        ];
+    }
 
-        foreach (var msg in _discussItem.Messages)
+    private static List<ChatMessage> BuildUserAssistantMessage(DiscussionItem item)
+    {
+        List<ChatMessage> messages = new();
+        messages.Add(SystemChatMessage.CreateSystemMessage(item.ChatOptions.SystemPrompt));
+
+        foreach (var msg in item.Messages)
         {
             if (!string.IsNullOrEmpty(msg.UserPrompt))
             {
                 messages.Add(UserChatMessage.CreateUserMessage(msg.UserPrompt));
             }
-            if (!string.IsNullOrEmpty(msg.AiChatCompletion.Content))
+            if (msg.AiChatCompletion.Content.Count > 0)
             {
-                messages.Add(AssistantChatMessage.CreateAssistantMessage(msg.AiChatCompletion.Content));
+                foreach (var contentPart in msg.AiChatCompletion.Content)
+                {
+                    if (contentPart is TextContentPart textMessage)
+                    {
+                        messages.Add(AssistantChatMessage.CreateAssistantMessage(textMessage.Text));
+                    }
+                    else if (contentPart is ToolCallingContentPart functionCall)
+                    {
+                        messages.Add(ToolChatMessage.CreateFunctionMessage(functionCall.Name, functionCall.Result));
+                    }
+                }
             }
         }
         return messages;
     }
 
-    private static ChatCompletionOptions CreateChatOptions(ChatOptions options) => new()
+    private static List<ChatMessage> BuildFilesMessage(DiscussionItem item)
     {
-        MaxOutputTokenCount = options.MaxTokens,
-        Temperature = options.Temperature,
-        TopP = options.TopP,
-        FrequencyPenalty = options.FrequencyPenalty,
-        Seed = options.Seed
-    };
+        if (item.Files?.Count == 0)
+            return [];
+
+        List<ChatMessage> messages = new();
+
+        // provide a templete to help ai understand the files
+        messages.Add(SystemChatMessage.CreateSystemMessage("""
+            The following files are provided for context in this template (contents in {} is variable):
+            [file name]: {file_name}
+            [file content begin]
+            {file_content}
+            [file content end]
+
+            Now the user is asking a question, please answer the question based on the context provided by the files which user selected:
+            """));
+
+        // add each file content to the system prompt
+        foreach (var file in item.Files.Where(x => x.IsActive))
+        {
+            messages.Add(SystemChatMessage.CreateSystemMessage($"""
+                [file name]: {file.Name}
+                [file content begin]
+                {file.Content}
+                [file content end]
+                """));
+        }
+
+        // add a note about how to handle files not provided in the system prompt
+        messages.Add(SystemChatMessage.CreateSystemMessage("By the way, if some files not provided in these system prompt but user used them, you can call \"GetFile\" tool to get files content."));
+        messages.Add(SystemChatMessage.CreateSystemMessage($"You can get these following files: {string.Join(',', item.Files.Select(x => x.Name))}"));
+        return messages;
+    }
+
+    private static ChatCompletionOptions CreateChatOptions(DiscussionItem item)
+    {
+        var options = item.ChatOptions;
+
+        var result = new ChatCompletionOptions()
+        {
+            MaxOutputTokenCount = options.MaxTokens,
+            Temperature = options.Temperature,
+            TopP = options.TopP,
+            FrequencyPenalty = options.FrequencyPenalty,
+            Seed = options.Seed
+        };
+
+        if(item.Files?.Count > 0)
+        {
+            result.ToolChoice = ChatToolChoice.CreateAutoChoice();
+
+            var getFileTool = ChatTool.CreateFunctionTool("GetFile",
+                "Get the content of a file by its name.",
+                FunctionToolParameter.Create(
+                    new Dictionary<string, ToolParameter>()
+                    {
+                        ["fileName"] = ValueToolParameter.Create(ParameterType.String, "The name of the file to get content.")
+                    },
+                    ["fileName"]
+                ).ToBinaryData(),
+                true
+            );
+
+            result.Tools.Add(getFileTool);
+        }
+
+        return result;
+    }
 
     private void RaiseStreamEvent(string content, UpdateType type, TokenUsage usage)
     {
         StreamResponseReceived?.Invoke(this, new(content, type, usage));
+    }
+
+    private void RaiseFunctionCallingEvent(object data, UpdateType type, TokenUsage usage)
+    {
+        FunctionCallingResponseReceived?.Invoke(this, new(data, type, usage));
     }
 
     private void NotifyCompletion(ProgressStatus status)
