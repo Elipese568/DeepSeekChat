@@ -1,4 +1,5 @@
 using CommunityToolkit.WinUI.UI.Controls;
+using DeepSeekChat.Helper;
 using DeepSeekChat.Models;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
@@ -102,22 +103,21 @@ namespace DeepSeekChat.Views
             DependencyProperty.Register("Value", typeof(object), typeof(ReferenceValue), new PropertyMetadata(0));
     }
 
-    public class ContentPartTemplateSelector : DataTemplateSelector
+    public class ModIdToDescriptiveConverter : IValueConverter
     {
-        public DataTemplate ContentTemplate { get; set; }
-        public DataTemplate ToolCallingTemplate { get; set; }
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        public const string DetailedRequest = "detailed_request";
+
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if(item is ContentPartViewModel contentPart)
+            return value switch
             {
-                return contentPart switch
-                {
-                    TextContentPartViewModel => ContentTemplate,
-                    ToolCallingContentPartViewModel => ToolCallingTemplate,
-                    _ => ToolCallingTemplate
-                };
-            }
-            return base.SelectTemplateCore(item, container);
+                DetailedRequest => "DetailedRequestArgumentOption.Text".GetLocalized("DiscussionPage"),
+                _ => value
+            };
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
         }
     }
 

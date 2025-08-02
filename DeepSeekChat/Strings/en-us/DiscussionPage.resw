@@ -201,4 +201,16 @@
   <data name="StreamingOutputOption.Content" xml:space="preserve">
     <value>Streaming</value>
   </data>
+  <data name="DetailedRequestArgumentOption.Text" xml:space="preserve">
+    <value>Detailed Request</value>
+  </data>
+  <data name="ModsFlyoutHeader.Text" xml:space="preserve">
+    <value>Mods</value>
+  </data>
+  <data name="ModOptionsHeader.Text" xml:space="preserve">
+    <value>Mod Options</value>
+  </data>
+  <data name="DetailedRequestArgumentOptionDescription.Text" xml:space="preserve">
+    <value>Using detailed requests can improve the AI's contextual understanding, but it also uses more tokens. Turning off this feature can help reduce token-related costs.</value>
+  </data>
 </root>

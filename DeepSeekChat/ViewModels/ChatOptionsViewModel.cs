@@ -86,4 +86,14 @@ public class ChatOptionsViewModel : WrapperViewModelBase<ChatOptions>
             OnPropertyChanged();
         }
     }
+
+    public bool DetailedRequest
+    {
+        get { return _innerObject.DetailedRequest; }
+        set
+        {
+            _innerObject.DetailedRequest = value;
+            OnPropertyChanged();
+        }
+    }
 }

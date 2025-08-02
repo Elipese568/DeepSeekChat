@@ -19,4 +19,5 @@ public class ChatOptions
 
     public bool SeedAutoRefresh { get; set; } = true;
     public bool StreamingOutput { get; set; } = true;
+    public bool DetailedRequest { get; set; } = false;
 }

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
+using DeepSeekChat.Views;
 using Microsoft.UI.Dispatching;
 using OpenAI.Chat;
 using Windows.Devices.Sms;
@@ -30,7 +31,7 @@ public enum UpdateType
 public record ChatResponseReceivedEventArgs(string ContentUpdate, UpdateType Type, TokenUsage TokenUsage);
 public record ChatResponseCompletedEventArgs(ProgressStatus Status);
 
-public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options);
+public record ChatCompletionMetadata(string Id, DateTime TimeCreated, string Model, ChatOptions Options, List<string> Mods);
 
 public record ChatResponseFunctionCallingReceivedEventArgs(object Data, UpdateType Type, TokenUsage TokenUsage);
 
@@ -263,7 +264,7 @@ public class ExecuteAICommand : ICommand
         try
         {
             IsRunning = true;
-            CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions));
+            CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions, []));
 
             using (_cts = new CancellationTokenSource())
             {
@@ -298,10 +299,18 @@ public class ExecuteAICommand : ICommand
         }
     }
 
+    private List<string> GetMods(ChatOptions options)
+    {
+        List<string> mods = [];
+        if(options.DetailedRequest)
+            mods.Add(ModIdToDescriptiveConverter.DetailedRequest);
+        return mods;
+    }
+
     private async Task<bool> CompletionProcess(List<ChatMessage> messages, ChatCompletionOptions options)
     {
         var response = await _clientService.CompleteChatAsync(messages, options, _cts);
-        CompletionMetadataReceived?.Invoke(this, new(response.Id, DateTimeOffset.FromUnixTimeSeconds(response.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
+        CompletionMetadataReceived?.Invoke(this, new(response.Id, DateTimeOffset.FromUnixTimeSeconds(response.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions, GetMods(_discussItem.ChatOptions)));
 
         var choice = response.Choices[0];
 
@@ -342,7 +351,7 @@ public class ExecuteAICommand : ICommand
         {
             if (!isMetadataReported)
             {
-                CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
+                CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions, GetMods(_discussItem.ChatOptions)));
                 isMetadataReported = true;
             }
 
@@ -368,7 +377,7 @@ public class ExecuteAICommand : ICommand
     private List<ChatMessage> BuildMessageThread(DiscussionItem item)
     {
         return [
-            .. BuildFilesMessage(item), 
+            .. BuildFilesMessage(item),
             .. BuildUserAssistantMessage(item)
         ];
     }
@@ -380,6 +389,22 @@ public class ExecuteAICommand : ICommand
 
         foreach (var msg in item.Messages)
         {
+            if(item.ChatOptions.DetailedRequest)
+            {
+                messages.Add(SystemChatMessage.CreateSystemMessage($"""
+                    This is a detailed request message, please pay attention to the following information:
+                    Id: {msg.Id}
+                    CreationTime: {msg.CurrentMessageMetadata.TimeCreated}
+                    Completion Status: {msg.ProgressStatus} (Stoped meaning user stopped generate, Failed meaning some error occurred during generate, LengthTerminated meaning AI was stopped because generate content to long)
+                    Model: {msg.CurrentMessageMetadata.Model}
+                    System Prompt: "{msg.CurrentMessageMetadata.Options.SystemPrompt}"
+                    Temperature: {msg.CurrentMessageMetadata.Options.Temperature}
+                    TopP: {msg.CurrentMessageMetadata.Options.TopP}
+                    Frequency Penalty: {msg.CurrentMessageMetadata.Options.FrequencyPenalty}
+                    Seed: {msg.CurrentMessageMetadata.Options.Seed}
+                    Mods: {string.Join(", ", msg.CurrentMessageMetadata.Mods ?? [])}
+                    """));
+            }
             if (!string.IsNullOrEmpty(msg.UserPrompt))
             {
                 messages.Add(UserChatMessage.CreateUserMessage(msg.UserPrompt));

@@ -30,6 +30,7 @@
         <local:FileTypeToGlyphConverter x:Key="FileTypeToGlyphConverter"/>
         <local:HalfIntegerValueConverter x:Key="HalfIntegerValueConverter"/>
         <local:StreamingModeToSelectionModeConverter x:Key="StreamingModeToSelectionModeConverter"/>
+        <local:ModIdToDescriptiveConverter x:Key="ModIdToDescriptiveConverter"/>
     </Page.Resources>
     <Grid x:Name="MainArea">
         <dscc:AdaptiveSplitPanel FirstControlSize="*" SecondControlSize="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Horizontal">
@@ -260,6 +261,22 @@
                                                                                                x:Uid="ms-resource:///DiscussionPage/FrequencyPenaltyArgumentFlyoutHeader"/>
                                                                                     <TextBlock Text="{Binding Metadata.Options.FrequencyPenalty}"/>
                                                                                 </StackPanel>
+                                                                                <MenuFlyoutSeparator Margin="-12" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" />
+                                                                                <StackPanel Spacing="8" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}">
+                                                                                    <TextBlock VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///DiscussionPage/ModsFlyoutHeader"/>
+                                                                                    <tklabcont:TokenView Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" IsWrapped="True" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" ItemsSource="{Binding Metadata.Mods}">
+                                                                                        <tklabcont:TokenView.ItemContainerStyle>
+                                                                                            <Style TargetType="tklabcont:TokenItem">
+                                                                                                <Setter Property="Margin" Value="8,8,0,8"/>
+                                                                                            </Style>
+                                                                                        </tklabcont:TokenView.ItemContainerStyle>
+                                                                                        <tklabcont:TokenView.ItemTemplate>
+                                                                                            <DataTemplate x:DataType="x:String">
+                                                                                                <TextBlock Text="{Binding Converter={StaticResource ModIdToDescriptiveConverter}}"/>
+                                                                                            </DataTemplate>
+                                                                                        </tklabcont:TokenView.ItemTemplate>
+                                                                                    </tklabcont:TokenView>
+                                                                                </StackPanel>
                                                                             </StackPanel>
                                                                         </Grid>
                                                                     </StackPanel>
@@ -420,6 +437,22 @@
 
                                         <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.StreamingOutput, Mode=TwoWay}" Grid.Row="0" x:Uid="ms-resource:///DiscussionPage/StreamingOutputOption"/>
                                         <!--<TextBlock Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">*若使用流式输出，则活动/非活动文件选择上传功能将不可用</TextBlock>-->
+                                    </Grid>
+
+                                    <MenuFlyoutSeparator/>
+
+                                    <TextBlock x:Uid="ms-resource:///DiscussionPage/ModOptionsHeader" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+
+                                    <Grid Height="Auto" RowSpacing="4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.DetailedRequest, Mode=TwoWay}" Grid.Row="0">
+                                            <TextBlock x:Uid="ms-resource:///DiscussionPage/DetailedRequestArgumentOption"/>
+                                        </CheckBox>
+                                        <TextBlock x:Uid="ms-resource:///DiscussionPage/DetailedRequestArgumentOptionDescription" Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                     </Grid>
                                 </StackPanel>
                             </ScrollView>

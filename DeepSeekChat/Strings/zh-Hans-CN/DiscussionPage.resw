@@ -201,4 +201,16 @@
   <data name="StreamingOutputOption.Content" xml:space="preserve">
     <value>流式输出</value>
   </data>
+  <data name="DetailedRequestArgumentOption.Text" xml:space="preserve">
+    <value>更详细的请求</value>
+  </data>
+  <data name="DetailedRequestArgumentOptionDescription.Text" xml:space="preserve">
+    <value>*若使用详细请求，AI的上下文关联能力通常会更加强大，但这也会消耗更多额外的token。通常来讲，关闭此功能有助于节省因token消耗而带来的成本。</value>
+  </data>
+  <data name="ModOptionsHeader.Text" xml:space="preserve">
+    <value>增强功能项</value>
+  </data>
+  <data name="ModsFlyoutHeader.Text" xml:space="preserve">
+    <value>增强功能项</value>
+  </data>
 </root>
