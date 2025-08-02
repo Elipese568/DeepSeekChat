@@ -74,6 +74,21 @@ namespace DeepSeekChat.Views
             throw new NotImplementedException();
         }
     }
+
+    public class StreamingModeToSelectionModeConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return !(bool)value ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ReferenceValue : DependencyObject
     {
         public object Value
@@ -170,14 +185,6 @@ namespace DeepSeekChat.Views
         public ImageSource GetRawImageSource(Uri fileUri)
         {
             return new BitmapImage(fileUri);
-        }
-
-        private void TokenView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-                (e.AddedItems[0] as FileViewModel).FileIsActive = true;
-            else
-                (e.RemovedItems[0] as FileViewModel).FileIsActive = false;
         }
     }
 }

@@ -29,6 +29,7 @@
         <local:AnalyzeStatusToVisibilityConverter x:Key="AnalyzeStatusToVisibilityConverter"/>
         <local:FileTypeToGlyphConverter x:Key="FileTypeToGlyphConverter"/>
         <local:HalfIntegerValueConverter x:Key="HalfIntegerValueConverter"/>
+        <local:StreamingModeToSelectionModeConverter x:Key="StreamingModeToSelectionModeConverter"/>
     </Page.Resources>
     <Grid x:Name="MainArea">
         <dscc:AdaptiveSplitPanel FirstControlSize="*" SecondControlSize="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Horizontal">
@@ -286,24 +287,13 @@
                                                 </Expander.Header>
                                                 <Expander.Content>
                                                     <Grid>
-                                                        <ItemsRepeater ItemsSource="{Binding AiChatCompletion.ReasoningContentViewModels}">
-                                                            <ItemsRepeater.ItemTemplate>
-                                                                <local:ContentPartTemplateSelector>
-                                                                    <local:ContentPartTemplateSelector.ContentTemplate>
-                                                                        <DataTemplate x:DataType="vm:TextContentPartViewModel">
-                                                                            <tkuicont:MarkdownTextBlock Background="Transparent" 
-                                                                                                        TextWrapping="Wrap" 
-                                                                                                        HorizontalAlignment="Left" 
-                                                                                                        IsTextSelectionEnabled="True" 
-                                                                                                        ParagraphLineHeight="16"
-                                                                                                        Text="{Binding Text}">
-                                                                            </tkuicont:MarkdownTextBlock>
-                                                                        </DataTemplate>
-                                                                    </local:ContentPartTemplateSelector.ContentTemplate>
-                                                                </local:ContentPartTemplateSelector>
-                                                            </ItemsRepeater.ItemTemplate>
-                                                        </ItemsRepeater>
-                                                        
+                                                        <tkuicont:MarkdownTextBlock Background="Transparent" 
+                                                                                    TextWrapping="Wrap" 
+                                                                                    HorizontalAlignment="Left" 
+                                                                                    IsTextSelectionEnabled="True" 
+                                                                                    ParagraphLineHeight="16"
+                                                                                    Text="{Binding AiChatCompletion.ReasoningContent}">
+                                                        </tkuicont:MarkdownTextBlock>
                                                     </Grid>
 
                                                 </Expander.Content>
@@ -431,6 +421,15 @@
                                         <NumberBox Maximum="2" Minimum="-2" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}"/>
                                         <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}" Name="FPSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Minimum="-2" Maximum="2"/>
                                     </Grid>
+                                    <Grid Height="Auto" RowSpacing="4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.StreamingOutput, Mode=TwoWay}" Grid.Row="0">流式输出</CheckBox>
+                                        <!--<TextBlock Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">*若使用流式输出，则活动/非活动文件选择上传功能将不可用</TextBlock>-->
+                                    </Grid>
                                 </StackPanel>
                             </ScrollView>
                         </Grid>
@@ -493,11 +492,10 @@
                     <dscc:AdaptiveSplitPanel Padding="16,16,0,16" FirstControlSize="64" SecondControlSize="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Vertical">
                         <Grid Padding="0,-16,0,0"
                               Visibility="{x:Bind ViewModel.FileListVisibility, Mode=OneWay}">
-                            <tklabcont:TokenView SelectionMode="Multiple" 
+                            <tklabcont:TokenView SelectionMode="None" 
                                                  CanRemoveTokens="True" 
                                                  TokenItemRemoving="TokenView_FileItemRemoving" 
-                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels}"
-                                                 SelectionChanged="TokenView_SelectionChanged">
+                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels}">
                                 <tklabcont:TokenView.ItemTemplate>
                                     <DataTemplate x:DataType="vm:FileViewModel">
                                         <Grid Height="50" Width="Auto" IsDoubleTapEnabled="True" DoubleTapped="FilePresent_DoubleTapped"

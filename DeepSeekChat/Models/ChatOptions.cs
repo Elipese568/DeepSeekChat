@@ -18,4 +18,5 @@ public class ChatOptions
     public int Seed { get; set; } = Random.Shared.Next();
 
     public bool SeedAutoRefresh { get; set; } = true;
+    public bool StreamingOutput { get; set; } = true;
 }

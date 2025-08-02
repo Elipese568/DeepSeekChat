@@ -15,11 +15,6 @@ public class ContentPartViewModel : WrapperViewModelBase<ContentPart>
     public string Type
     {
         get { return _innerObject.Type; }
-        set
-        {
-            _innerObject.Type = value;
-            OnPropertyChanged();
-        }
     }
 
     public static ContentPartViewModel Create(ContentPart contentPart)
@@ -87,14 +82,7 @@ public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletion>
 {
     public AiChatCompletionViewModel(AiChatCompletion wrapped) : base(wrapped)
     {
-        ReasoningContentViewModels = new(wrapped.ReasoningContent?.Select(ContentPartViewModel.Create));
         ContentViewModels = new(wrapped.Content?.Select(ContentPartViewModel.Create));
-    }
-
-    public void AddReasoningContentViewModel(ContentPartViewModel contentPartViewModel)
-    {
-        ReasoningContentViewModels.Add(contentPartViewModel);
-        _innerObject.ReasoningContent?.Add(contentPartViewModel.InnerObject);
     }
 
     public void AddContentViewModel(ContentPartViewModel contentPartViewModel)
@@ -103,18 +91,21 @@ public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletion>
         _innerObject.Content?.Add(contentPartViewModel.InnerObject);
     }
 
-    public void RemoveReasoningContentViewModel(ContentPartViewModel contentPartViewModel)
-    {
-        ReasoningContentViewModels.Remove(contentPartViewModel);
-        _innerObject.ReasoningContent?.Remove(contentPartViewModel.InnerObject);
-    }
-
     public void RemoveContentViewModel(ContentPartViewModel contentPartViewModel)
     {
         ContentViewModels.Remove(contentPartViewModel);
         _innerObject.Content?.Remove(contentPartViewModel.InnerObject);
     }
 
-    public ObservableCollection<ContentPartViewModel> ReasoningContentViewModels { get; set; }
+    public string ReasoningContent
+    {
+        get { return _innerObject.ReasoningContent; }
+        set
+        {
+            _innerObject.ReasoningContent = value;
+            OnPropertyChanged();
+        }
+    }
+
     public ObservableCollection<ContentPartViewModel> ContentViewModels { get; set; }
 }

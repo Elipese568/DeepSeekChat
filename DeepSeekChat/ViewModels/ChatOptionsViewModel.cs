@@ -76,4 +76,14 @@ public class ChatOptionsViewModel : WrapperViewModelBase<ChatOptions>
             OnPropertyChanged();
         }
     }
+
+    public bool StreamingOutput
+    {
+        get { return _innerObject.StreamingOutput; }
+        set
+        {
+            _innerObject.StreamingOutput = value;
+            OnPropertyChanged();
+        }
+    }
 }

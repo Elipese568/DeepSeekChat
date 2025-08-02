@@ -20,7 +20,7 @@ public class StreamingChatCompletionChunk
     public string Model { get; set; }
 
     [JsonPropertyName("choices")]
-    public List<Choice> Choices { get; set; }
+    public List<StreamingChoice> Choices { get; set; }
 
     [JsonPropertyName("system_fingerprint")]
     public string SystemFingerprint { get; set; }
@@ -41,8 +41,8 @@ public class FunctionCallingProperty
 
     [JsonPropertyName("arguments")]
     public Dictionary<string, object> Arguments { get; set; } = new();
+    public string Id { get; set; }
 
-    public bool IsContent { get; set; }
 
     public static FunctionCallingProperty FromJson(string? jsonString)
     {
@@ -70,7 +70,7 @@ public class FunctionCallingChatCompletionChunk : StreamingChatCompletionChunk
     }
 }
 
-public class Choice
+public class StreamingChoice
 {
     [JsonPropertyName("index")]
     public int Index { get; set; }
@@ -104,4 +104,13 @@ public class TokenUsage
 
     [JsonPropertyName("total_tokens")]
     public int TotalTokens { get; set; }
+
+    [JsonPropertyName("completion_tokens_details")]
+    public CompletionTokensDetails CompletionTokensDetails { get; set; }
+}
+
+public class CompletionTokensDetails
+{
+    [JsonPropertyName("reasoning_tokens")]
+    public int ReasoningTokens { get; set; }
 }

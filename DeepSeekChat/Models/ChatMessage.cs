@@ -62,13 +62,17 @@ public class ContentPartConverter : JsonConverter<ContentPart>
 public class ContentPart
 {
     // required: text, tool_calling
-    public string Type { get; set; }
+    public string Type { get; init; }
 }
 
 
 public class TextContentPart : ContentPart
 {
     public string Text { get; set; }
+    public TextContentPart()
+    {
+        Type = "text";
+    }
 }
 
 public class ToolCallingContentPart : ContentPart
@@ -77,11 +81,12 @@ public class ToolCallingContentPart : ContentPart
     public Dictionary<string, string> Arguments { get; set; }
 
     public string Result { get; set; }
+    public string Id { get; set; }
 }
 
 public partial class AiChatCompletion : ObservableObject
 {
-    public List<ContentPart> ReasoningContent { get; set; }
+    public string ReasoningContent { get; set; }
 
     public List<ContentPart> Content { get; set; }
 }

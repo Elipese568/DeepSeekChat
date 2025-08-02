@@ -14,6 +14,7 @@ using DeepSeekChat.Models;
 using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
 using OpenAI.Chat;
+using Windows.Devices.Sms;
 
 namespace DeepSeekChat.Command;
 
@@ -262,74 +263,24 @@ public class ExecuteAICommand : ICommand
         try
         {
             IsRunning = true;
+            CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions));
+
             using (_cts = new CancellationTokenSource())
             {
+            BuildSendMessage:
                 var messages = BuildMessageThread(_discussItem);
                 var options = CreateChatOptions(_discussItem);
-                bool isMetadataReported = false;
-                CompletionMetadataReceived?.Invoke(this, new("No Received", DateTime.Now, _clientService.Model, _discussItem.ChatOptions));
 
-                await foreach (var chunk in await _clientService.CompleteChatStreamingAsync(messages, options, _cts))
+                if (_discussItem.ChatOptions.StreamingOutput)
                 {
-                    if (chunk is FunctionCallingChatCompletionChunk fcChunk)
-                    {
-                        var property = fcChunk.FunctionCalling;
-                        var completionType = !string.IsNullOrEmpty(fcChunk.Choices[0].Delta.Content) ? UpdateType.Content : UpdateType.Reasoning;
-                        RaiseFunctionCallingEvent(property, completionType | UpdateType.FunctionCalling, fcChunk.Usage);
-
-                        switch (property.Name)
-                        {
-                            case "GetFile":
-                                if (property.Arguments.TryGetValue("fileName", out var fileNameObj) && fileNameObj is JsonElement fileName && fileName.ValueKind == JsonValueKind.String)
-                                {
-                                    var file = _discussItem.Files?.FirstOrDefault(f => f.Name.Equals(fileName.GetString(), StringComparison.OrdinalIgnoreCase));
-                                    if (file != null)
-                                    {
-                                        RaiseFunctionCallingEvent(file.Content, completionType | UpdateType.ReturnValue, fcChunk.Usage);
-                                    }
-                                    else
-                                    {
-                                        RaiseFunctionCallingEvent($"File '{fileName}' not found.", completionType | UpdateType.ReturnValue, fcChunk.Usage);
-                                    }
-                                }
-                                else
-                                {
-                                    RaiseFunctionCallingEvent("Invalid file name provided.", completionType | UpdateType.ReturnValue, fcChunk.Usage);
-                                }
-                                break;
-                            default:
-                                RaiseFunctionCallingEvent($"Unknown function call: {property.Name}", completionType | UpdateType.ReturnValue, fcChunk.Usage);
-                                break;
-                        }
-
-                        Execute(parameter);
-                        break;
-                    }
-
-                    if (!isMetadataReported)
-                    {
-                        CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
-                        isMetadataReported = true;
-                    }
-
-                    var choice = chunk.Choices[0];
-                    if (choice.FinishReason != null && choice.FinishReason != "stop")
-                    {
-                        throw new InvalidOperationException($"Unexpected finish reason: {choice.FinishReason}");
-                    }
-
-                    var delta = choice.Delta;
-
-                    if (!string.IsNullOrEmpty(delta.ReasoningContent))
-                    {
-                        RaiseStreamEvent(delta.ReasoningContent, UpdateType.Reasoning, chunk.Usage);
-                    }
-                    else if (!string.IsNullOrEmpty(delta.Content))
-                    {
-                        RaiseStreamEvent(delta.Content, UpdateType.Content, chunk.Usage);
-                    }
+                    await StreamingCompletionProcess(messages, options);
                 }
-
+                else
+                {
+                    var retry = await CompletionProcess(messages, options);
+                    if (retry)
+                        goto BuildSendMessage;
+                }
                 NotifyCompletion(ProgressStatus.Completed);
                 IsRunning = false;
             }
@@ -344,6 +295,74 @@ public class ExecuteAICommand : ICommand
             Debug.WriteLine($"Chat processing failed: {ex}");
             NotifyCompletion(ProgressStatus.Failed);
             IsRunning = false;
+        }
+    }
+
+    private async Task<bool> CompletionProcess(List<ChatMessage> messages, ChatCompletionOptions options)
+    {
+        var response = await _clientService.CompleteChatAsync(messages, options, _cts);
+        CompletionMetadataReceived?.Invoke(this, new(response.Id, DateTimeOffset.FromUnixTimeSeconds(response.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
+
+        var choice = response.Choices[0];
+
+        if(!string.IsNullOrEmpty(choice.Message.ReasoningContent))
+        {
+            RaiseStreamEvent(choice.Message.ReasoningContent, UpdateType.Reasoning, response.Usage);
+        }
+        
+        if(!string.IsNullOrEmpty(choice.Message.Content))
+        {
+            RaiseStreamEvent(choice.Message.Content, UpdateType.Content, response.Usage);
+        }
+
+        if(choice.FinishReason == "tool_call")
+        {
+            var tools = choice.Message.ToolCallingItems;
+            foreach(ToolCallingItem tool in tools)
+            {
+                RaiseFunctionCallingEvent(tool, UpdateType.Content | UpdateType.FunctionCalling, response.Usage);
+                switch(tool.Function.Name)
+                {
+                    case "GetFile":
+                        var fileName = ((JsonElement)tool.Function.Arguments["fileName"]).GetString();
+                        RaiseFunctionCallingEvent(_discussItem.Files.Find(x => x.Name == fileName).Content, UpdateType.ReturnValue, response.Usage);
+                        break;
+                }
+            }
+            return true;
+        }
+        
+        return false;
+    }
+
+    private async Task StreamingCompletionProcess(List<ChatMessage> messages, ChatCompletionOptions options)
+    {
+        bool isMetadataReported = false;
+        await foreach (var chunk in await _clientService.CompleteChatStreamingAsync(messages, options, _cts))
+        {
+
+            if (!isMetadataReported)
+            {
+                CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
+                isMetadataReported = true;
+            }
+
+            var choice = chunk.Choices[0];
+            if (choice.FinishReason != null && choice.FinishReason != "stop")
+            {
+                throw new InvalidOperationException($"Unexpected finish reason: {choice.FinishReason}");
+            }
+
+            var delta = choice.Delta;
+
+            if (!string.IsNullOrEmpty(delta.ReasoningContent))
+            {
+                RaiseStreamEvent(delta.ReasoningContent, UpdateType.Reasoning, chunk.Usage);
+            }
+            else if (!string.IsNullOrEmpty(delta.Content))
+            {
+                RaiseStreamEvent(delta.Content, UpdateType.Content, chunk.Usage);
+            }
         }
     }
 
@@ -376,7 +395,7 @@ public class ExecuteAICommand : ICommand
                     }
                     else if (contentPart is ToolCallingContentPart functionCall)
                     {
-                        messages.Add(ToolChatMessage.CreateFunctionMessage(functionCall.Name, functionCall.Result));
+                        messages.Add(ToolChatMessage.CreateToolMessage(functionCall.Id, functionCall.Result));
                     }
                 }
             }
@@ -392,20 +411,23 @@ public class ExecuteAICommand : ICommand
         List<ChatMessage> messages = new();
 
         // provide a templete to help ai understand the files
-        messages.Add(SystemChatMessage.CreateSystemMessage("""
+        List<ChatMessageContentPart> parts = new List<ChatMessageContentPart>()
+        {
+            ChatMessageContentPart.CreateTextPart("""
             The following files are provided for context in this template (contents in {} is variable):
             [file name]: {file_name}
             [file content begin]
             {file_content}
             [file content end]
 
-            Now the user is asking a question, please answer the question based on the context provided by the files which user selected:
-            """));
+            Now the user is asking a question, please answer the question based on the context provided by the files which user selected (if there's not content, maybe user do not selected any file and you need to get):
+            """)
+        };
 
         // add each file content to the system prompt
-        foreach (var file in item.Files.Where(x => x.IsActive))
+        foreach (var file in item.Files)
         {
-            messages.Add(SystemChatMessage.CreateSystemMessage($"""
+            parts.Add(ChatMessageContentPart.CreateTextPart($"""
                 [file name]: {file.Name}
                 [file content begin]
                 {file.Content}
@@ -413,9 +435,12 @@ public class ExecuteAICommand : ICommand
                 """));
         }
 
-        // add a note about how to handle files not provided in the system prompt
-        messages.Add(SystemChatMessage.CreateSystemMessage("By the way, if some files not provided in these system prompt but user used them, you can call \"GetFile\" tool to get files content."));
-        messages.Add(SystemChatMessage.CreateSystemMessage($"You can get these following files: {string.Join(',', item.Files.Select(x => x.Name))}"));
+        //if(!item.ChatOptions.StreamingOutput)
+        //{
+        //    // add a note about how to handle files not provided in the system prompt
+        //    //messages.Add(SystemChatMessage.CreateSystemMessage("By the way, if some files not provided in these system prompt but user used them, you can call \"GetFile\" tool to get files content."));
+        //    messages.Add(SystemChatMessage.CreateSystemMessage($"You can get these following files: {string.Join(',', item.Files.Select(x => x.Name))}"));
+        //}
         return messages;
     }
 
@@ -434,8 +459,6 @@ public class ExecuteAICommand : ICommand
 
         if(item.Files?.Count > 0)
         {
-            result.ToolChoice = ChatToolChoice.CreateAutoChoice();
-
             var getFileTool = ChatTool.CreateFunctionTool("GetFile",
                 "Get the content of a file by its name.",
                 FunctionToolParameter.Create(

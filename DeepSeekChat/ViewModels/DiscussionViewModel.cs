@@ -90,7 +90,7 @@ public partial class DiscussionViewModel : ObservableRecipient
             UserPrompt = prompt,
             AiChatCompletion = new()
             {
-                ReasoningContent = [],
+                ReasoningContent = "",
                 Content = []
             },
             TokenUsage = new(),
@@ -234,102 +234,40 @@ public partial class DiscussionViewModel : ObservableRecipient
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus = ProgressStatus.Stoped;
     }
 
-
-    private UpdateType? _currentResponseTypeStatusMachine = null;
-
-    private void OnFunctionCalling(object? sender, ChatResponseFunctionCallingReceivedEventArgs e)
+    private void OnFunctionCalling(object? sender, ChatResponseFunctionCallingReceivedEventArgs e) // as known, deepseek doesn't call tools in reasoning, so we can safely assume that the last message "content" part is the one we are working on
     {
-        if (!(e.Type.HasFlag(UpdateType.FunctionCalling) || e.Type.HasFlag(UpdateType.ReturnValue)))
-            return;
-
-        bool isContent = ((FunctionCallingProperty)e.Data).IsContent;
-
-        if (_currentResponseTypeStatusMachine.Value.HasFlag(UpdateType.FunctionCalling))
+        if(e.Data is ToolCallingItem item)
         {
-            if (isContent)
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
             {
-                ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Result = e.Data.ToString();
-            }
-            else
-            {
-                ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContentViewModels[^1]).Result = e.Data.ToString();
-            }
-            return;
+                Arguments = item.Function.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value.ToString())).ToDictionary(),
+                Name = item.Function.Name,
+                Id = item.Id
+            }));
         }
         else
         {
-            FunctionCallingProperty property = (FunctionCallingProperty)e.Data;
-            if (isContent)
-            {
-                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
-                {
-                    Arguments = property.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value?.ToString()??"null")).ToDictionary(),
-                    Name = property.Name,
-                    Type = "tool_calling"
-                }));
-                _currentResponseTypeStatusMachine = UpdateType.Content | UpdateType.FunctionCalling;
-            }
-            else
-            {
-                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddReasoningContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
-                {
-                    Arguments = property.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value?.ToString() ?? "null")).ToDictionary(),
-                    Name = property.Name,
-                    Type = "tool_calling"
-                }));
-                _currentResponseTypeStatusMachine = UpdateType.Reasoning | UpdateType.FunctionCalling;
-            }
+            ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Result = e.Data.ToString() ?? "null";
         }
-
-        SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
 
     private void OnStreamResponseReceived(object sender, ChatResponseReceivedEventArgs e)
     {
-        if (_currentResponseTypeStatusMachine.HasValue && (int)_currentResponseTypeStatusMachine.Value < 2) // if now is chating and last response is not tool calling
+        var messageVm = SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1];
+        if (e.Type == UpdateType.Reasoning) // as known, deepseek doesn't call tools in reasoning
         {
-            if (e.Type == UpdateType.Reasoning && _currentResponseTypeStatusMachine == UpdateType.Reasoning) // if last response is reasoning and current response is reasoning, we need to append text into the last reasoning content part
-            {
-                ((TextContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContentViewModels[^1]).Text += e.ContentUpdate;
-            }
-            else // current response is not reasoning or last response is not reasoning(but current response is reasoning, although it's impossible, we still need process this case)
-            {
-                if (e.Type == UpdateType.Content && _currentResponseTypeStatusMachine == UpdateType.Content) // if last response is content and current response is content, we need to append text into the last content part
-                {
-                    ((TextContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Text += e.ContentUpdate;
-                }
-                else
-                {
-                    SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart()
-                    {
-                        Text = e.ContentUpdate,
-                        Type = "text"
-                    }));
-                    _currentResponseTypeStatusMachine = UpdateType.Content;
-                }
-            }
+            messageVm.AiChatCompletion.ReasoningContent += e.ContentUpdate;
         }
-        else // if chat begin or last response is tool calling, we need to add text content part into it
+        else if (e.Type == UpdateType.Content)
         {
-            if (e.Type == UpdateType.Reasoning)
+            if (messageVm.AiChatCompletion.ContentViewModels.Any() && messageVm.AiChatCompletion.ContentViewModels[^1] is TextContentPartViewModel textContentPartVm)
             {
-                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddReasoningContentViewModel(new TextContentPartViewModel(new TextContentPart()
-                {
-                    Text = e.ContentUpdate,
-                    Type = "text"
-                }));
-                _currentResponseTypeStatusMachine = UpdateType.Reasoning;
+                textContentPartVm.Text += e.ContentUpdate;
             }
             else
             {
-                SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart()
-                {
-                    Text = e.ContentUpdate,
-                    Type = "text"
-                }));
-                _currentResponseTypeStatusMachine = UpdateType.Content;
+                messageVm.AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart() { Text = e.ContentUpdate }));
             }
-            
         }
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
@@ -338,13 +276,13 @@ public partial class DiscussionViewModel : ObservableRecipient
     {
         if(SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus != ProgressStatus.Stoped)
             SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].ProgressStatus = e.Status;
+
         SelectedDiscussItemViewModel.LeastStatus = e.Status;
+
         if (MainPage.Current.ViewModel.SelectedDiscussItem.Id != SelectedDiscussItemViewModel.Id)
             SelectedDiscussItemViewModel.IsViewed = false;
         else
             SelectedDiscussItemViewModel.IsViewed = true;
-
-        _currentResponseTypeStatusMachine = null;
     }
 
     public event EventHandler ScrollToBottomRequested;
