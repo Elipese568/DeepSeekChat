@@ -303,24 +303,15 @@
                                                   CornerRadius="4"
                                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                   Padding="12"
-                                                  Visibility="{Binding AiChatCompletion.ContentViewModels.Count, Converter={StaticResource EmptyVisibilityConverter}}">
-                                                <ItemsRepeater ItemsSource="{Binding AiChatCompletion.ContentViewModels}">
-                                                    <ItemsRepeater.ItemTemplate>
-                                                        <local:ContentPartTemplateSelector>
-                                                            <local:ContentPartTemplateSelector.ContentTemplate>
-                                                                <DataTemplate x:DataType="vm:TextContentPartViewModel">
-                                                                    <tkuicont:MarkdownTextBlock Background="Transparent"
-                                                                                                TextWrapping="Wrap" 
-                                                                                                HorizontalAlignment="Left" 
-                                                                                                IsTextSelectionEnabled="True" 
-                                                                                                ParagraphLineHeight="16"
-                                                                                                Text="{Binding Text}">
-                                                                    </tkuicont:MarkdownTextBlock>
-                                                                </DataTemplate>
-                                                            </local:ContentPartTemplateSelector.ContentTemplate>
-                                                        </local:ContentPartTemplateSelector>
-                                                    </ItemsRepeater.ItemTemplate>
-                                                </ItemsRepeater>
+                                                  Visibility="{Binding AiChatCompletion.Content, Mode=OneWay, Converter={StaticResource EmptyVisibilityConverter}}">
+                                                <tkuicont:MarkdownTextBlock Background="Transparent"
+                                                                            TextWrapping="Wrap" 
+                                                                            HorizontalAlignment="Left" 
+                                                                            IsTextSelectionEnabled="True" 
+                                                                            ParagraphLineHeight="16"
+                                                                            Text="{Binding AiChatCompletion.Content, Mode=OneWay}">
+                                                </tkuicont:MarkdownTextBlock>
+ 
                                             </Grid>
                                         </StackPanel>
                                         <PersonPicture Grid.Column="0" 
@@ -427,7 +418,7 @@
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
 
-                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.StreamingOutput, Mode=TwoWay}" Grid.Row="0">流式输出</CheckBox>
+                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.StreamingOutput, Mode=TwoWay}" Grid.Row="0" x:Uid="ms-resource:///DiscussionPage/StreamingOutputOption"/>
                                         <!--<TextBlock Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">*若使用流式输出，则活动/非活动文件选择上传功能将不可用</TextBlock>-->
                                     </Grid>
                                 </StackPanel>
@@ -450,12 +441,10 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Padding="16,8">
-                            <DropDownButton HorizontalAlignment="Stretch">
-                                <TextBlock>添加文件</TextBlock>
+                            <DropDownButton x:Uid="ms-resource:///DiscussionPage/AddFileButton" HorizontalAlignment="Stretch">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFileCommand}">
-                                            文档
+                                        <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/DocumentFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
                                             <MenuFlyoutItem.Icon>
                                                 <SymbolIcon Symbol="Document"/>
                                             </MenuFlyoutItem.Icon>
@@ -465,8 +454,7 @@
                                                 </m:FileType>
                                             </MenuFlyoutItem.CommandParameter>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFileCommand}">
-                                            图片
+                                        <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/MediaFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE91B;" />
                                             </MenuFlyoutItem.Icon>
@@ -531,8 +519,8 @@
                                                            HorizontalAlignment="Left" 
                                                            Margin="0,0,8,0" 
                                                            x:Name="AnalyzingText" 
-                                                           Visibility="{Binding Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}">
-                                                    Analyzing...
+                                                           Visibility="{Binding Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
+                                                           x:Uid="ms-resource:///DiscussionPage/AnalyzingCaptionTextBlock">
                                                 </TextBlock>
                                                 <TextBlock Grid.Column="1" 
                                                            HorizontalAlignment="Right" 
@@ -559,7 +547,7 @@
                 <Button x:Name="ExitPreviewFile" Click="ExitPreviewFile_Click" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Style="{ThemeResource SubtleButtonStyle}" VerticalAlignment="Top">
                     <StackPanel Orientation="Horizontal" Spacing="8" Margin="1,2,0,0">
                         <FontIcon Glyph="&#xE711;" />
-                        <TextBlock>退出</TextBlock>
+                        <TextBlock x:Uid="ms-resource:///DiscussionPage/ExitButtonTextBlock"/>
                     </StackPanel>
                 </Button>
                 <tkcont:Segmented x:Name="ContentSelection" Grid.Row="0" SelectedIndex="0" HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -567,13 +555,13 @@
                         <tkcont:SegmentedItem.Icon>
                             <FontIcon Glyph="&#xE8FF;" />
                         </tkcont:SegmentedItem.Icon>
-                        识别内容
+                        <TextBlock x:Uid="ms-resource:///DiscussionPage/AnalyzedResultItemContent"/>
                     </tkcont:SegmentedItem>
                     <tkcont:SegmentedItem Tag="RawData">
                         <tkcont:SegmentedItem.Icon>
                             <FontIcon Glyph="&#xE7C3;" />
                         </tkcont:SegmentedItem.Icon>
-                        原数据
+                        <TextBlock x:Uid="ms-resource:///DiscussionPage/RawDataItemContent"/>
                     </tkcont:SegmentedItem>
                 </tkcont:Segmented>
                 <Grid x:Name="FilePreviewer" Grid.Row="1" RowSpacing="36" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-36,0,-36,-40" Padding="36,40" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderThickness="0,1,0,0">
@@ -584,7 +572,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{x:Bind ViewModel.PreviewFileViewModel.Name,Mode=OneWay}"/>
                     <tkcont:SwitchPresenter HorizontalAlignment="Stretch" Grid.Column="0" VerticalAlignment="Stretch" Grid.Row="1" Value="{Binding SelectedItem.Tag,ElementName=ContentSelection}">
                         <tkcont:Case Value="RenderedContent">
-                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{x:Bind ViewModel.PreviewFileViewModel.Content,Mode=OneWay}"/>
+                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{x:Bind ViewModel.PreviewFileViewModel.Content,Mode=TwoWay}"/>
                         </tkcont:Case>
                         <tkcont:Case Value="RawData">
                             <tkcont:SwitchPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Value="{x:Bind AsString(ViewModel.PreviewFileViewModel.Type),Mode=OneWay}">

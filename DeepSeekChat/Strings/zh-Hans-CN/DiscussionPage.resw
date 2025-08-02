@@ -177,4 +177,28 @@
   <data name="DetailEditSystemPromptButton.Content" xml:space="preserve">
     <value>详细编辑</value>
   </data>
+  <data name="AnalyzingCaptionTextBlock.Text" xml:space="preserve">
+    <value>分析中....</value>
+  </data>
+  <data name="AnalyzedResultItemContent.Text" xml:space="preserve">
+    <value>识别结果</value>
+  </data>
+  <data name="RawDataItemContent.Text" xml:space="preserve">
+    <value>原数据</value>
+  </data>
+  <data name="ExitButtonTextBlock.Text" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="AddFileButton.Content" xml:space="preserve">
+    <value>添加文件</value>
+  </data>
+  <data name="DocumentFileTypeMenuItem.Text" xml:space="preserve">
+    <value>文档</value>
+  </data>
+  <data name="MediaFileTypeMenuItem.Text" xml:space="preserve">
+    <value>图片</value>
+  </data>
+  <data name="StreamingOutputOption.Content" xml:space="preserve">
+    <value>流式输出</value>
+  </data>
 </root>

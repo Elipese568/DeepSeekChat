@@ -340,7 +340,6 @@ public class ExecuteAICommand : ICommand
         bool isMetadataReported = false;
         await foreach (var chunk in await _clientService.CompleteChatStreamingAsync(messages, options, _cts))
         {
-
             if (!isMetadataReported)
             {
                 CompletionMetadataReceived?.Invoke(this, new(chunk.Id, DateTimeOffset.FromUnixTimeSeconds(chunk.Created).LocalDateTime, _clientService.Model, _discussItem.ChatOptions));
@@ -385,19 +384,9 @@ public class ExecuteAICommand : ICommand
             {
                 messages.Add(UserChatMessage.CreateUserMessage(msg.UserPrompt));
             }
-            if (msg.AiChatCompletion.Content.Count > 0)
+            if (!string.IsNullOrEmpty(msg.AiChatCompletion.Content))
             {
-                foreach (var contentPart in msg.AiChatCompletion.Content)
-                {
-                    if (contentPart is TextContentPart textMessage)
-                    {
-                        messages.Add(AssistantChatMessage.CreateAssistantMessage(textMessage.Text));
-                    }
-                    else if (contentPart is ToolCallingContentPart functionCall)
-                    {
-                        messages.Add(ToolChatMessage.CreateToolMessage(functionCall.Id, functionCall.Result));
-                    }
-                }
+                messages.Add(AssistantChatMessage.CreateAssistantMessage(msg.AiChatCompletion.Content));
             }
         }
         return messages;
@@ -441,6 +430,8 @@ public class ExecuteAICommand : ICommand
         //    //messages.Add(SystemChatMessage.CreateSystemMessage("By the way, if some files not provided in these system prompt but user used them, you can call \"GetFile\" tool to get files content."));
         //    messages.Add(SystemChatMessage.CreateSystemMessage($"You can get these following files: {string.Join(',', item.Files.Select(x => x.Name))}"));
         //}
+
+        messages.Add(SystemChatMessage.CreateSystemMessage(parts));
         return messages;
     }
 

@@ -177,4 +177,28 @@
   <data name="DetailEditSystemPromptButton.Content" xml:space="preserve">
     <value>Detail Edit</value>
   </data>
+  <data name="AddFileButton.Content" xml:space="preserve">
+    <value>Add File</value>
+  </data>
+  <data name="AnalyzedResultItemContent.Text" xml:space="preserve">
+    <value>Analyze Result</value>
+  </data>
+  <data name="AnalyzingCaptionTextBlock.Text" xml:space="preserve">
+    <value>Analyzing....</value>
+  </data>
+  <data name="MediaFileTypeMenuItem.Text" xml:space="preserve">
+    <value>Picture</value>
+  </data>
+  <data name="ExitButtonTextBlock.Text" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="RawDataItemContent.Text" xml:space="preserve">
+    <value>Raw Data</value>
+  </data>
+  <data name="DocumentFileTypeMenuItem.Text" xml:space="preserve">
+    <value>Document</value>
+  </data>
+  <data name="StreamingOutputOption.Content" xml:space="preserve">
+    <value>Streaming</value>
+  </data>
 </root>

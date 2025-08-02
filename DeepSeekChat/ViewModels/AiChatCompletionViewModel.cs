@@ -82,19 +82,6 @@ public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletion>
 {
     public AiChatCompletionViewModel(AiChatCompletion wrapped) : base(wrapped)
     {
-        ContentViewModels = new(wrapped.Content?.Select(ContentPartViewModel.Create));
-    }
-
-    public void AddContentViewModel(ContentPartViewModel contentPartViewModel)
-    {
-        ContentViewModels.Add(contentPartViewModel);
-        _innerObject.Content?.Add(contentPartViewModel.InnerObject);
-    }
-
-    public void RemoveContentViewModel(ContentPartViewModel contentPartViewModel)
-    {
-        ContentViewModels.Remove(contentPartViewModel);
-        _innerObject.Content?.Remove(contentPartViewModel.InnerObject);
     }
 
     public string ReasoningContent
@@ -107,5 +94,13 @@ public class AiChatCompletionViewModel : WrapperViewModelBase<AiChatCompletion>
         }
     }
 
-    public ObservableCollection<ContentPartViewModel> ContentViewModels { get; set; }
+    public string Content
+    {
+        get { return _innerObject.Content; }
+        set
+        {
+            _innerObject.Content = value;
+            OnPropertyChanged();
+        }
+    }
 }

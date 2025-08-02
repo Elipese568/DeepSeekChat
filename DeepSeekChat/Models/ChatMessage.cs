@@ -88,7 +88,7 @@ public partial class AiChatCompletion : ObservableObject
 {
     public string ReasoningContent { get; set; }
 
-    public List<ContentPart> Content { get; set; }
+    public string Content { get; set; }
 }
 
 public partial class ApplicationChatMessage : ObservableObject

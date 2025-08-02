@@ -43,7 +43,6 @@ public partial class DiscussionViewModel : ObservableRecipient
     private FileViewModel? _previewFileViewModel = null;
 
     public Visibility FileListVisibility => SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ContentVisibility => SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
 
     public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
@@ -91,7 +90,7 @@ public partial class DiscussionViewModel : ObservableRecipient
             AiChatCompletion = new()
             {
                 ReasoningContent = "",
-                Content = []
+                Content = ""
             },
             TokenUsage = new(),
             ProgressStatus = ProgressStatus.InProgress
@@ -236,38 +235,30 @@ public partial class DiscussionViewModel : ObservableRecipient
 
     private void OnFunctionCalling(object? sender, ChatResponseFunctionCallingReceivedEventArgs e) // as known, deepseek doesn't call tools in reasoning, so we can safely assume that the last message "content" part is the one we are working on
     {
-        if(e.Data is ToolCallingItem item)
-        {
-            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
-            {
-                Arguments = item.Function.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value.ToString())).ToDictionary(),
-                Name = item.Function.Name,
-                Id = item.Id
-            }));
-        }
-        else
-        {
-            ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Result = e.Data.ToString() ?? "null";
-        }
+        //if(e.Data is ToolCallingItem item)
+        //{
+        //    SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.AddContentViewModel(new ToolCallingContentPartViewModel(new ToolCallingContentPart()
+        //    {
+        //        Arguments = item.Function.Arguments.Select(x => KeyValuePair.Create(x.Key, x.Value.ToString())).ToDictionary(),
+        //        Name = item.Function.Name,
+        //        Id = item.Id
+        //    }));
+        //}
+        //else
+        //{
+        //    ((ToolCallingContentPartViewModel)SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ContentViewModels[^1]).Result = e.Data.ToString() ?? "null";
+        //}
     }
 
     private void OnStreamResponseReceived(object sender, ChatResponseReceivedEventArgs e)
     {
-        var messageVm = SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1];
-        if (e.Type == UpdateType.Reasoning) // as known, deepseek doesn't call tools in reasoning
+        if (e.Type == UpdateType.Reasoning)
         {
-            messageVm.AiChatCompletion.ReasoningContent += e.ContentUpdate;
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.ReasoningContent += e.ContentUpdate;
         }
         else if (e.Type == UpdateType.Content)
         {
-            if (messageVm.AiChatCompletion.ContentViewModels.Any() && messageVm.AiChatCompletion.ContentViewModels[^1] is TextContentPartViewModel textContentPartVm)
-            {
-                textContentPartVm.Text += e.ContentUpdate;
-            }
-            else
-            {
-                messageVm.AiChatCompletion.AddContentViewModel(new TextContentPartViewModel(new TextContentPart() { Text = e.ContentUpdate }));
-            }
+            SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].AiChatCompletion.Content += e.ContentUpdate;
         }
         SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels[^1].TokenUsage = e.TokenUsage;
     }
