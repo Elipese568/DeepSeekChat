@@ -159,4 +159,7 @@
   <data name="ServerUnavaliableErrorInfoBar.Message" xml:space="preserve">
     <value>未连接到互联网、服务器网址不正确或服务不可用，请检查网络连接或稍后重试</value>
   </data>
+  <data name="NoDiscussionTip.Text" xml:space="preserve">
+    <value>无对话</value>
+  </data>
 </root>

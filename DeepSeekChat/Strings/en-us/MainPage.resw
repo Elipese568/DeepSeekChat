@@ -159,4 +159,7 @@
   <data name="ServerUnavaliableErrorInfoBar.Message" xml:space="preserve">
     <value>Not connected to the internet, incorrect server URL, or service unavailable. Please check your network connection or try again later.</value>
   </data>
+  <data name="NoDiscussionTip.Text" xml:space="preserve">
+    <value>No Discussion</value>
+  </data>
 </root>

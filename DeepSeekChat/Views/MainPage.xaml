@@ -124,7 +124,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <TextBlock x:Name="NoItemTip" Visibility="Collapsed" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">No Discussion</TextBlock>
+                    <TextBlock x:Name="NoItemTip" x:Uid="ms-resource:///MainPage/NoDiscussionTip" Visibility="Collapsed" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 </Grid>
             </ScrollViewer>
         </Grid>
