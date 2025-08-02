@@ -206,7 +206,6 @@ public class ClientService
         NoticeUpdate();
     }
 
-    [Obsolete("This option is locked now")]
     public void UpdateServer(Uri serverEndpoint)
     {
         _aiServerEndPoint = serverEndpoint;

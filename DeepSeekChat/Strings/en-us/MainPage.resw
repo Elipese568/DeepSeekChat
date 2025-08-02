@@ -150,7 +150,13 @@
   <data name="RemoveMenuItem.Text" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="SetApiKeyActionButton.Content" xml:space="preserve">
+  <data name="GoSettingToCorrectActionButton.Content" xml:space="preserve">
     <value>Set</value>
+  </data>
+  <data name="ServerUnavaliableErrorInfoBar.Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ServerUnavaliableErrorInfoBar.Message" xml:space="preserve">
+    <value>Not connected to the internet, incorrect server URL, or service unavailable. Please check your network connection or try again later.</value>
   </data>
 </root>

@@ -49,8 +49,6 @@ namespace DeepSeekChat.Views
             this.InitializeComponent();
 
             _settingService = App.Current.GetService<SettingService>();
-
-            //UNSUPPORTED: Dynamic switch language
             _defaultContextForCurrentView = ResourceManager.Current.DefaultContext;
 
             _defaultContextForCurrentView.QualifierValues.MapChanged += async (s, m) =>
@@ -172,7 +170,13 @@ namespace DeepSeekChat.Views
 
         private void SetApiKeyButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.TryNavigate("SettingTipApiKey", () => new SettingPage(true), true);
+            ViewModel.TryNavigate("SettingTipApiKey", () => new SettingPage(0), true);
+            DiscussList.SelectedIndex = -1;
+        }
+
+        private void SetServerEndpointButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.TryNavigate("SettingTipServerEndpoint", () => new SettingPage(1), true);
             DiscussList.SelectedIndex = -1;
         }
 

@@ -118,25 +118,24 @@ namespace DeepSeekChat.Views
             };
         }
 
-        public SettingPage(bool tipApiKeyOption) : this()
+        public SettingPage(int setOptionFlag) : this()
         {
             ViewModel = new(this);
             this.InitializeComponent();
-            if (tipApiKeyOption)
+            switch(setOptionFlag)
             {
-                ApiKeyTip.IsOpen = true;
+                case 0:
+                    ApiKeyTip.IsOpen = true;
+                    return;
+                case 1:
+                    ServerEndpointTip.IsOpen = true ;
+                    return;
             }
         }
 
         private void SettingsCard_Click(object sender, RoutedEventArgs e)
         {
             Launcher.LaunchUriAsync(new("https://github.com/Elipese568/DeepSeekChat/issues"));
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //if((e.AddedItems[0] as ComboBoxItem).Content.Equals("Light"))
-            //    ThemeTeachingTip.IsOpen = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

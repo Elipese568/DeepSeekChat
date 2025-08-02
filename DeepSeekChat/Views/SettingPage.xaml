@@ -50,9 +50,10 @@
                             <tkc:SettingsCard.HeaderIcon>
                                 <FontIcon Glyph="&#xE968;"/>
                             </tkc:SettingsCard.HeaderIcon>
-
-                            <TextBox MinWidth="106" TextAlignment="Left" HorizontalAlignment="Right" IsEnabled="False" VerticalAlignment="Center" Text="https://api.siliconflow.cn/v1/"></TextBox>
-
+                            <Grid>
+                                <TextBox Name="ServerEndpointInput" MinWidth="106" TextAlignment="Left" HorizontalAlignment="Right" VerticalAlignment="Center" Text="{x:Bind ViewModel.ServerEndpoint, Mode=TwoWay}"/>
+                                <TeachingTip PreferredPlacement="Left" x:Name="ServerEndpointTip" Target="{Binding ElementName=ServerEndpointInput}" IsLightDismissEnabled="True"  x:Uid="ms-resource:///SettingPage/ServerEndpointTipFlyout"/>
+                            </Grid>
                         </tkc:SettingsCard>
                         <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/ApiKeySettingCard">
                             <tkc:SettingsCard.HeaderIcon>

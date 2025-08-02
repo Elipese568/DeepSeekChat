@@ -52,6 +52,16 @@ public partial class SettingViewModel : ObservableRecipient
         _settingPage = page;
     }
 
+    public string ServerEndpoint
+    {
+        get => _settingService.Read(SettingService.SETTING_SERVER_ENDPOINT, "https://api.deepseek.com");
+        set
+        {
+            _settingService.Write(SettingService.SETTING_SERVER_ENDPOINT, value);
+            OnPropertyChanged();
+        }
+    }
+
     public string ApiKey
     {
         get => _settingService.Read(SettingService.SETTING_APIKEY, string.Empty);

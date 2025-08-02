@@ -63,23 +63,30 @@
 
             <StackPanel Grid.Row="1" Padding="16,4" Spacing="4">
                 <InfoBar Severity="Error"
-                         Title="Error"
                          x:Uid="ms-resource:///MainPage/ApiKeyEmptyErrorInfoBar"
                          IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False">
                     <InfoBar.ActionButton>
                         <HyperlinkButton HorizontalAlignment="Right"
-                                         x:Uid="ms-resource:///MainPage/SetApiKeyActionButton"
+                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"
                                          Click="SetApiKeyButton_Click"/>
                     </InfoBar.ActionButton>
                 </InfoBar>
                 <InfoBar Severity="Error"
-                         Title="Error"
                          x:Uid="ms-resource:///MainPage/ApiKeyInvaildErrorInfoBar"
-                         IsOpen="{x:Bind ReverseBool(ViewModel.IsClientAvailable), Mode=OneWay}" IsClosable="False">
+                         IsOpen="{x:Bind ReverseBool(ViewModel.IsApiKeyAvailable), Mode=OneWay}" IsClosable="False">
                     <InfoBar.ActionButton>
                         <HyperlinkButton HorizontalAlignment="Right"
                                          Click="SetApiKeyButton_Click"
-                                         x:Uid="ms-resource:///MainPage/SetApiKeyActionButton"/>
+                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
+                    </InfoBar.ActionButton>
+                </InfoBar>
+                <InfoBar Severity="Error"
+                         x:Uid="ms-resource:///MainPage/ServerUnavaliableErrorInfoBar"
+                         IsOpen="{x:Bind ReverseBool(ViewModel.IsServiceAvailable), Mode=OneWay}" IsClosable="False">
+                    <InfoBar.ActionButton>
+                        <HyperlinkButton HorizontalAlignment="Right"
+                                         Click="SetServerEndpointButton_Click"
+                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
                     </InfoBar.ActionButton>
                 </InfoBar>
             </StackPanel>

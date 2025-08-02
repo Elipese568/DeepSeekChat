@@ -145,7 +145,7 @@
     <value>Set a corrent ApiKey to connect to AI</value>
   </data>
   <data name="ApiKeyTipFlyout.Title" xml:space="preserve">
-    <value>Set ApiKey corrently</value>
+    <value>Set ApiKey correctly</value>
   </data>
   <data name="ArgWrongTip.Text" xml:space="preserve">
     <value>Name and ID cannot be empty or white space</value>
@@ -233,5 +233,11 @@
   </data>
   <data name="IsUseDisplayAnswerSettingCard.Description" xml:space="preserve">
     <value>Set the AI's response language to match the display language for a smooth, consistent experience.</value>
+  </data>
+  <data name="ServerEndpointTipFlyout.Title" xml:space="preserve">
+    <value>Set Server Endpoint correctly</value>
+  </data>
+  <data name="ServerEndpointTipFlyout.Subtitle" xml:space="preserve">
+    <value>Set a correct server endpoint to connect to AI</value>
   </data>
 </root>

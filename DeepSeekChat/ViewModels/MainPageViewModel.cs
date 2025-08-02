@@ -16,6 +16,8 @@ using Windows.UI;
 using System.ComponentModel;
 using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
+using CommunityToolkit.WinUI.Helpers;
+using System.Net.NetworkInformation;
 
 namespace DeepSeekChat.ViewModels;
 
@@ -27,8 +29,10 @@ public class DiscussionViewStatusChangedEventArgs : EventArgs
 
 public partial class MainPageViewModel : ObservableRecipient
 {
+    private readonly DiscussionItemService _discussionItemService;
+    private readonly SettingService _settingService;
+
     private List<DiscussionItem> _discussionItems;
-    private DiscussionItemService _discussionItemService;
 
     [ObservableProperty]
     private ObservableCollection<DiscussionItemViewModel> _discussionItemViewModels = new();
@@ -46,7 +50,10 @@ public partial class MainPageViewModel : ObservableRecipient
     private bool _isApiKeyEmpty = false;
 
     [ObservableProperty]
-    private bool _isClientAvailable = true;
+    private bool _isApiKeyAvailable = true;
+
+    [ObservableProperty]
+    private bool _isServiceAvailable = true;
 
     public event EventHandler<DiscussionViewStatusChangedEventArgs> DiscussionViewStatusChanged;
 
@@ -55,9 +62,21 @@ public partial class MainPageViewModel : ObservableRecipient
     public MainPageViewModel(MainPage page)
     {
         Parent = page;
+
         _discussionItemService = App.Current.GetService<DiscussionItemService>();
+        _settingService = App.Current.GetService<SettingService>();
+
         _discussionItems = _discussionItemService.GetStroragedDiscussionItems();
+
         DiscussionItemViewModels = new(_discussionItems.Select(x => new DiscussionItemViewModel(x)));
+
+        NetworkHelper.Instance.NetworkChanged += (s, e) =>
+        {
+            Parent.DispatcherQueue.TryEnqueue(() =>
+            {
+                SettingStatusToDisplay(null, null);
+            });
+        };
 
         SettingStatusToDisplay(null, null);
         App.Current.GetService<SettingService>().SettingChanged += SettingStatusToDisplay;
@@ -72,23 +91,43 @@ public partial class MainPageViewModel : ObservableRecipient
 
     public async void SettingStatusToDisplay(object sender, SettingChangedEventArgs e)
     {
-        if (App.Current.GetService<SettingService>().Read(SettingService.SETTING_APIKEY) is string apikey && !string.IsNullOrWhiteSpace(apikey))
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable || CheckServiceIsNotAvailable())
+        {
+            IsServiceAvailable = false;
+            return;
+        }
+        else
+        {
+            IsServiceAvailable = true;
+        }
+
+        if (_settingService.Read(SettingService.SETTING_APIKEY) is string apikey && !string.IsNullOrWhiteSpace(apikey))
         {
             IsApiKeyEmpty = false;
             if (await App.Current.GetService<ClientService>().IsApiKeyVaildAsync(apikey))
             {
-                IsClientAvailable = true;
+                IsApiKeyAvailable = true;
             }
             else
             {
-                IsClientAvailable = false;
+                IsApiKeyAvailable = false;
             }
         }
         else
         {
             IsApiKeyEmpty = true;
-            IsClientAvailable = false;
+            IsApiKeyAvailable = false;
         }
+    }
+
+    private bool CheckServiceIsNotAvailable()
+    {
+        try
+        {
+            using var ping = new Ping();
+            return ping.Send(new Uri(_settingService.Read(SettingService.SETTING_SERVER_ENDPOINT, "https://api.deepseek.com")).Host).Status != IPStatus.Success;
+        }
+        catch { return true; }
     }
 
     private void RemoveDiscussionItem(DiscussionItem item)

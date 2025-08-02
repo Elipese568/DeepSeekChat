@@ -80,6 +80,7 @@
     <Content Remove="Assets\StoreLogo.scale-400.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\AppIconLight.png" />
     <None Remove="Assets\LargeTile.scale-100.png" />
     <None Remove="Assets\LargeTile.scale-125.png" />
     <None Remove="Assets\LargeTile.scale-150.png" />
@@ -186,6 +187,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\AppIconLight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\DeepSeekingIconDarkMode.svg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
