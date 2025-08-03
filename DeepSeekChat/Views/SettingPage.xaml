@@ -283,9 +283,9 @@
                             <tkc:SettingsExpander.Items>
                                 <tkc:SettingsCard Header="To clone this repository">
                                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}" 
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   IsTextSelectionEnabled="True">
-                                    git clone https://github.com/Elipese568/DeepSeekChat.git
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               IsTextSelectionEnabled="True"
+                                               Text="{x:Bind GetProjectGitCloneCommand()}">
                                     </TextBlock>
                                 </tkc:SettingsCard>
                                 <tkc:SettingsCard Header="File a bug or proposed your idea"

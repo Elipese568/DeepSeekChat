@@ -75,5 +75,15 @@ namespace DeepSeekChat.Views
         {
             Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder);
         }
+
+        private void ThrowException_Click(object sender, RoutedEventArgs e)
+        {
+            throw new Exception("This is a test exception to demonstrate error handling in the application.");
+        }
+
+        private void ThrowRandomException_Click(object sender, RoutedEventArgs e)
+        {
+            throw new Exception("This is a test exception to demonstrate error handling in the application with random string: " + Random.Shared.NextInt64().ToString("X"));
+        }
     }
 }

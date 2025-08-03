@@ -126,6 +126,9 @@
   <data name="ChangingLanguageDisplayText" xml:space="preserve">
     <value>Changing language...</value>
   </data>
+  <data name="CloseText" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="CompletedText" xml:space="preserve">
     <value>Completed</value>
   </data>
@@ -147,8 +150,14 @@
   <data name="NeedConfirmOperationText" xml:space="preserve">
     <value>Need Confirm</value>
   </data>
+  <data name="SeeDetailText" xml:space="preserve">
+    <value>See Detail</value>
+  </data>
   <data name="StopedText" xml:space="preserve">
     <value>Stoped</value>
+  </data>
+  <data name="UnexpectedExceptionText" xml:space="preserve">
+    <value>Unexpected Exception</value>
   </data>
   <data name="UnexpectedOperationText" xml:space="preserve">
     <value>Unexpected Operation</value>

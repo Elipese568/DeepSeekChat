@@ -11,6 +11,7 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
+	<LangVersion>13.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\.altform-lightunplated_targetsize-16.png" />
@@ -133,6 +134,7 @@
     <None Remove="Assets\Wide310x150Logo.scale-150.png" />
     <None Remove="Assets\Wide310x150Logo.scale-200.png" />
     <None Remove="Assets\Wide310x150Logo.scale-400.png" />
+    <None Remove="ExceptionPreviewWindow.xaml" />
     <None Remove="MainPage.xaml" />
     <None Remove="Styles\Text.xaml" />
     <None Remove="Views\AdvanceOperationPage.xaml" />
@@ -206,6 +208,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ExceptionPreviewWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AdvanceOperationPage.xaml">

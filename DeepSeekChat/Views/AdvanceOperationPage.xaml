@@ -35,6 +35,22 @@
                     <FontIcon Glyph="&#xE76C;" />
                 </tkc:SettingsCard.ActionIcon>
             </tkc:SettingsCard>
+            <tkc:SettingsCard Header="Throw an exception"
+                              x:Name="ThrowException"
+                              Click="ThrowException_Click"
+                              IsClickEnabled="True">
+                <tkc:SettingsCard.ActionIcon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </tkc:SettingsCard.ActionIcon>
+            </tkc:SettingsCard>
+            <tkc:SettingsCard Header="Throw an random exception"
+                              x:Name="ThrowRandomException"
+                              Click="ThrowRandomException_Click"
+                              IsClickEnabled="True">
+                <tkc:SettingsCard.ActionIcon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </tkc:SettingsCard.ActionIcon>
+            </tkc:SettingsCard>
         </StackPanel>
     </Grid>
 </Page>

@@ -1,3 +1,4 @@
+using DeepSeekChat.Foundation;
 using DeepSeekChat.Helper;
 using DeepSeekChat.Models;
 using DeepSeekChat.Service;
@@ -298,5 +299,7 @@ namespace DeepSeekChat.Views
         {
             (sender as Image).Opacity = 0;
         }
+
+        private string GetProjectGitCloneCommand() => ProjectProperties.ProjectGitCloneCommand;
     }
 }
