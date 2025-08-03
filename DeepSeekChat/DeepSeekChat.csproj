@@ -141,9 +141,10 @@
     <None Remove="Views\DiscussionPage.xaml" />
     <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
-
   <ItemGroup>
-    <Content Include="AppIconIco.ico" />
+    <Content Include="AppIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
