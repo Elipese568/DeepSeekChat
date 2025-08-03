@@ -300,13 +300,13 @@
                                                                 Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
                                                             <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE74D;" />
                                                         </Button>
-                                                        <Button Padding="4" 
+                                                        <!--<Button Padding="4" 
                                                                 VerticalAlignment="Stretch"
                                                                 Style="{ThemeResource SubtleButtonStyle}" 
                                                                 Name="RegenerateMessageButton" Click="RegenerateMessageButton_Click"
                                                                 Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
                                                             <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE72C;" />
-                                                        </Button>
+                                                        </Button>-->
                                                     </StackPanel>
                                                 </Expander.Header>
                                                 <Expander.Content>
@@ -574,7 +574,11 @@
                             </tklabcont:TokenView>
                         </Grid>
                         <Grid VerticalAlignment="Stretch">
-                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox KeyboardAcceleratorPlacementMode="Hidden" x:Name="MessageInputBox" AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="Enter" Modifiers="Control" IsEnabled="True" Invoked="SendKeyboardAccelerator_Invoked"/>
+                                </TextBox.KeyboardAccelerators>
+                            </TextBox>
                         </Grid>
                     </dscc:AdaptiveSplitPanel>
                 </Grid>

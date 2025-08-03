@@ -202,5 +202,15 @@ namespace DeepSeekChat.Views
         {
 
         }
+
+        private void SendKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            sender.IsEnabled = false; // 禁用加速器，防止重复触发
+
+            if(ViewModel.SendCommand.CanExecute(ViewModel.InputingPrompt))
+                ViewModel.SendCommand.Execute(ViewModel.InputingPrompt);
+
+            args.Handled = true; // 标记事件已处理
+        }
     }
 }
