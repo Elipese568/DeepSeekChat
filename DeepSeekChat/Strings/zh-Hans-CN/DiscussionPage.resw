@@ -213,4 +213,7 @@
   <data name="ModsFlyoutHeader.Text" xml:space="preserve">
     <value>增强功能项</value>
   </data>
+  <data name="DeleteMessageConfirmDialogText" xml:space="preserve">
+    <value>删除后这条消息将消失，无法恢复。确定需要删除吗？</value>
+  </data>
 </root>

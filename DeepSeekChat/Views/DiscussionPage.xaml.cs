@@ -186,5 +186,21 @@ namespace DeepSeekChat.Views
         {
             return new BitmapImage(fileUri);
         }
+
+        private async void RemoveMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = await ContentDialogHelper.ShowMessageDialog("NeedConfirmOperationText".GetLocalized(), "DeleteMessageConfirmDialogText".GetLocalized("DiscussionPage"), "DeleteText".GetLocalized(), "CancelText".GetLocalized(), "", ContentDialogButton.Close, XamlRoot);
+
+            if (result != ContentDialogResult.Primary)
+                return;
+
+            ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
+            ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.Remove(messageVm.InnerObject);
+        }
+
+        private void RegenerateMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

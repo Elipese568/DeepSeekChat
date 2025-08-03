@@ -11,14 +11,16 @@ namespace DeepSeekChat.Foundation;
 /// A list that allows you to set a element to the head of the list. It can use to such storing the selection history and so on.
 /// </summary>
 /// <typeparam name="T">The type of list elements</typeparam>
-/// [0] tail         [1]         head [2]
-///  a -------------- b -------------- c
-///         next             next
-///  a  ----------->  b  ----------->  c
-///       previous         previous
-///  a  <-----------  b  <-----------  c
 public class HeaderAdjustableList<T> : IList<T>
 {
+
+    // [0] tail         [1]         head [2]
+    //  a -------------- b -------------- c
+    //         next             next
+    //  a  ----------->  b  ----------->  c
+    //       previous         previous
+    //  a  <-----------  b  <-----------  c
+
     class ListLinkItem
     {
         public ListLinkItem? Next { get; set; }

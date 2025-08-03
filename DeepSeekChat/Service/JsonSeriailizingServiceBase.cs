@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeepSeekChat.Helper;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,8 +27,8 @@ public class JsonSeriailizingServiceBase<TData> : ImplementationLifetimeServiceB
 
     protected override void OnInitialize()
     {
-        _storage = ApplicationData.Current.LocalFolder.CreateFileAsync(GetType().GetCustomAttribute<JsonStorageFileAttribute>().FileName, CreationCollisionOption.OpenIfExists).GetAwaiter().GetResult();
-        using var readStream = _storage.OpenStreamForReadAsync().GetAwaiter().GetResult();
+        _storage = ApplicationData.Current.LocalFolder.CreateFileAsync(GetType().GetCustomAttribute<JsonStorageFileAttribute>().FileName, CreationCollisionOption.OpenIfExists).Sync();
+        using var readStream = _storage.OpenStreamForReadAsync().Sync();
         if (readStream.Length == 0)
         {
             _data = Activator.CreateInstance<TData>();
@@ -48,7 +49,9 @@ public class JsonSeriailizingServiceBase<TData> : ImplementationLifetimeServiceB
 
     protected override void OnDispose()
     {
-        var serializedStream = _storage.OpenStreamForWriteAsync().GetAwaiter().GetResult();
+        _storage.DeleteAsync().Sync();
+        _storage = ApplicationData.Current.LocalFolder.CreateFileAsync(GetType().GetCustomAttribute<JsonStorageFileAttribute>().FileName, CreationCollisionOption.OpenIfExists).Sync();
+        var serializedStream = _storage.OpenStreamForWriteAsync().Sync();
         try
         {
             JsonSerializer.Serialize(serializedStream, _data);

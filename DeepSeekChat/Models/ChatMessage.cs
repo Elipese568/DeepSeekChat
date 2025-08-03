@@ -104,4 +104,9 @@ public partial class ApplicationChatMessage : ObservableObject
     public string Id { get; set; }
 
     public ProgressStatus ProgressStatus { get; set; }
+
+    public ApplicationChatMessage()
+    {
+        Id = Guid.NewGuid().ToString();
+    }
 }

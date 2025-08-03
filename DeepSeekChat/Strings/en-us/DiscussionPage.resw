@@ -213,4 +213,7 @@
   <data name="DetailedRequestArgumentOptionDescription.Text" xml:space="preserve">
     <value>Using detailed requests can improve the AI's contextual understanding, but it also uses more tokens. Turning off this feature can help reduce token-related costs.</value>
   </data>
+  <data name="DeleteMessageConfirmDialogText" xml:space="preserve">
+    <value>Once it’s gone, it’s gone. Are you sure you want to delete it?</value>
+  </data>
 </root>

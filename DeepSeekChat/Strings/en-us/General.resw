@@ -132,6 +132,9 @@
   <data name="ConfirmText" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="DeleteText" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="FailedText" xml:space="preserve">
     <value>Failed</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="LengthTerminatedText" xml:space="preserve">
     <value>Length Terminated</value>
+  </data>
+  <data name="NeedConfirmOperationText" xml:space="preserve">
+    <value>Need Confirm</value>
   </data>
   <data name="StopedText" xml:space="preserve">
     <value>Stoped</value>

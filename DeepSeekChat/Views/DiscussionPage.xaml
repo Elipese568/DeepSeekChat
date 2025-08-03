@@ -144,7 +144,7 @@
                                                                 BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
                                                                 BorderThickness="1"
                                                                 Height="Auto"/>
-                                                        <Button Margin="0,2,0,0" VerticalAlignment="Center" Style="{StaticResource SubtleButtonStyle}">
+                                                        <Button Margin="0,2,0,0" VerticalAlignment="Stretch" Style="{StaticResource SubtleButtonStyle}">
                                                             <Button.Flyout>
                                                                 <Flyout>
                                                                     <StackPanel Spacing="16">
@@ -170,14 +170,14 @@
                                                                 <TextBlock>token(s)</TextBlock>
                                                             </StackPanel>
                                                         </Button>
-                                                        <Button Margin="-11,2,0,0" VerticalAlignment="Center" Style="{StaticResource SubtleButtonStyle}">
+                                                        <Button Margin="-11,2,0,0" VerticalAlignment="Stretch" Style="{StaticResource SubtleButtonStyle}">
                                                             <Button.Flyout>
                                                                 <Flyout>
                                                                     <StackPanel Spacing="16">
                                                                         <StackPanel Spacing="8">
                                                                             <TextBlock VerticalAlignment="Center"
-                                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                           x:Uid="ms-resource:///DiscussionPage/MessageIdFlyoutHeader"/>
+                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                       x:Uid="ms-resource:///DiscussionPage/MessageIdFlyoutHeader"/>
                                                                             <TextBlock Text="{Binding Metadata.Id}"/>
                                                                         </StackPanel>
                                                                         <MenuFlyoutSeparator Margin="-12" />
@@ -264,12 +264,7 @@
                                                                                 <MenuFlyoutSeparator Margin="-12" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" />
                                                                                 <StackPanel Spacing="8" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}">
                                                                                     <TextBlock VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///DiscussionPage/ModsFlyoutHeader"/>
-                                                                                    <tklabcont:TokenView Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" IsWrapped="True" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" ItemsSource="{Binding Metadata.Mods}">
-                                                                                        <tklabcont:TokenView.ItemContainerStyle>
-                                                                                            <Style TargetType="tklabcont:TokenItem">
-                                                                                                <Setter Property="Margin" Value="8,8,0,8"/>
-                                                                                            </Style>
-                                                                                        </tklabcont:TokenView.ItemContainerStyle>
+                                                                                    <tklabcont:TokenView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" IsWrapped="True" ItemsSource="{Binding Metadata.Mods}">
                                                                                         <tklabcont:TokenView.ItemTemplate>
                                                                                             <DataTemplate x:DataType="x:String">
                                                                                                 <TextBlock Text="{Binding Converter={StaticResource ModIdToDescriptiveConverter}}"/>
@@ -291,14 +286,26 @@
                                                                 Width="1"
                                                                 BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
                                                                 BorderThickness="1"
-                                                                Height="Auto"
-                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}"/>
+                                                                Height="Auto"/>
                                                         <Button Padding="4" 
-                                                                Width="28" 
                                                                 Style="{ThemeResource SubtleButtonStyle}" 
                                                                 Name="StopGeneratingButton" Click="StopGeneratingButton_Click" 
-                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}}">
-                                                            <FontIcon FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE71A;" />
+                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, Mode=OneWay}">
+                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE71A;" />
+                                                        </Button>
+                                                        <Button Padding="4" 
+                                                                VerticalAlignment="Stretch"
+                                                                Style="{ThemeResource SubtleButtonStyle}" 
+                                                                Name="RemoveMessageButton" Click="RemoveMessageButton_Click"
+                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
+                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE74D;" />
+                                                        </Button>
+                                                        <Button Padding="4" 
+                                                                VerticalAlignment="Stretch"
+                                                                Style="{ThemeResource SubtleButtonStyle}" 
+                                                                Name="RegenerateMessageButton" Click="RegenerateMessageButton_Click"
+                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
+                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE72C;" />
                                                         </Button>
                                                     </StackPanel>
                                                 </Expander.Header>
