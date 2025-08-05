@@ -42,9 +42,10 @@ namespace DeepSeekChat.Views
             _defaultContextForCurrentView = ResourceManager.Current.DefaultContext;
             _defaultContextForCurrentView.QualifierValues.MapChanged += async (s, m) =>
             {
+                // Dynamic Language Switch Support
+                // Core
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    //UNSUPPORTED: Dynamic switch language
                     _contentLoaded = false;
                     InitializeComponent();
                     UpdateLayout();
@@ -52,11 +53,12 @@ namespace DeepSeekChat.Views
                     GC.Collect();
                 });
 
+                // Animation
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     MainPage.Current.ViewModel.ClearOtherPages(x =>
                     {
-                        return x.Item2 is DiscussionPage;
+                        return x.Item2.Item1 is DiscussionPage;
                     });
                     Grid grid = new();
                     grid.Background = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];

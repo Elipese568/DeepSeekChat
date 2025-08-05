@@ -221,25 +221,31 @@ public partial class MainPageViewModel : ObservableRecipient
 
     private bool _doLeaveDestory = false;
 
-    private Dictionary<string, Page> _pages = new();
+    private Dictionary<string, (Page page, int index)> _pages = new();
     private string _currentPageId = string.Empty;
+    private int _currentPageIndex = 0;
     public string CurrentPageId => _currentPageId;
-    public void TryNavigate(string pageId, Func<Page> buildPageFactory, bool shouldLeaveDestroy = false)
+    public void TryNavigate(string pageId, Func<Page> buildPageFactory, bool shouldLeaveDestroy = false, bool addIndex = true)
     {
         if (_doLeaveDestory)
         {
             _pages.Remove(CurrentPageId);
         }
-        if (_pages.TryGetValue(pageId, out Page page))
+        if (_pages.TryGetValue(pageId, out var dataTuple))
         {
-            page.RequestedTheme = Parent.RequestedTheme;
-            ContentPage = page;
+            dataTuple.page.RequestedTheme = Parent.RequestedTheme;
+            ContentPage = dataTuple.page;
+            _pages[pageId] = (dataTuple.page, _currentPageIndex);
+            if(addIndex)
+                _currentPageIndex++;
         }
         else
         {
             Page newPage = buildPageFactory();
             newPage.RequestedTheme = Parent.RequestedTheme;
-            _pages.Add(pageId, newPage);
+            _pages.Add(pageId, (newPage, _currentPageIndex));
+            if (addIndex)
+                _currentPageIndex++;
             ContentPage = newPage;
         }
         _currentPageId = pageId;
@@ -249,7 +255,7 @@ public partial class MainPageViewModel : ObservableRecipient
 
     public void TryRemovePage(string pageId)
     {
-        if (_pages.TryGetValue(pageId, out Page page))
+        if (_pages.TryGetValue(pageId, out var dataTuple))
         {
             if(pageId == _currentPageId)
             {
@@ -260,10 +266,29 @@ public partial class MainPageViewModel : ObservableRecipient
         }
     }
 
-    public void ClearOtherPages(Predicate<(string, Page)> predicate)
+    public void ClearOtherPages(Predicate<(string, (Page, int))> predicate)
     {
         _pages = _pages.Where(item => !predicate((item.Key, item.Value)) || item.Key == _currentPageId).ToDictionary();
         _doLeaveDestory = false;
         GC.Collect();
+    }
+
+    public void GoBack()
+    {
+        if (_pages.Count == 0)
+            return;
+
+        var previousPageDataList =
+            _pages.Order( // Order by page index
+                Comparer<KeyValuePair<string, (Page, int index)>>.Create(
+                    (item1, item2) => item1.Value.index.CompareTo(item2.Value.index)
+                )
+            ).ToList();
+        if (previousPageDataList.Count == 1)
+            return;
+
+        var previousPageData = previousPageDataList[^2];
+        TryRemovePage(_currentPageId);
+        TryNavigate(previousPageData.Key, null, addIndex: false);
     }
 }

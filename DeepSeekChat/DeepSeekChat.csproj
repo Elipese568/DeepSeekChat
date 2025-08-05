@@ -241,7 +241,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <DefaultLanguage>en-us</DefaultLanguage>
-    <PackageCertificateThumbprint>C70C0BC5D2909D62D79F0326B27C041F94C38837</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>BC61A3DB86E7D47279EF21302AE4AB3B52216BDD</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
 </Project>

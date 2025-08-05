@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using DeepSeekChat.ViewModels;
+using DeepSeekChat.Views;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -36,6 +38,11 @@ namespace DeepSeekChat
 
             SetTitleBar(MyTitleBar);
             this.InitializeComponent();
+        }
+
+        private void MyTitleBar_BackRequested(TitleBar sender, object args)
+        {
+            MainPage.Current.ViewModel.GoBack();
         }
     }
 }

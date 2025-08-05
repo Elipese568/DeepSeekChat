@@ -8,7 +8,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="40783714-d18b-474c-ae7c-70b19744c32e"
+    Name="deepseekchat"
     Publisher="CN=DeepSeekChatProducer"
     Version="1.0.0.0" />
 
@@ -16,7 +16,7 @@
 
   <Properties>
     <DisplayName>DeepSeekChat</DisplayName>
-    <PublisherDisplayName>Admin</PublisherDisplayName>
+    <PublisherDisplayName>DeepSeekChat Producer</PublisherDisplayName>
 	<Logo>Assets\StoreLogo.backup.png</Logo>
   </Properties>
 

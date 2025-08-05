@@ -107,7 +107,7 @@
                                             <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{Binding CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
                                             </Grid>
-                                        </Grid>
+                                        </Grid>  
                                         <Border HorizontalAlignment="Right" 
                                                 VerticalAlignment="Top" 
                                                 CornerRadius="8"
