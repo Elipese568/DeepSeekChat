@@ -29,6 +29,24 @@ using Microsoft.UI.Dispatching;
 
 namespace DeepSeekChat.Views
 {
+    public class DiscussionItemNavigationItemTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate DiscussionItemItemTemplate { get; set; }
+        public DataTemplate NavigationViewItemTemplate { get; set; }
+
+        public DiscussionItemNavigationItemTemplateSelector()
+        {
+        }
+
+        protected override DataTemplate SelectTemplateCore(object item)
+        {
+            if (item is NavigationViewItem)
+                return NavigationViewItemTemplate;
+
+            return DiscussionItemItemTemplate;
+        }
+    }
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -43,8 +61,6 @@ namespace DeepSeekChat.Views
             ViewModel = new(this);
             DataContext = ViewModel;
 
-            ViewModel.DiscussionItemViewModels.CollectionChanged += DiscussItems_CollectionChanged;
-            ViewModel.DiscussionViewStatusChanged += ViewModel_DiscussionViewStatusChanged;
             Current = this;
             this.InitializeComponent();
 
@@ -78,106 +94,40 @@ namespace DeepSeekChat.Views
         private readonly ResourceContext _defaultContextForCurrentView;
         private readonly SettingService _settingService;
 
-        private void ViewModel_DiscussionViewStatusChanged(object? sender, DiscussionViewStatusChangedEventArgs e)
-        {
-            //if(_self_set_property_no_process_flag_dont_remove)
-            //{
-            //    _self_set_property_no_process_flag_dont_remove = false;
-            //    return;
-            //}
-            //_self_set_property_no_process_flag_dont_remove = true;
-            //var item = DiscussList.ItemsPanelRoot.Children.First(x => ((x as ListViewItem).DataContext as DiscussItemViewModel).Id == e.DiscussItem.Id) as ListViewItem;
-            //((item.Content as Grid).FindName("StatusSelector") as Border).Visibility = Visibility.Visible;
-        }
-
-        private void DiscussItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                DiscussList.Visibility = Visibility.Visible;
-                NoItemTip.Visibility = Visibility.Collapsed;
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove && ViewModel.DiscussionItemViewModels.Count == 0)
-            {
-                DiscussList.Visibility = Visibility.Collapsed;
-                NoItemTip.Visibility = Visibility.Visible;
-            }
-        }
-
         private void ListViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             ViewModel.OperatingItem = ((sender as FrameworkElement).Tag as DiscussionItemViewModel);
-            ViewModel.OperatingItem.IsViewed = true;
             RightClickCommands.ShowAt(sender as UIElement, e.GetPosition(sender as UIElement));
         }
 
-        private void DiscussList_ItemClick(object sender, ItemClickEventArgs e)
+        private void DiscussList_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-          
-        }
-
-        private void DiscussList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.RemovedItems.Count > 0 && e.AddedItems.Count == 0)
+            if(args.IsSettingsSelected)
             {
-                ViewModel.SelectedDiscussItem = null;
+                ContentFrame.Navigate(typeof(SettingPage), _needSetServerEndpoint ? 1 : _needSetApiKey ? 0 : null, args.RecommendedNavigationTransitionInfo);
+                _needSetServerEndpoint = false;
+                _needSetApiKey = false;
             }
-            else
+            else if(args.SelectedItem is NavigationViewItem navitem && navitem.DataContext is DiscussionItemViewModel divm)
             {
-                ViewModel.SelectedDiscussItem = (e.AddedItems[0] as DiscussionItemViewModel);
+                ViewModel.SelectedDiscussItem = divm;
                 ViewModel.SelectedDiscussItem.LeastStatus = ProgressStatus.None;
-                ViewModel.TryNavigate(ViewModel.SelectedDiscussItem.Id.ToString(), ()=> new DiscussionPage(ViewModel.SelectedDiscussItem));
 
+                ContentFrame.Navigate(typeof(DiscussionPage), divm, args.RecommendedNavigationTransitionInfo);
             }
         }
-
-        int _goSettingButtonContinuousClickCount = 0;
-        CancellationTokenSource _goSettingButtonContinousCts = null;
-        Stopwatch _advanceOperationPagenavigatedWatch = new();
-        private void GoSettingButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.CurrentPageId == "AdvanceOperation" && _advanceOperationPagenavigatedWatch.ElapsedMilliseconds < 2000)
-            {
-                return;
-            }
-            _advanceOperationPagenavigatedWatch.Reset();
-            _goSettingButtonContinuousClickCount++;
-            ViewModel.TryNavigate("Setting", () => new SettingPage());
-            DiscussList.SelectedIndex = -1;
-            if(_goSettingButtonContinousCts == null)
-            {
-                _goSettingButtonContinousCts = new CancellationTokenSource();
-                Task.Run(() =>
-                {
-                    while (!_goSettingButtonContinousCts.IsCancellationRequested)
-                    {
-                        if(_goSettingButtonContinuousClickCount == 10)
-                        {
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                Current.ViewModel.TryNavigate("AdvanceOperation", () => new AdvanceOperationPage(), true);
-                                _advanceOperationPagenavigatedWatch.Start();
-                            });
-                            _goSettingButtonContinuousClickCount = 0;
-                            _goSettingButtonContinousCts.Cancel();
-                        }
-                    }
-                    _goSettingButtonContinousCts = null;
-                }, _goSettingButtonContinousCts.Token);
-                _goSettingButtonContinousCts?.CancelAfter(2000);
-            }
-        }
-
+        private bool _needSetApiKey = false;
+        private bool _needSetServerEndpoint = false;
         private void SetApiKeyButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.TryNavigate("SettingTipApiKey", () => new SettingPage(0), true);
-            DiscussList.SelectedIndex = -1;
+            _needSetApiKey = true;
+            DiscussList.SelectedItem = DiscussList.SettingsItem;
         }
 
         private void SetServerEndpointButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.TryNavigate("SettingTipServerEndpoint", () => new SettingPage(1), true);
-            DiscussList.SelectedIndex = -1;
+            _needSetServerEndpoint = true;
+            DiscussList.SelectedItem = DiscussList.SettingsItem;
         }
 
         public bool ReverseBool(bool value)
@@ -188,6 +138,46 @@ namespace DeepSeekChat.Views
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ((FrameworkElement)MainWindow.Current.Content).RequestedTheme = (ElementTheme)int.Parse(App.Current.GetService<SettingService>().Read("ApplicationTheme", "0"));
+
+            foreach(var item in ViewModel.DiscussionItemViewModels)
+            {
+                NavigationViewItem navitem = new()
+                {
+                    DataContext = item,
+                    ContentTemplate = "DiscussionItemNavigationViewItemDataTemplate".GetResource<DataTemplate>()
+                };
+
+                DiscussList.MenuItems.Add(navitem);
+            }
+
+            ViewModel.DiscussionItemViewModels.CollectionChanged += (s, e) =>
+            {
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                {
+                    NavigationViewItem navitem = new()
+                    {
+                        DataContext = (DiscussionItemViewModel)e.NewItems[0],
+                        ContentTemplate = "DiscussionItemNavigationViewItemDataTemplate".GetResource<DataTemplate>()
+                    };
+
+                    DiscussList.MenuItems.Add(navitem);
+                }
+                else
+                {
+                    int removeItemIdx = DiscussList.MenuItems.IndexOf(x => (x as NavigationViewItem).DataContext is DiscussionItemViewModel divm && divm.Id == (e.OldItems[0] as DiscussionItemViewModel).Id);
+                    DiscussList.FooterMenuItems.RemoveAt(removeItemIdx);
+                }
+            };
+        }
+
+        private async void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            try
+            {
+                if(args.InvokedItemContainer.Tag is string tagStr && tagStr == "AddDiscussionItem")
+                    await ViewModel.AddDiscussion();
+            }
+            catch { }
         }
     }
 }

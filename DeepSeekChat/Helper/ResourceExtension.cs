@@ -1,4 +1,6 @@
-﻿using Microsoft.Windows.ApplicationModel.Resources;
+﻿using DeepSeekChat.Views;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +20,14 @@ public static class ResourceExtension
     public static string GetLocalized(this string resourceKey)
     {
         return new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "General").GetString(resourceKey.Replace(".", "/"));
+    }
+
+    public static T GetResource<T>(this string resourceKey, FrameworkElement? element = null)
+    {
+        if (element == null)
+            return (T)MainPage.Current.Resources[resourceKey];
+
+        return (T)element.Resources[element.Name];
     }
 
     //public static ResourceCandidate GetLocalizedRaw(this string resourceKey, string map = "Resources") => _resources[map + "/" + resourceKey];

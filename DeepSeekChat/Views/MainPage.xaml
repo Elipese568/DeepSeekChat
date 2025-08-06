@@ -25,110 +25,86 @@
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
         <conv:StringSubSplitConverter x:Key="StringSubSplitConverter"/>
         <tkconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </Page.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="306"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <Grid RowSpacing="4" Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="3" Padding="8" Spacing="8">
-                <Button Command="{x:Bind ViewModel.AddDiscussionCommand}" 
-                        HorizontalAlignment="Stretch" 
-                        x:Uid="ms-resource:///MainPage/AddDiscussionButton"/>
-                <Button x:Name="GoSettingButton" 
-                        Click="GoSettingButton_Click" 
-                        Style="{ThemeResource AccentButtonStyle}" 
-                        HorizontalAlignment="Stretch" 
-                        x:Uid="ms-resource:///MainPage/GoSettingButton"/>
-            </StackPanel>
-            <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Image Source="ms-appx:///Assets/AppIconLight.png" VerticalAlignment="Center" Grid.Column="0" Width="48"/>
-                <StackPanel Grid.Column="1" Padding="0">
-                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">DeepSeekChat</TextBlock>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///MainPage/ApplicationSubtitle"/>
-                </StackPanel>
+        <DataTemplate x:DataType="vm:DiscussionItemViewModel" x:Key="DiscussionItemNavigationViewItemDataTemplate">
+            <Grid RightTapped="ListViewItem_RightTapped" Tag="{Binding}">
+                <Grid Padding="0,16">
+                    <Grid HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={h:Int32Markup Value=20}, Mode=TwoWay}"/>
+                        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{Binding CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </Grid>
+                    <Border HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    CornerRadius="8"
+                    Width="26" 
+                    Height="16" 
+                    Margin="0, 8"
+                    Background="{Binding LeastStatus, Converter={StaticResource ProgressStatusToColorConverter}}"
+                    Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
+                    Name="StatusSelector">
+                        <TextBlock HorizontalAlignment="Center" Visibility="{Binding Background,ElementName=StatusSelector,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="10" Foreground="{ThemeResource TextOnAccentFillColorPrimary}">New</TextBlock>
+                    </Border>
+                </Grid>
             </Grid>
-
-            <StackPanel Grid.Row="1" Padding="16,4" Spacing="4">
-                <InfoBar Severity="Error"
+        </DataTemplate>
+    </Page.Resources>
+    <NavigationView x:Name="DiscussList" IsBackButtonVisible="Collapsed" PaneDisplayMode="Left" SelectionChanged="DiscussList_SelectionChanged" IsPaneToggleButtonVisible="False" IsSettingsVisible="True" ItemInvoked="NavigationView_ItemInvoked">
+        <NavigationView.PaneCustomContent>
+            <StackPanel>
+                <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="ms-appx:///Assets/AppIconLight.png" VerticalAlignment="Center" Grid.Column="0" Width="48"/>
+                    <StackPanel Grid.Column="1" Padding="0">
+                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">DeepSeekChat</TextBlock>
+                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///MainPage/ApplicationSubtitle"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Grid.Row="1" Padding="16,4" Spacing="4">
+                    <InfoBar Severity="Error"
                          x:Uid="ms-resource:///MainPage/ApiKeyEmptyErrorInfoBar"
                          IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False">
-                    <InfoBar.ActionButton>
-                        <HyperlinkButton HorizontalAlignment="Right"
-                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"
-                                         Click="SetApiKeyButton_Click"/>
-                    </InfoBar.ActionButton>
-                </InfoBar>
-                <InfoBar Severity="Error"
+                        <InfoBar.ActionButton>
+                            <HyperlinkButton HorizontalAlignment="Right"
+                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"
+                             Click="SetApiKeyButton_Click"/>
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+                    <InfoBar Severity="Error"
                          x:Uid="ms-resource:///MainPage/ApiKeyInvaildErrorInfoBar"
                          IsOpen="{x:Bind ReverseBool(ViewModel.IsApiKeyAvailable), Mode=OneWay}" IsClosable="False">
-                    <InfoBar.ActionButton>
-                        <HyperlinkButton HorizontalAlignment="Right"
-                                         Click="SetApiKeyButton_Click"
-                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
-                    </InfoBar.ActionButton>
-                </InfoBar>
-                <InfoBar Severity="Error"
+                        <InfoBar.ActionButton>
+                            <HyperlinkButton HorizontalAlignment="Right"
+                             Click="SetApiKeyButton_Click"
+                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+                    <InfoBar Severity="Error"
                          x:Uid="ms-resource:///MainPage/ServerUnavaliableErrorInfoBar"
                          IsOpen="{x:Bind ReverseBool(ViewModel.IsServiceAvailable), Mode=OneWay}" IsClosable="False">
-                    <InfoBar.ActionButton>
-                        <HyperlinkButton HorizontalAlignment="Right"
-                                         Click="SetServerEndpointButton_Click"
-                                         x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
-                    </InfoBar.ActionButton>
-                </InfoBar>
+                        <InfoBar.ActionButton>
+                            <HyperlinkButton HorizontalAlignment="Right"
+                             Click="SetServerEndpointButton_Click"
+                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+                </StackPanel>
             </StackPanel>
-            
-            <ScrollViewer Grid.Row="2" Padding="0,0,0,16">
-                <Grid>
-                    <ListView x:Name="DiscussList" Grid.Row="1" SelectionChanged="DiscussList_SelectionChanged" ItemClick="DiscussList_ItemClick" ItemsSource="{x:Bind ViewModel.DiscussionItemViewModels}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="vm:DiscussionItemViewModel">
-                                <ListViewItem RightTapped="ListViewItem_RightTapped" Tag="{Binding}" VerticalContentAlignment="Center">
-                                    <Grid Padding="0,16">
-                                        <Grid HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Center">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={h:Int32Markup Value=20}, Mode=TwoWay}"/>
-                                            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
-                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{Binding CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
-                                            </Grid>
-                                        </Grid>  
-                                        <Border HorizontalAlignment="Right" 
-                                                VerticalAlignment="Top" 
-                                                CornerRadius="8"
-                                                Width="26" 
-                                                Height="16" 
-                                                Margin="0, 8"
-                                                Background="{Binding LeastStatus, Converter={StaticResource ProgressStatusToColorConverter}}"
-                                                Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
-                                                Name="StatusSelector">
-                                            <TextBlock HorizontalAlignment="Center" Visibility="{Binding Background,ElementName=StatusSelector,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="10" Foreground="{ThemeResource TextOnAccentFillColorPrimary}">New</TextBlock>
-                                        </Border>
-                                    </Grid>
-                                </ListViewItem>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <TextBlock x:Name="NoItemTip" x:Uid="ms-resource:///MainPage/NoDiscussionTip" Visibility="Collapsed" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                </Grid>
-            </ScrollViewer>
-        </Grid>
-
-        <ContentPresenter Background="{ThemeResource LayerFillColorDefault}" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" CornerRadius="8,0,0,0" BorderThickness="1,1,0,0" x:Name="DiscussionFrame" Grid.Column="1" Content="{x:Bind ViewModel.ContentPage, Mode=TwoWay}"/>
-    </Grid>
+        </NavigationView.PaneCustomContent>
+        <NavigationView.FooterMenuItems>
+            <NavigationViewItem SelectsOnInvoked="False" Tag="AddDiscussionItem" x:Uid="ms-resource:///MainPage/AddDiscussionButton">
+                <NavigationViewItem.Icon>
+                    <SymbolIcon Symbol="Add"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.FooterMenuItems>
+        <Frame x:Name="ContentFrame"/>
+    </NavigationView>
 </Page>

@@ -212,7 +212,7 @@ public partial class MainPageViewModel : ObservableRecipient
     private void OnDiscussItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == "IsViewed")
-            DiscussionViewStatusChanged(this, new()
+            DiscussionViewStatusChanged?.Invoke(this, new()
             {
                 DiscussItem = (sender as DiscussionItemViewModel).InnerObject,
                 Status = (sender as DiscussionItemViewModel).LeastStatus

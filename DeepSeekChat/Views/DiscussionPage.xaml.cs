@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.IO;
 using System.Linq;
@@ -125,16 +126,15 @@ namespace DeepSeekChat.Views
     {
         public DiscussionViewModel ViewModel { get; set; }
 
-        public DiscussionPage(DiscussionItemViewModel item)
+        public DiscussionPage()
         {
-            ViewModel = new DiscussionViewModel(item); // 传递item到ViewModel
             this.InitializeComponent();
+        }
 
-            // 确保消息更新时自动滚动到底部
-            ViewModel.ScrollToBottomRequested += (s, e) =>
-            {
-                InvertedListView.ScrollIntoView(ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels.LastOrDefault());
-            };
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            ViewModel = new((DiscussionItemViewModel)e.Parameter);
+            base.OnNavigatedTo(e);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -145,14 +145,6 @@ namespace DeepSeekChat.Views
         private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.StopGenerating();
-        }
-
-        private void MarkdownTextBlock_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if ((bool)e.NewValue == false)
-            {
-                ((MarkdownTextBlock)sender).Opacity = 1.0;
-            }
         }
 
         private void TokenView_FileItemRemoving(object sender, CommunityToolkit.Labs.WinUI.TokenItemRemovingEventArgs e)

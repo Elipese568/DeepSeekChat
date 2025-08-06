@@ -121,19 +121,22 @@ namespace DeepSeekChat.Views
             };
         }
 
-        public SettingPage(int setOptionFlag) : this()
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ViewModel = new(this);
-            this.InitializeComponent();
-            switch(setOptionFlag)
+            int? parameter = (int?)e.Parameter;
+            if(parameter.HasValue)
             {
-                case 0:
-                    ApiKeyTip.IsOpen = true;
-                    return;
-                case 1:
-                    ServerEndpointTip.IsOpen = true ;
-                    return;
+                switch(parameter)
+                {
+                    case 0:
+                        ApiKeyTip.IsOpen = true;
+                        break;
+                    case 1:
+                        ServerEndpointTip.IsOpen = true; 
+                        break;
+                }
             }
+            base.OnNavigatedTo(e);
         }
 
         private void SettingsCard_Click(object sender, RoutedEventArgs e)
