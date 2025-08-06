@@ -281,7 +281,10 @@
                                 <ImageIcon Source="ms-appx:///Assets/AppIconLight.png" Width="24"/>
                             </tkc:SettingsExpander.HeaderIcon>
                             <tkc:SettingsExpander.Items>
-                                <tkc:SettingsCard Header="To clone this repository">
+                                <tkc:SettingsCard IsClickEnabled="True" Click="SettingsCard_Click_1" Header="To clone this repository">
+                                    <tkc:SettingsCard.ActionIcon>
+                                        <FontIcon Glyph=""/>
+                                    </tkc:SettingsCard.ActionIcon>
                                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}" 
                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                IsTextSelectionEnabled="True"

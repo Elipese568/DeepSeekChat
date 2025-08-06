@@ -53,6 +53,7 @@ namespace DeepSeekChat.Views
     public sealed partial class MainPage : Page
     {
         public MainPageViewModel ViewModel { get; set; }
+        public new Frame Frame => ContentFrame;
 
         public static MainPage Current { get; private set; }
 
@@ -79,12 +80,13 @@ namespace DeepSeekChat.Views
                     InitializeComponent();
 
                     var MainPage_obj1_Bindings__Connect = DynamicCall.GetVoidInvoker<IMainPage_Bindings, int, object>(Bindings, "Connect");
-                    MainPage_obj1_Bindings__Connect(3, RemoveDiscussionMenuItem);
-                    MainPage_obj1_Bindings__Connect(4, ChangeDiscussionTitleMenuItem);
+                    MainPage_obj1_Bindings__Connect(6, RemoveDiscussionMenuItem);
+                    MainPage_obj1_Bindings__Connect(7, ChangeDiscussionTitleMenuItem);
 
                     UpdateLayout();
                     Bindings.Update();
 
+                    UpdateDiscussionItemNavList();
                     
                     GC.Collect();
                 });
@@ -138,17 +140,7 @@ namespace DeepSeekChat.Views
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ((FrameworkElement)MainWindow.Current.Content).RequestedTheme = (ElementTheme)int.Parse(App.Current.GetService<SettingService>().Read("ApplicationTheme", "0"));
-
-            foreach(var item in ViewModel.DiscussionItemViewModels)
-            {
-                NavigationViewItem navitem = new()
-                {
-                    DataContext = item,
-                    ContentTemplate = "DiscussionItemNavigationViewItemDataTemplate".GetResource<DataTemplate>()
-                };
-
-                DiscussList.MenuItems.Add(navitem);
-            }
+            UpdateDiscussionItemNavList();
 
             ViewModel.DiscussionItemViewModels.CollectionChanged += (s, e) =>
             {
@@ -165,9 +157,26 @@ namespace DeepSeekChat.Views
                 else
                 {
                     int removeItemIdx = DiscussList.MenuItems.IndexOf(x => (x as NavigationViewItem).DataContext is DiscussionItemViewModel divm && divm.Id == (e.OldItems[0] as DiscussionItemViewModel).Id);
-                    DiscussList.FooterMenuItems.RemoveAt(removeItemIdx);
+                    DiscussList.MenuItems.RemoveAt(removeItemIdx);
                 }
             };
+        }
+
+        private void UpdateDiscussionItemNavList()
+        {
+            foreach (
+                var navitem in
+                from item in ViewModel.DiscussionItemViewModels
+                let navitem = new NavigationViewItem()
+                {
+                    DataContext = item,
+                    ContentTemplate = "DiscussionItemNavigationViewItemDataTemplate".GetResource<DataTemplate>()
+                }
+                select navitem
+            )
+            {
+                DiscussList.MenuItems.Add(navitem);
+            }
         }
 
         private async void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

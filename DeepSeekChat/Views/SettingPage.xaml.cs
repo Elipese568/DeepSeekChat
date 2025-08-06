@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -56,10 +57,9 @@ namespace DeepSeekChat.Views
                 // Animation
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    MainPage.Current.ViewModel.ClearOtherPages(x =>
-                    {
-                        return x.Item2.Item1 is DiscussionPage;
-                    });
+                    Debug.WriteLine(MainPage.Current.Frame.GetNavigationState());
+                    MainPage.Current.Frame.BackStack.Clear();
+
                     Grid grid = new();
                     grid.Background = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];
 
@@ -306,5 +306,16 @@ namespace DeepSeekChat.Views
         }
 
         private string GetProjectGitCloneCommand() => ProjectProperties.ProjectGitCloneCommand;
+
+        int _adv_click_times = 0;
+
+        private void SettingsCard_Click_1(object sender, RoutedEventArgs e)
+        {
+            _adv_click_times++;
+            if (_adv_click_times > 10)
+            {
+                MainPage.Current.Frame.Navigate(typeof(AdvanceOperationPage), null, new DrillInNavigationTransitionInfo());
+            }
+        }
     }
 }

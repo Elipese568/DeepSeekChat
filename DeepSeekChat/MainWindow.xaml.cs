@@ -13,8 +13,10 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Input.Preview.Injection;
 using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -36,13 +38,16 @@ namespace DeepSeekChat
             AppWindow.TitleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
             Current = this;
 
+            AccessKeyManager.AreKeyTipsEnabled = false;
+
             SetTitleBar(MyTitleBar);
             this.InitializeComponent();
         }
 
         private void MyTitleBar_BackRequested(TitleBar sender, object args)
         {
-            MainPage.Current.ViewModel.GoBack();
+            if(MainPage.Current.Frame.BackStackDepth > 0)
+                MainPage.Current.Frame.GoBack();
         }
     }
 }
