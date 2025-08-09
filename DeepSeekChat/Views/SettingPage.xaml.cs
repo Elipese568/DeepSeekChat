@@ -57,7 +57,6 @@ namespace DeepSeekChat.Views
                 // Animation
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    Debug.WriteLine(MainPage.Current.Frame.GetNavigationState());
                     MainPage.Current.Frame.BackStack.Clear();
 
                     Grid grid = new();

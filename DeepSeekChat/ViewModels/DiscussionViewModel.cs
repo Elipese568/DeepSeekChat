@@ -278,10 +278,11 @@ public partial class DiscussionViewModel : ObservableRecipient
 
         SelectedDiscussItemViewModel.LeastStatus = e.Status;
 
-        if (MainPage.Current.ViewModel.SelectedDiscussItem.Id != SelectedDiscussItemViewModel.Id)
+        if (MainPage.Current.ViewModel.SelectedDiscussItem?.Id != SelectedDiscussItemViewModel.Id)
             SelectedDiscussItemViewModel.IsViewed = false;
         else
-            SelectedDiscussItemViewModel.IsViewed = true;
+            if(SelectedDiscussItemViewModel != null)
+                SelectedDiscussItemViewModel.IsViewed = true;
     }
 
     public event EventHandler ScrollToBottomRequested;

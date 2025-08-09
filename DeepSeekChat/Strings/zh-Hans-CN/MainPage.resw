@@ -162,4 +162,7 @@
   <data name="NoDiscussionTip.Text" xml:space="preserve">
     <value>无对话</value>
   </data>
+  <data name="QuickDiscussionItem.Content" xml:space="preserve">
+    <value>快捷讨论</value>
+  </data>
 </root>

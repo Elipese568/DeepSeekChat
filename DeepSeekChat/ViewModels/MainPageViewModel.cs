@@ -18,6 +18,7 @@ using DeepSeekChat.Service;
 using Microsoft.UI.Dispatching;
 using CommunityToolkit.WinUI.Helpers;
 using System.Net.NetworkInformation;
+using Microsoft.UI.Xaml.Media.Animation;
 
 namespace DeepSeekChat.ViewModels;
 
@@ -200,12 +201,28 @@ public partial class MainPageViewModel : ObservableRecipient
                 }
                 else
                 {
-                    var current = _discussionItemService.CreateNewDiscussionItem(textBox.Text);
-                    var ndVM = new DiscussionItemViewModel(current);
-                    ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
-                    DiscussionItemViewModels.Add(ndVM);
+                    _ = CreateDiscussion(textBox.Text, true);
                 }
             });
+    }
+
+    private DiscussionItemViewModel CreateDiscussion(string title, bool addInTrack)
+    {
+        var current = _discussionItemService.InjectNewDiscussionItem(title);
+        var ndVM = new DiscussionItemViewModel(current);
+        ndVM.PropertyChanged += OnDiscussItemPropertyChanged;
+        if(addInTrack)
+            DiscussionItemViewModels.Add(ndVM);
+
+        return ndVM;
+    }
+
+    public async Task QuickDiscussion()
+    {
+        var current = _discussionItemService.CreateNewDiscussionItem("QuickDiscussionItem.Content".GetLocalized("MainPage"));
+        var ndVM = new DiscussionItemViewModel(current);
+        MainWindow.Current.DrillInQuickDiscussionMode(ndVM);
+        await Task.CompletedTask;
     }
 
     private void OnDiscussItemPropertyChanged(object? sender, PropertyChangedEventArgs e)

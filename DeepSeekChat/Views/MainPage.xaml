@@ -99,6 +99,12 @@
             </StackPanel>
         </NavigationView.PaneCustomContent>
         <NavigationView.FooterMenuItems>
+            <NavigationViewItem SelectsOnInvoked="False" Tag="QuickDiscussion" x:Uid="ms-resource:///MainPage/QuickDiscussionItem">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xEE56;" />
+                </NavigationViewItem.Icon>
+                Quick Discussion
+            </NavigationViewItem>
             <NavigationViewItem SelectsOnInvoked="False" Tag="AddDiscussionItem" x:Uid="ms-resource:///MainPage/AddDiscussionButton">
                 <NavigationViewItem.Icon>
                     <SymbolIcon Symbol="Add"/>

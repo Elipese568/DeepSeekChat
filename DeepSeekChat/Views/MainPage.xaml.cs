@@ -183,8 +183,18 @@ namespace DeepSeekChat.Views
         {
             try
             {
-                if(args.InvokedItemContainer.Tag is string tagStr && tagStr == "AddDiscussionItem")
-                    await ViewModel.AddDiscussion();
+                if(args.InvokedItemContainer.Tag is string tagStr)
+                {
+                    switch (tagStr)
+                    {
+                        case "AddDiscussionItem":
+                            await ViewModel.AddDiscussion();
+                            break;
+                        case "QuickDiscussion":
+                            await ViewModel.QuickDiscussion();
+                            break;
+                    }
+                }
             }
             catch { }
         }

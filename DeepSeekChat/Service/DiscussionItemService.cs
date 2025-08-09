@@ -43,18 +43,9 @@ public class DiscussionItemService : JsonSeriailizingServiceBase<List<Discussion
         return _data;
     }
 
-    public DiscussionItem CreateNewDiscussionItem(string name)
+    public DiscussionItem InjectNewDiscussionItem(string name)
     {
-        var discussionItem = new DiscussionItem()
-        {
-            LeastStatus = ProgressStatus.None,
-            ChatOptions = new(),
-            Id = Guid.NewGuid(),
-            CreationTime = DateTime.Now,
-            IsViewed = true,
-            Messages = new List<ApplicationChatMessage>(),
-            Title = name
-        };
+        var discussionItem = CreateNewDiscussionItem(name);
         _data.Add(discussionItem);
         _itemChangedHandler.Invoke(this, new DiscussionItemChangedEventArgs()
         {
@@ -64,6 +55,27 @@ public class DiscussionItemService : JsonSeriailizingServiceBase<List<Discussion
 
         return discussionItem;
     }
+
+    public void InjectDiscussionItem(DiscussionItem item)
+    {
+        _data.Add(item);
+        _itemChangedHandler.Invoke(this, new DiscussionItemChangedEventArgs()
+        {
+            Item = item,
+            Operation = ChangeOperation.Add
+        });
+    }
+
+    public DiscussionItem CreateNewDiscussionItem(string name) => new DiscussionItem()
+    {
+        LeastStatus = ProgressStatus.None,
+        ChatOptions = new(),
+        Id = Guid.NewGuid(),
+        CreationTime = DateTime.Now,
+        IsViewed = true,
+        Messages = new List<ApplicationChatMessage>(),
+        Title = name
+    };
 
     public DiscussionItem GetDiscussionItemById(Guid id)
     {
