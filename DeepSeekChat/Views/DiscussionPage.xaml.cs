@@ -1,6 +1,5 @@
 using CommunityToolkit.WinUI.UI.Controls;
 using DeepSeekChat.Helper;
-using DeepSeekChat.Models;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,64 +17,6 @@ using System.Linq;
 
 namespace DeepSeekChat.Views
 {
-    public class ProgressStatusVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return ((ProgressStatus)value == ProgressStatus.InProgress) ^ bool.Parse((string)parameter ?? "false") ? Visibility.Visible : Visibility.Collapsed;
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class AnalyzeStatusToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return (((AnalyzeStatus)value) == AnalyzeStatus.Analyzing) ^ bool.Parse((string)parameter) ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class FileTypeToGlyphConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value is FileType fileType)
-            {
-                return fileType switch
-                {
-                    FileType.Document => "\uE8A5", // Document icon
-                    FileType.Media => "\uE91B",    // Media icon
-                    _ => "\uE8A5"                  // Default to Document icon
-                };
-            }
-            return DependencyProperty.UnsetValue;
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class HalfIntegerValueConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return (double)value / 2;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     public class StreamingModeToSelectionModeConverter : IValueConverter
     {
@@ -89,19 +30,6 @@ namespace DeepSeekChat.Views
         {
             throw new NotImplementedException();
         }
-    }
-
-    public class ReferenceValue : DependencyObject
-    {
-        public object Value
-        {
-            get { return (object)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(object), typeof(ReferenceValue), new PropertyMetadata(0));
     }
 
     public class ModIdToDescriptiveConverter : IValueConverter
@@ -128,6 +56,7 @@ namespace DeepSeekChat.Views
 
         public DiscussionPage()
         {
+            DataContext = ViewModel;
             this.InitializeComponent();
         }
 
@@ -156,27 +85,8 @@ namespace DeepSeekChat.Views
         private void FilePresent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             FileViewModel fileVm = ((Grid)sender).Tag as FileViewModel;
-
             ViewModel.PreviewFileViewModel = fileVm;
-            FilePreviewArea.Visibility = Visibility.Visible;
-        }
-
-        private void ExitPreviewFile_Click(object sender, RoutedEventArgs e)
-        {
-            FilePreviewArea.Visibility = Visibility.Collapsed;
-        }
-
-        public string AsString(FileType type)
-            => type switch { FileType.Document => "Document", FileType.Media => "Media", _ => "Unknown" };
-
-        public string GetRawDataString(Uri fileUri)
-        {
-            return File.ReadAllText(fileUri.LocalPath);
-        }
-
-        public ImageSource GetRawImageSource(Uri fileUri)
-        {
-            return new BitmapImage(fileUri);
+            ViewModel.FilePreviewerVisibility = Visibility.Visible;
         }
 
         private async void RemoveMessageButton_Click(object sender, RoutedEventArgs e)
@@ -203,6 +113,11 @@ namespace DeepSeekChat.Views
                 ViewModel.SendCommand.Execute(ViewModel.InputingPrompt);
 
             args.Handled = true; // 标记事件已处理
+        }
+
+        private void FilePreviewPresenter_FilePreviewClosing(object sender, EventArgs e)
+        {
+            ViewModel.FilePreviewerVisibility = Visibility.Collapsed;
         }
     }
 }

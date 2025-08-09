@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DeepSeekChat.Controls.MessageMetadataPresenter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeepSeekChat.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:hmkp="using:DeepSeekChat.Helper.Markups" 
+    xmlns:tklabcont="using:CommunityToolkit.Labs.WinUI"
+    mc:Ignorable="d">
+    <StackPanel Spacing="16">
+        <local:PropertyPresenter x:Uid="ms-resource:///DiscussionPage/MessageIdFlyoutHeader" Value="{x:Bind Metadata.Id, Mode=OneWay}"/>
+        <MenuFlyoutSeparator Margin="-12"/>
+        <local:PropertyPresenter x:Uid="ms-resource:///DiscussionPage/CreationTimeFlyoutHeader" Value="{x:Bind Metadata.TimeCreated, Mode=OneWay}"/>
+        <MenuFlyoutSeparator Margin="-12"/>
+        <local:PropertyPresenter x:Uid="ms-resource:///DiscussionPage/ModelIdFlyoutHeader" Value="{x:Bind Metadata.Model, Mode=OneWay}"/>
+        <MenuFlyoutSeparator Margin="-12"/>
+        <Grid RowSpacing="12" Margin="-16" Padding="16"  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/ArgumentsFlyoutPartHeader"/>
+            <StackPanel Grid.Row="1" Spacing="16">
+                <local:PropertyPresenter Value="{x:Bind Metadata.Options.SystemPrompt, Mode=OneWay}" MaxWidth="250">
+                    <local:PropertyPresenter.Header>
+                        <StackPanel Spacing="4" Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="{hmkp:I18N Key=SystemPromptArgumentItem.Header,Map=DiscussionPage}"/>
+                            <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="{x:Bind Metadata.Options.SystemPrompt, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        </StackPanel>
+                    </local:PropertyPresenter.Header>
+                </local:PropertyPresenter>
+                <MenuFlyoutSeparator Margin="-12"/>
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <local:PropertyPresenter Grid.Column="0" x:Uid="ms-resource:///DiscussionPage/MaxTokenOutputCountArgumentItem" Value="{x:Bind Metadata.Options.MaxTokens, Mode=OneWay}"/>
+                    <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                    <local:PropertyPresenter Grid.Column="2" x:Uid="ms-resource:///DiscussionPage/SeedArgumentItem" Value="{x:Bind Metadata.Options.Seed, Mode=OneWay}"/>
+                </Grid>
+                <MenuFlyoutSeparator Margin="-12"/>
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <local:PropertyPresenter Grid.Column="0" x:Uid="ms-resource:///DiscussionPage/TemperatureArgumentItem" Value="{x:Bind Metadata.Options.Temperature, Mode=OneWay}"/>
+                    <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                    <local:PropertyPresenter Grid.Column="2" x:Uid="ms-resource:///DiscussionPage/TopPArgumentItem" Value="{x:Bind Metadata.Options.TopP, Mode=OneWay}"/>
+                </Grid>
+
+                <MenuFlyoutSeparator Margin="-12"/>
+                <local:PropertyPresenter x:Uid="ms-resource:///DiscussionPage/FrequencyPenaltyArgumentItem" Value="{x:Bind Metadata.Options.FrequencyPenalty, Mode=OneWay}"/>
+                <MenuFlyoutSeparator Margin="-12" Visibility="{x:Bind Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false, Mode=OneWay}" />
+                <StackPanel Spacing="8" Visibility="{x:Bind Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false, Mode=OneWay}">
+                    <TextBlock VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///DiscussionPage/ModsFlyoutHeader"/>
+                    <tklabcont:TokenView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" IsWrapped="True" ItemsSource="{x:Bind Metadata.Mods, Mode=OneWay}">
+                        <tklabcont:TokenView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{x:Bind Converter={StaticResource ModIdToDescriptiveConverter}}"/>
+                            </DataTemplate>
+                        </tklabcont:TokenView.ItemTemplate>
+                    </tklabcont:TokenView>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -22,12 +22,15 @@ public static class ResourceExtension
         return new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "General").GetString(resourceKey.Replace(".", "/"));
     }
 
-    public static T GetResource<T>(this string resourceKey, FrameworkElement? element = null)
+    public static T GetResource<T>(this string resourceKey, FrameworkElement? element = null, ResourceDictionary? rd = null)
     {
         if (element == null)
-            return (T)MainPage.Current.Resources[resourceKey];
-
-        return (T)element.Resources[element.Name];
+            if (rd == null)
+                return (T)MainPage.Current.Resources[resourceKey];
+            else
+                return (T)rd[resourceKey];
+        else
+            return (T)element.Resources[resourceKey];
     }
 
     //public static ResourceCandidate GetLocalizedRaw(this string resourceKey, string map = "Resources") => _resources[map + "/" + resourceKey];

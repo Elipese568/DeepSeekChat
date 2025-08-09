@@ -64,6 +64,7 @@ namespace DeepSeekChat.Controls
 
         private readonly Dictionary<UIElement, long> _callbackTokens = new();
 
+        #region Helper Functions
         private void AttachVisibilityHandlers()
         {
             foreach (var child in this.Children)
@@ -91,6 +92,20 @@ namespace DeepSeekChat.Controls
 
         private bool IsVisible(UIElement element) =>
             element != null && element.Visibility != Visibility.Collapsed;
+
+        private double CalculateLength(GridLength length, double total, GridLength otherLength)
+        {
+            return length.GridUnitType switch
+            {
+                GridUnitType.Pixel => length.Value,
+                GridUnitType.Star =>
+                    (length.Value + otherLength.Value) == 0 ? total / 2 : total * (length.Value / (length.Value + otherLength.Value)),
+                GridUnitType.Auto => total / 2,
+                _ => total / 2,
+            };
+        }
+
+        #endregion
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -200,18 +215,6 @@ namespace DeepSeekChat.Controls
             }
 
             return finalSize;
-        }
-
-        private double CalculateLength(GridLength length, double total, GridLength otherLength)
-        {
-            return length.GridUnitType switch
-            {
-                GridUnitType.Pixel => length.Value,
-                GridUnitType.Star =>
-                    (length.Value + otherLength.Value) == 0 ? total / 2 : total * (length.Value / (length.Value + otherLength.Value)),
-                GridUnitType.Auto => total / 2,
-                _ => total / 2,
-            };
         }
     }
 }

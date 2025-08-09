@@ -65,6 +65,7 @@ namespace DeepSeekChat
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<>), (value) => (value as ICollection).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<ContentPartViewModel>), (value) => (value as ObservableCollection<ContentPartViewModel>).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<DiscussionItem>), (value) => (value as ObservableCollection<DiscussionItem>).Count != 0);
+            EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<ApplicationChatMessageViewModel>), (value) => (value as ObservableCollection<ApplicationChatMessageViewModel>).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ObservableCollection<FileViewModel>), (value) => (value as ObservableCollection<FileViewModel>).Count != 0);
             EmptyVisibilityConverter.RegisterHandler(typeof(ItemCollection), (value) => (value as ItemCollection).Count != 0);
 
@@ -123,23 +124,34 @@ namespace DeepSeekChat
 
         private void UnhandledExceptionProcessor(object s, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            var notification = new AppNotificationBuilder()
+            var notificationBuilder = new AppNotificationBuilder()
                 .AddText("UnexpectedExceptionText".GetLocalized())
-                .AddText(e.Exception.Message)
-                .AddButton(new AppNotificationButton("SeeDetailText".GetLocalized()))
-                .BuildNotification();
+                .AddText(e.Exception.Message);
 
-            var exceptionPipeData = new PipeData("exception", new Dictionary<string, string>()
+            PipeData? exceptionPipeData = null;
+            AppNotification notification = null;
+
+            try
             {
-                ["exception_serialized_string"] = JsonSerializer.Serialize(e.Exception, m_exceptionJsonSerializeOptions),
-                ["exception_type"] = e.Exception.GetType().FullName
-            });
+                exceptionPipeData = new ("exception", new Dictionary<string, string>()
+                {
+                    ["exception_serialized_string"] = JsonSerializer.Serialize(e.Exception, m_exceptionJsonSerializeOptions),
+                    ["exception_type"] = e.Exception.GetType().FullName
+                });
+                notificationBuilder.AddButton(new AppNotificationButton("SeeDetailText".GetLocalized()));
+            }
+            catch { }
+            finally
+            {
+                notification = notificationBuilder.BuildNotification();
+            }
 
             notification.Priority = Microsoft.Windows.AppNotifications.AppNotificationPriority.High;
             AppNotificationManager.Default.Show(notification);
             e.Handled = true;
 
-            ExceptionPipeHolder(exceptionPipeData);
+            if(exceptionPipeData.HasValue)
+                ExceptionPipeHolder(exceptionPipeData.Value);
         }
 
         private NamedPipeServerStream m_exceptionPipe;

@@ -9,16 +9,16 @@
     xmlns:uim="using:DeepSeekChat.Models"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
-    xmlns:h="using:DeepSeekChat.Helper"
+    xmlns:hmkp="using:DeepSeekChat.Helper.Markups"
     xmlns:vm="using:DeepSeekChat.ViewModels" d:DataContext="{d:DesignInstance Type=local:MainPage}"
     Loaded="Page_Loaded"
     x:Name="MainPage_obj"
     mc:Ignorable="d">
     <Page.Resources>
         <MenuFlyout x:Name="RightClickCommands">
-            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" Text="{h:I18N Key=RemoveMenuItem.Text,Map=MainPage}">
+            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" Text="{hmkp:I18N Key=RemoveMenuItem.Text,Map=MainPage}">
             </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" Text="{h:I18N Key=ChangeTitleMenuItem.Text,Map=MainPage}">
+            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" Text="{hmkp:I18N Key=ChangeTitleMenuItem.Text,Map=MainPage}">
             </MenuFlyoutItem>
         </MenuFlyout>
         <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
@@ -33,20 +33,20 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={h:Int32Markup Value=20}, Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="0" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{Binding Path=Title, Converter={StaticResource StringSubSplitConverter}, ConverterParameter={hmkp:Int32Markup Value=20}, Mode=TwoWay}"/>
                         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                             <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{Binding CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
                         </Grid>
                     </Grid>
                     <Border HorizontalAlignment="Right" 
-                    VerticalAlignment="Top" 
-                    CornerRadius="8"
-                    Width="26" 
-                    Height="16" 
-                    Margin="0, 8"
-                    Background="{Binding LeastStatus, Converter={StaticResource ProgressStatusToColorConverter}}"
-                    Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
-                    Name="StatusSelector">
+                            VerticalAlignment="Top" 
+                            CornerRadius="8"
+                            Width="26" 
+                            Height="16" 
+                            Margin="0, 8"
+                            Background="{Binding LeastStatus, Converter={StaticResource ProgressStatusToColorConverter}}"
+                            Visibility="{Binding IsViewed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
+                            Name="StatusSelector">
                         <TextBlock HorizontalAlignment="Center" Visibility="{Binding Background,ElementName=StatusSelector,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="10" Foreground="{ThemeResource TextOnAccentFillColorPrimary}">New</TextBlock>
                     </Border>
                 </Grid>
@@ -73,8 +73,8 @@
                          IsOpen="{x:Bind ViewModel.IsApiKeyEmpty, Mode=OneWay}" IsClosable="False">
                         <InfoBar.ActionButton>
                             <HyperlinkButton HorizontalAlignment="Right"
-                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"
-                             Click="SetApiKeyButton_Click"/>
+                                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"
+                                             Click="SetApiKeyButton_Click"/>
                         </InfoBar.ActionButton>
                     </InfoBar>
                     <InfoBar Severity="Error"
@@ -82,8 +82,8 @@
                          IsOpen="{x:Bind ReverseBool(ViewModel.IsApiKeyAvailable), Mode=OneWay}" IsClosable="False">
                         <InfoBar.ActionButton>
                             <HyperlinkButton HorizontalAlignment="Right"
-                             Click="SetApiKeyButton_Click"
-                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
+                                             Click="SetApiKeyButton_Click"
+                                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
                         </InfoBar.ActionButton>
                     </InfoBar>
                     <InfoBar Severity="Error"
@@ -91,8 +91,8 @@
                          IsOpen="{x:Bind ReverseBool(ViewModel.IsServiceAvailable), Mode=OneWay}" IsClosable="False">
                         <InfoBar.ActionButton>
                             <HyperlinkButton HorizontalAlignment="Right"
-                             Click="SetServerEndpointButton_Click"
-                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
+                                             Click="SetServerEndpointButton_Click"
+                                             x:Uid="ms-resource:///MainPage/GoSettingToCorrectActionButton"/>
                         </InfoBar.ActionButton>
                     </InfoBar>
                 </StackPanel>
@@ -105,6 +105,7 @@
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
         </NavigationView.FooterMenuItems>
+        
         <Frame x:Name="ContentFrame"/>
     </NavigationView>
 </Page>

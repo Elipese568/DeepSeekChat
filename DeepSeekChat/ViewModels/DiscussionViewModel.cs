@@ -41,8 +41,11 @@ public partial class DiscussionViewModel : ObservableRecipient
 
     [ObservableProperty]
     private FileViewModel? _previewFileViewModel = null;
+    [ObservableProperty]
+    public Visibility _filePreviewerVisibility;
 
     public Visibility FileListVisibility => SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
+    
 
     public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
@@ -61,6 +64,7 @@ public partial class DiscussionViewModel : ObservableRecipient
 
         UserAvatarDataViewModel = _avatarManagerService.GetSelectedUserAvatarViewModel();
         AiAvatarDataViewModel = _avatarManagerService.GetSelectedAiAvatarViewModel();
+        FilePreviewerVisibility = Visibility.Collapsed;
 
         _avatarManagerService.SelectedUserAvatarChanged += (s, e) =>
         {
@@ -92,7 +96,7 @@ public partial class DiscussionViewModel : ObservableRecipient
                 ReasoningContent = "",
                 Content = ""
             },
-            TokenUsage = new(),
+            TokenUsage = new() { CompletionTokens = 0, PromptTokens = 0, TotalTokens = 0},
             ProgressStatus = ProgressStatus.InProgress
         });
 
@@ -153,30 +157,34 @@ public partial class DiscussionViewModel : ObservableRecipient
             FileType.Media => PickerViewMode.Thumbnail
         };
 
-        var pickedFile = await filePicker.PickSingleFileAsync();
-        if(pickedFile == null)
-            return;
+        var pickedFiles = await filePicker.PickMultipleFilesAsync();
 
-        var fileModel = await _fileManagerService.CreateFileReferenceAsync(pickedFile, SelectedDiscussItemViewModel.Id.ToString(), type);
-        var realType = FileTypeChecker.GetFileType(pickedFile.Path);
-        var expectedType = type;
-
-        if (realType == CheckFileType.Unknown || type switch { FileType.Document => realType is not CheckFileType.Text and not CheckFileType.Unknown, FileType.Media => realType is not CheckFileType.Image})
+        foreach(var pickedFile in pickedFiles)
         {
-            var result = await ContentDialogHelper.ShowMessageDialog("未知的文件类型", $"当前正在添加{(type == FileType.Document ? ("文档/文本") : ("图片"))}文件，但当前文件非此格式，是否以{(type == FileType.Document ? ("图片") : ("文档/文本"))}格式上传？", "是", "取消", "我还是想这样上传", ContentDialogButton.Close, MainPage.Current.XamlRoot);
-            if(result == ContentDialogResult.Primary) 
-            {
-                expectedType = (FileType)(((int)expectedType + 1) % 2); // Toggle between Text and Image
-                fileModel.Type = expectedType;
-            }
-            else if(result != ContentDialogResult.Secondary)
-            {
-                return; // User chose to cancel
-            }
-        }
+            if (pickedFile == null)
+                continue;
 
-        var fileVm = SelectedDiscussItemViewModel.FilesViewModel.Add(fileModel);
-        AnalyzingFileContent(fileVm, realType == CheckFileType.Unknown? expectedType switch { FileType.Document => CheckFileType.Text, FileType.Media => CheckFileType.Image } : realType);
+            var fileModel = await _fileManagerService.CreateFileReferenceAsync(pickedFile, SelectedDiscussItemViewModel.Id.ToString(), type);
+            var realType = FileTypeChecker.GetFileType(pickedFile.Path);
+            var expectedType = type;
+
+            if (realType == CheckFileType.Unknown || type switch { FileType.Document => realType is not CheckFileType.Text and not CheckFileType.Unknown, FileType.Media => realType is not CheckFileType.Image })
+            {
+                var result = await ContentDialogHelper.ShowMessageDialog("未知的文件类型", $"当前正在添加{(type == FileType.Document ? ("文档/文本") : ("图片"))}文件，但当前文件非此格式，是否以{(type == FileType.Document ? ("图片") : ("文档/文本"))}格式上传？", "是", "取消", "我还是想这样上传", ContentDialogButton.Close, MainPage.Current.XamlRoot);
+                if (result == ContentDialogResult.Primary)
+                {
+                    expectedType = (FileType)(((int)expectedType + 1) % 2); // Toggle between Text and Image
+                    fileModel.Type = expectedType;
+                }
+                else if (result != ContentDialogResult.Secondary)
+                {
+                    continue; // User chose to cancel
+                }
+            }
+
+            var fileVm = SelectedDiscussItemViewModel.FilesViewModel.Add(fileModel);
+            AnalyzingFileContent(fileVm, realType == CheckFileType.Unknown ? expectedType switch { FileType.Document => CheckFileType.Text, FileType.Media => CheckFileType.Image } : realType);
+        }
     }
 
     private async Task AnalyzingFileContent(FileViewModel fileVm, CheckFileType fileType)

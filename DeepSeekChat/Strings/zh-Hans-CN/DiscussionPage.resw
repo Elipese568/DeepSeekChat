@@ -123,40 +123,40 @@
   <data name="OptionsButtonLabel.Text" xml:space="preserve">
     <value>选项设置</value>
   </data>
-  <data name="PromptTokenUsageFlyoutHeader.Text" xml:space="preserve">
+  <data name="PromptTokenUsageFlyoutHeader.Header" xml:space="preserve">
     <value>提示词Token使用量</value>
   </data>
-  <data name="CompletionTokenUsageFlyoutHeader.Text" xml:space="preserve">
+  <data name="CompletionTokenUsageFlyoutHeader.Header" xml:space="preserve">
     <value>对话Token使用量</value>
   </data>
-  <data name="MessageIdFlyoutHeader.Text" xml:space="preserve">
+  <data name="MessageIdFlyoutHeader.Header" xml:space="preserve">
     <value>对话ID</value>
   </data>
-  <data name="CreationTimeFlyoutHeader.Text" xml:space="preserve">
+  <data name="CreationTimeFlyoutHeader.Header" xml:space="preserve">
     <value>创建时间</value>
   </data>
-  <data name="ModelIdFlyoutHeader.Text" xml:space="preserve">
+  <data name="ModelIdFlyoutHeader.Header" xml:space="preserve">
     <value>模型ID</value>
   </data>
   <data name="ArgumentsFlyoutPartHeader.Text" xml:space="preserve">
     <value>对话参数</value>
   </data>
-  <data name="SystemPromptArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="SystemPromptArgumentItem.Header" xml:space="preserve">
     <value>基本提示词</value>
   </data>
-  <data name="MaxTokenOutputCountArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="MaxTokenOutputCountArgumentItem.Header" xml:space="preserve">
     <value>最大Token输出量</value>
   </data>
-  <data name="SeedArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="SeedArgumentItem.Header" xml:space="preserve">
     <value>随机种子</value>
   </data>
-  <data name="TemperatureArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="TemperatureArgumentItem.Header" xml:space="preserve">
     <value>温度</value>
   </data>
-  <data name="TopPArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="TopPArgumentItem.Header" xml:space="preserve">
     <value>概率采样</value>
   </data>
-  <data name="FrequencyPenaltyArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="FrequencyPenaltyArgumentItem.Header" xml:space="preserve">
     <value>频率惩罚</value>
   </data>
   <data name="AutoRefreshSeedToogleButton.Content" xml:space="preserve">

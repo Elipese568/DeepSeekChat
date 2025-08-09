@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepSeekChat.Helper;
+namespace DeepSeekChat.Helper.Markups;
 
 [MarkupExtensionReturnType(ReturnType = typeof(int))]
 public sealed class Int32MarkupExtension : MarkupExtension

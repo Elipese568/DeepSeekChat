@@ -134,6 +134,11 @@
     <None Remove="Assets\Wide310x150Logo.scale-150.png" />
     <None Remove="Assets\Wide310x150Logo.scale-200.png" />
     <None Remove="Assets\Wide310x150Logo.scale-400.png" />
+    <None Remove="Controls\ChatOptionSettingPane.xaml" />
+    <None Remove="Controls\FilePreviewPresenter.xaml" />
+    <None Remove="Controls\MessageMetadataPresenter.xaml" />
+    <None Remove="Controls\MessagesView.xaml" />
+    <None Remove="Controls\MessageTokenUsagePresenter.xaml" />
     <None Remove="ExceptionPreviewWindow.xaml" />
     <None Remove="MainPage.xaml" />
     <None Remove="Styles\Text.xaml" />
@@ -209,6 +214,31 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\MessagesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\MessageTokenUsagePresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\MessageMetadataPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\FilePreviewPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\ChatOptionSettingPane.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ExceptionPreviewWindow.xaml">

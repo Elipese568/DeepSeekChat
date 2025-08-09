@@ -123,40 +123,40 @@
   <data name="OptionsButtonLabel.Text" xml:space="preserve">
     <value>Options</value>
   </data>
-  <data name="PromptTokenUsageFlyoutHeader.Text" xml:space="preserve">
+  <data name="PromptTokenUsageFlyoutHeader.Header" xml:space="preserve">
     <value>Prompt Token Usage</value>
   </data>
-  <data name="CompletionTokenUsageFlyoutHeader.Text" xml:space="preserve">
+  <data name="CompletionTokenUsageFlyoutHeader.Header" xml:space="preserve">
     <value>Completion Token Usage</value>
   </data>
-  <data name="MessageIdFlyoutHeader.Text" xml:space="preserve">
+  <data name="MessageIdFlyoutHeader.Header" xml:space="preserve">
     <value>Message ID</value>
   </data>
-  <data name="CreationTimeFlyoutHeader.Text" xml:space="preserve">
+  <data name="CreationTimeFlyoutHeader.Header" xml:space="preserve">
     <value>Creation Time</value>
   </data>
-  <data name="ModelIdFlyoutHeader.Text" xml:space="preserve">
+  <data name="ModelIdFlyoutHeader.Header" xml:space="preserve">
     <value>Model ID</value>
   </data>
   <data name="ArgumentsFlyoutPartHeader.Text" xml:space="preserve">
     <value>Arguments</value>
   </data>
-  <data name="SystemPromptArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="SystemPromptArgumentItem.Header" xml:space="preserve">
     <value>SystemPrompt</value>
   </data>
-  <data name="MaxTokenOutputCountArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="MaxTokenOutputCountArgumentItem.Header" xml:space="preserve">
     <value>Max Token Output Count</value>
   </data>
-  <data name="SeedArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="SeedArgumentItem.Header" xml:space="preserve">
     <value>Seed</value>
   </data>
-  <data name="TemperatureArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="TemperatureArgumentItem.Header" xml:space="preserve">
     <value>Temperature</value>
   </data>
-  <data name="TopPArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="TopPArgumentItem.Header" xml:space="preserve">
     <value>Top-P</value>
   </data>
-  <data name="FrequencyPenaltyArgumentFlyoutHeader.Text" xml:space="preserve">
+  <data name="FrequencyPenaltyArgumentItem.Header" xml:space="preserve">
     <value>Frequency Penalty</value>
   </data>
   <data name="AutoRefreshSeedToogleButton.Content" xml:space="preserve">

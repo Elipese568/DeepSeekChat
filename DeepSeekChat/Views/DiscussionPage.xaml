@@ -11,6 +11,7 @@
     xmlns:com="using:System.Collections.ObjectModel"
     xmlns:dscc="using:DeepSeekChat.Controls"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
+    xmlns:hmkp="using:DeepSeekChat.Helper.Markups"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
     xmlns:tkcont="using:CommunityToolkit.WinUI.Controls"
     xmlns:tkuicont="using:CommunityToolkit.WinUI.UI.Controls"
@@ -21,27 +22,48 @@
     d:DataContext="{d:DesignInstance Type=local:DiscussionPage}">
     <Page.Resources>
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
-        <conv:IntyConverter x:Key="IntyConverter"/>
-        <local:ProgressStatusVisibilityConverter x:Key="ProgressStatusVisibilityConverter"/>
-        <tkconv:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
         <tkconv:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter"/>
-        <conv:FileSizeFriendlyStringConverter x:Key="FileSizeToFriendlyStringConverter"/>
-        <local:AnalyzeStatusToVisibilityConverter x:Key="AnalyzeStatusToVisibilityConverter"/>
-        <local:FileTypeToGlyphConverter x:Key="FileTypeToGlyphConverter"/>
-        <local:HalfIntegerValueConverter x:Key="HalfIntegerValueConverter"/>
-        <local:StreamingModeToSelectionModeConverter x:Key="StreamingModeToSelectionModeConverter"/>
         <local:ModIdToDescriptiveConverter x:Key="ModIdToDescriptiveConverter"/>
+
+        <MenuFlyout x:Key="AddFileSelectorMenuFlyout">
+            <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/DocumentFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
+                <MenuFlyoutItem.Icon>
+                    <SymbolIcon Symbol="Document"/>
+                </MenuFlyoutItem.Icon>
+                <MenuFlyoutItem.CommandParameter>
+                    <m:FileType>
+                        Document
+                    </m:FileType>
+                </MenuFlyoutItem.CommandParameter>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/MediaFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE91B;" />
+                </MenuFlyoutItem.Icon>
+                <MenuFlyoutItem.CommandParameter>
+                    <m:FileType>
+                        Media
+                    </m:FileType>
+                </MenuFlyoutItem.CommandParameter>
+            </MenuFlyoutItem>
+        </MenuFlyout>
     </Page.Resources>
     <Grid x:Name="MainArea">
-        <dscc:AdaptiveSplitPanel FirstControlSize="*" SecondControlSize="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Horizontal">
+        <dscc:AdaptiveSplitPanel FirstControlSize="*" 
+                                 SecondControlSize="*" 
+                                 HorizontalAlignment="Stretch" 
+                                 VerticalAlignment="Stretch" 
+                                 Orientation="Horizontal">
             <Grid RowSpacing="16" Padding="36,40" Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="120"/>
                 </Grid.RowDefinitions>
+                
+                <!--Header-->
                 <Grid Grid.Row="0">
-                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.Title, Mode=TwoWay}"/>
+                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.Title, Mode=OneWay}"/>
                     <Button Click="Button_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                         <StackPanel Spacing="8" Orientation="Horizontal">
                             <FontIcon FontSize="16" Glyph="&#xE713;" />
@@ -49,423 +71,24 @@
                         </StackPanel>
                     </Button>
                 </Grid>
-                <!--<StackPanel Spacing="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding ViewModel.SelectedDiscussItemViewModel.Messages, Converter={StaticResource CollectionVisibilityConverter}, ConverterParameter=True}">
+                
+                <!--Greeting Content-->
+                <!--<StackPanel Spacing="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels, Converter={StaticResource EmptyVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
                     <TextBlock HorizontalAlignment="Center" Style="{ThemeResource SubtitleTextBlockStyle}">No Messages</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}">Please input a prompt and click <Run FontFamily="{StaticResource SymbolThemeFontFamily}" Text=" &#xE725; "/> to start</TextBlock>
                 </StackPanel>-->
-                <ListView SelectionMode="None" Grid.Row="1" x:Name="InvertedListView" ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.MessageViewModels, Mode=TwoWay}">
-                    <!-- The ItemsStackPanel must be edited to update the following two properties -->
-                    <!-- These properties allow the list to grow from the bottom -->
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
-                                 VerticalAlignment="Bottom"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-
-                    <!-- This setter property is created so ListViewItems correctly align to the left or right. -->
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="Margin" Value="0,0,0,8"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:ApplicationChatMessageViewModel">
-                            <ListViewItem>
-                                <ListViewItem.Resources>
-                                    <local:ReferenceValue Value="{Binding}" x:Key="Self"/>
-                                </ListViewItem.Resources>
-                                <Grid RowSpacing="18">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid Grid.Row="0" ColumnSpacing="8" MaxWidth="800" HorizontalAlignment="Right">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="32"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid Grid.Column="0" 
-                                              CornerRadius="4" 
-                                              Padding="12" 
-                                              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                                              BorderThickness="1" 
-                                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Right" 
-                                                       IsTextSelectionEnabled="True" 
-                                                       TextWrapping="Wrap" 
-                                                       Text="{Binding UserPrompt}"/>
-                                        </Grid>
-                                        <PersonPicture Grid.Column="1" 
-                                                       ProfilePicture="{Binding UserAvatar}" 
-                                                       Height="32" 
-                                                       Width="32" 
-                                                       VerticalAlignment="Top" 
-                                                       HorizontalAlignment="Center" 
-                                                       BorderThickness="1" />
-                                    </Grid>
-                                    <Grid Grid.Row="1" ColumnSpacing="8" HorizontalAlignment="Left">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="32"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="1" CornerRadius="4" Spacing="8">
-                                            <Expander IsExpanded="True"
-                                                      ExpandDirection="Down"
-                                                      VerticalAlignment="Top"
-                                                      HorizontalContentAlignment="Left">
-                                                <Expander.Header>
-                                                    <StackPanel Orientation="Horizontal" Spacing="12">
-                                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
-                                                            <Image Height="16">
-                                                                <Image.Resources>
-                                                                    <ResourceDictionary>
-                                                                        <ResourceDictionary.ThemeDictionaries>
-                                                                            <ResourceDictionary x:Key="Light">
-                                                                                <Style TargetType="Image">
-                                                                                    <Setter Property="Source" Value="ms-appx:///Assets/DeepSeekingIconLightMode.svg" />
-                                                                                </Style>
-                                                                            </ResourceDictionary>
-                                                                            <ResourceDictionary x:Key="Dark">
-                                                                                <Style TargetType="Image">
-                                                                                    <Setter Property="Source" Value="ms-appx:///Assets/DeepSeekingIconDarkMode.svg" />
-                                                                                </Style>
-                                                                            </ResourceDictionary>
-                                                                        </ResourceDictionary.ThemeDictionaries>
-                                                                    </ResourceDictionary>
-                                                                </Image.Resources>
-                                                            </Image>
-                                                            <TextBlock x:Uid="ms-resource:///DiscussionPage/DeepSeekingLabel"/>
-                                                        </StackPanel>
-                                                        <Border VerticalAlignment="Stretch"
-                                                                Width="1"
-                                                                BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
-                                                                BorderThickness="1"
-                                                                Height="Auto"/>
-                                                        <Button Margin="0,2,0,0" VerticalAlignment="Stretch" Style="{StaticResource SubtleButtonStyle}">
-                                                            <Button.Flyout>
-                                                                <Flyout>
-                                                                    <StackPanel Spacing="16">
-                                                                        <StackPanel Spacing="8">
-                                                                            <TextBlock VerticalAlignment="Center"
-                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                       x:Uid="ms-resource:///DiscussionPage/PromptTokenUsageFlyoutHeader"/>
-                                                                            <TextBlock Text="{Binding TokenUsage.PromptTokens}"/>
-                                                                        </StackPanel>
-                                                                        <MenuFlyoutSeparator Margin="-12" />
-                                                                        <StackPanel Spacing="8">
-                                                                            <TextBlock VerticalAlignment="Center"
-                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                       x:Uid="ms-resource:///DiscussionPage/CompletionTokenUsageFlyoutHeader"/>
-                                                                            <TextBlock Text="{Binding TokenUsage.CompletionTokens}"/>
-                                                                        </StackPanel>
-                                                                    </StackPanel>
-                                                                </Flyout>
-                                                            </Button.Flyout>
-                                                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                                                <TextBlock x:Uid="ms-resource:///DiscussionPage/TokenUsageHeader"/>
-                                                                <TextBlock Text="{Binding TokenUsage.TotalTokens}"/>
-                                                                <TextBlock>token(s)</TextBlock>
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <Button Margin="-11,2,0,0" VerticalAlignment="Stretch" Style="{StaticResource SubtleButtonStyle}">
-                                                            <Button.Flyout>
-                                                                <Flyout>
-                                                                    <StackPanel Spacing="16">
-                                                                        <StackPanel Spacing="8">
-                                                                            <TextBlock VerticalAlignment="Center"
-                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                       x:Uid="ms-resource:///DiscussionPage/MessageIdFlyoutHeader"/>
-                                                                            <TextBlock Text="{Binding Metadata.Id}"/>
-                                                                        </StackPanel>
-                                                                        <MenuFlyoutSeparator Margin="-12" />
-                                                                        <StackPanel Spacing="8">
-                                                                            <TextBlock VerticalAlignment="Center"
-                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                       x:Uid="ms-resource:///DiscussionPage/CreationTimeFlyoutHeader"/>
-                                                                            <TextBlock Text="{Binding Metadata.TimeCreated}"/>
-                                                                        </StackPanel>
-                                                                        <MenuFlyoutSeparator Margin="-12" />
-                                                                        <StackPanel Spacing="8">
-                                                                            <TextBlock VerticalAlignment="Center"
-                                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                       x:Uid="ms-resource:///DiscussionPage/ModelIdFlyoutHeader"/>
-                                                                            <TextBlock Text="{Binding Metadata.Model}"/>
-                                                                        </StackPanel>
-                                                                        <MenuFlyoutSeparator Margin="-12" />
-                                                                        <Grid RowSpacing="12" Margin="-16,-16,-16,-16" Padding="16"  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                                                                            <Grid.RowDefinitions>
-                                                                                <RowDefinition/>
-                                                                                <RowDefinition/>
-                                                                            </Grid.RowDefinitions>
-                                                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/ArgumentsFlyoutPartHeader"/>
-                                                                            <StackPanel Grid.Row="1" Spacing="16">
-                                                                                <StackPanel Spacing="8">
-                                                                                    <StackPanel Spacing="4" Orientation="Horizontal">
-                                                                                        <TextBlock VerticalAlignment="Center"
-                                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                                   x:Uid="ms-resource:///DiscussionPage/SystemPromptArgumentFlyoutHeader"/>
-                                                                                        <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="{Binding Metadata.Options.SystemPrompt}" FontSize="12" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                                                                    </StackPanel>
-                                                                                    <TextBlock Text="{Binding Metadata.Options.SystemPrompt}" MaxWidth="250"/>
-                                                                                </StackPanel>
-                                                                                <MenuFlyoutSeparator Margin="-12" />
-                                                                                <Grid ColumnSpacing="8">
-                                                                                    <Grid.ColumnDefinitions>
-                                                                                        <ColumnDefinition Width="*"/>
-                                                                                        <ColumnDefinition Width="1"/>
-                                                                                        <ColumnDefinition Width="*"/>
-                                                                                    </Grid.ColumnDefinitions>
-                                                                                    <StackPanel Spacing="8" Grid.Column="0">
-                                                                                        <TextBlock VerticalAlignment="Center"
-                                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                                   x:Uid="ms-resource:///DiscussionPage/MaxTokenOutputCountArgumentFlyoutHeader"/>
-                                                                                        <TextBlock Text="{Binding Metadata.Options.MaxTokens}"/>
-                                                                                    </StackPanel>
-                                                                                    <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
-                                                                                    <StackPanel Spacing="8" Grid.Column="2">
-                                                                                        <TextBlock VerticalAlignment="Center"
-                                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                                   x:Uid="ms-resource:///DiscussionPage/SeedArgumentFlyoutHeader"/>
-                                                                                        <TextBlock Text="{Binding Metadata.Options.Seed}"/>
-                                                                                    </StackPanel>
-                                                                                </Grid>
-                                                                                <MenuFlyoutSeparator Margin="-12" />
-                                                                                <Grid ColumnSpacing="8">
-                                                                                    <Grid.ColumnDefinitions>
-                                                                                        <ColumnDefinition Width="*"/>
-                                                                                        <ColumnDefinition Width="1"/>
-                                                                                        <ColumnDefinition Width="*"/>
-                                                                                    </Grid.ColumnDefinitions>
-                                                                                    <StackPanel Spacing="8" Grid.Column="0">
-                                                                                        <TextBlock VerticalAlignment="Center"
-                                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                                   x:Uid="ms-resource:///DiscussionPage/TemperatureArgumentFlyoutHeader"/>
-                                                                                        <TextBlock Text="{Binding Metadata.Options.Temperature}"/>
-                                                                                    </StackPanel>
-                                                                                    <Border Margin="0,-16" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" Width="1" HorizontalAlignment="Stretch" Grid.Column="1"/>
-                                                                                    <StackPanel Spacing="8" Grid.Column="2">
-                                                                                        <TextBlock VerticalAlignment="Center"
-                                                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                                   x:Uid="ms-resource:///DiscussionPage/TopPArgumentFlyoutHeader"/>
-                                                                                        <TextBlock Text="{Binding Metadata.Options.TopP}"/>
-                                                                                    </StackPanel>
-                                                                                </Grid>
-
-                                                                                <MenuFlyoutSeparator Margin="-12" />
-                                                                                <StackPanel Spacing="8">
-                                                                                    <TextBlock VerticalAlignment="Center"
-                                                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                                               x:Uid="ms-resource:///DiscussionPage/FrequencyPenaltyArgumentFlyoutHeader"/>
-                                                                                    <TextBlock Text="{Binding Metadata.Options.FrequencyPenalty}"/>
-                                                                                </StackPanel>
-                                                                                <MenuFlyoutSeparator Margin="-12" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}" />
-                                                                                <StackPanel Spacing="8" Visibility="{Binding Metadata.Mods.Count, Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=false}">
-                                                                                    <TextBlock VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" x:Uid="ms-resource:///DiscussionPage/ModsFlyoutHeader"/>
-                                                                                    <tklabcont:TokenView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" IsWrapped="True" ItemsSource="{Binding Metadata.Mods}">
-                                                                                        <tklabcont:TokenView.ItemTemplate>
-                                                                                            <DataTemplate x:DataType="x:String">
-                                                                                                <TextBlock Text="{Binding Converter={StaticResource ModIdToDescriptiveConverter}}"/>
-                                                                                            </DataTemplate>
-                                                                                        </tklabcont:TokenView.ItemTemplate>
-                                                                                    </tklabcont:TokenView>
-                                                                                </StackPanel>
-                                                                            </StackPanel>
-                                                                        </Grid>
-                                                                    </StackPanel>
-                                                                </Flyout>
-                                                            </Button.Flyout>
-                                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
-                                                                <Border CornerRadius="16" Width="16" Height="16" Background="{Binding ProgressStatus, Converter={StaticResource ProgressStatusToColorConverter}}" />
-                                                                <TextBlock Text="{Binding ProgressStatus, Converter={StaticResource ProgressStatusToTextConverter}}"/>
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <Border VerticalAlignment="Stretch"
-                                                                Width="1"
-                                                                BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
-                                                                BorderThickness="1"
-                                                                Height="Auto"/>
-                                                        <Button Padding="4" 
-                                                                Style="{ThemeResource SubtleButtonStyle}" 
-                                                                Name="StopGeneratingButton" Click="StopGeneratingButton_Click" 
-                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, Mode=OneWay}">
-                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE71A;" />
-                                                        </Button>
-                                                        <Button Padding="4" 
-                                                                VerticalAlignment="Stretch"
-                                                                Style="{ThemeResource SubtleButtonStyle}" 
-                                                                Name="RemoveMessageButton" Click="RemoveMessageButton_Click"
-                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
-                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE74D;" />
-                                                        </Button>
-                                                        <!--<Button Padding="4" 
-                                                                VerticalAlignment="Stretch"
-                                                                Style="{ThemeResource SubtleButtonStyle}" 
-                                                                Name="RegenerateMessageButton" Click="RegenerateMessageButton_Click"
-                                                                Visibility="{Binding ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
-                                                            <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE72C;" />
-                                                        </Button>-->
-                                                    </StackPanel>
-                                                </Expander.Header>
-                                                <Expander.Content>
-                                                    <Grid>
-                                                        <tkuicont:MarkdownTextBlock Background="Transparent" 
-                                                                                    TextWrapping="Wrap" 
-                                                                                    HorizontalAlignment="Left" 
-                                                                                    IsTextSelectionEnabled="True" 
-                                                                                    ParagraphLineHeight="16"
-                                                                                    Text="{Binding AiChatCompletion.ReasoningContent}">
-                                                        </tkuicont:MarkdownTextBlock>
-                                                    </Grid>
-
-                                                </Expander.Content>
-                                            </Expander>
-                                            <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                                                  BorderThickness="1" 
-                                                  CornerRadius="4"
-                                                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                  Padding="12"
-                                                  Visibility="{Binding AiChatCompletion.Content, Mode=OneWay, Converter={StaticResource EmptyVisibilityConverter}}">
-                                                <tkuicont:MarkdownTextBlock Background="Transparent"
-                                                                            TextWrapping="Wrap" 
-                                                                            HorizontalAlignment="Left" 
-                                                                            IsTextSelectionEnabled="True" 
-                                                                            ParagraphLineHeight="16"
-                                                                            Text="{Binding AiChatCompletion.Content, Mode=OneWay}">
-                                                </tkuicont:MarkdownTextBlock>
- 
-                                            </Grid>
-                                        </StackPanel>
-                                        <PersonPicture Grid.Column="0" 
-                                                       ProfilePicture="{Binding AiAvatar}" 
-                                                       Height="32" 
-                                                       Width="32" 
-                                                       VerticalAlignment="Top" 
-                                                       HorizontalAlignment="Center" 
-                                                       BorderThickness="1" />
-                                    </Grid>
-                                </Grid>
-                            </ListViewItem>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <!--Messages View Area & Options Setting Pane-->
+                <dscc:MessagesView MessagesSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel}" 
+                                   StopGeneratingEvent="StopGeneratingButton_Click" 
+                                   RemoveMessageEvent="RemoveMessageButton_Click"
+                                   Grid.Row="1"/>
                 <SplitView PaneBackground="{ThemeResource SolidBackgroundFillColorBase}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
                     <SplitView.Pane>
-                        <Grid BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="24"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Margin="24,32,0,0" Grid.Row="0" Style="{ThemeResource TitleTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/OptionsPanelHeader"/>
-                            <ScrollView Padding="24,0,24,32" Grid.Row="2">
-                                <StackPanel Spacing="16">
-                                    <StackPanel.Resources>
-                                        <Style BasedOn="{StaticResource DefaultSliderStyle}" TargetType="Slider">
-                                            <Setter Property="Margin" Value="2,0"/>
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" x:Uid="ms-resource:///DiscussionPage/SystemPromptArgumentFlyoutHeader"/>
-                                        <Button HorizontalAlignment="Right" Command="{x:Bind ViewModel.DetailEditSystemPromptCommand}" x:Uid="ms-resource:///DiscussionPage/DetailEditSystemPromptButton"/>
-                                        <TextBox MaxHeight="200" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.SystemPrompt, Mode=TwoWay}" TextWrapping="Wrap" Grid.Row="1" AcceptsReturn="True" MinHeight="70"/>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/MaxTokenOutputCountArgumentFlyoutHeader"/>
-                                        <NumberBox Maximum="16384" Minimum="1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}"/>
-                                        <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.MaxTokens, Mode=TwoWay}" Name="MaxTSlider" Grid.Row="1" Maximum="16384" Minimum="1"/>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/SeedArgumentFlyoutHeader"/>
-                                        <ToggleButton IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.SeedAutoRefresh, Mode=TwoWay}" x:Uid="ms-resource:///DiscussionPage/AutoRefreshSeedToogleButton" HorizontalAlignment="Right" />
-                                        <Grid Grid.Row="1" ColumnSpacing="4">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Seed, Mode=TwoWay}" x:Uid="ms-resource:///DiscussionPage/SeedInputBox" HorizontalAlignment="Stretch"/>
-                                            <Button Grid.Column="1" VerticalAlignment="Stretch" Command="{x:Bind ViewModel.RandomSeedCommand}">
-                                                <FontIcon Glyph="&#xE72C;" FontSize="14" />
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/TemperatureArgumentFlyoutHeader"/>
-                                        <NumberBox ValidationMode="Disabled" Maximum="1" Minimum="0" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.Temperature, Mode=TwoWay, Converter={StaticResource IntyConverter}, UpdateSourceTrigger=PropertyChanged}" Name="TemptSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Maximum="2"/>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/TopPArgumentFlyoutHeader"/>
-                                        <NumberBox Maximum="1" Minimum="0.1" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}"/>
-                                        <Slider Grid.Row="1" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.TopP, Mode=TwoWay, Converter={StaticResource IntyConverter}, ConverterParameter=2}" Name="TopPSlider" TickFrequency="0.05" StepFrequency="0.05" TickPlacement="None" Maximum="1" Minimum="0.1"/>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Uid="ms-resource:///DiscussionPage/FrequencyPenaltyArgumentFlyoutHeader"/>
-                                        <NumberBox Maximum="2" Minimum="-2" HorizontalAlignment="Right" Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}"/>
-                                        <Slider Value="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.FrequencyPenalty, Mode=TwoWay, Converter={StaticResource IntyConverter}}" Name="FPSlider" TickFrequency="0.1" StepFrequency="0.1" TickPlacement="None" Grid.Row="1" Minimum="-2" Maximum="2"/>
-                                    </Grid>
-                                    <Grid Height="Auto" RowSpacing="4">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.StreamingOutput, Mode=TwoWay}" Grid.Row="0" x:Uid="ms-resource:///DiscussionPage/StreamingOutputOption"/>
-                                        <!--<TextBlock Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">*若使用流式输出，则活动/非活动文件选择上传功能将不可用</TextBlock>-->
-                                    </Grid>
-
-                                    <MenuFlyoutSeparator/>
-
-                                    <TextBlock x:Uid="ms-resource:///DiscussionPage/ModOptionsHeader" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-
-                                    <Grid Height="Auto" RowSpacing="4">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <CheckBox IsChecked="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel.DetailedRequest, Mode=TwoWay}" Grid.Row="0">
-                                            <TextBlock x:Uid="ms-resource:///DiscussionPage/DetailedRequestArgumentOption"/>
-                                        </CheckBox>
-                                        <TextBlock x:Uid="ms-resource:///DiscussionPage/DetailedRequestArgumentOptionDescription" Grid.Row="1" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                    </Grid>
-                                </StackPanel>
-                            </ScrollView>
-                        </Grid>
+                        <dscc:ChatOptionSettingPane ChatOptionsViewModel="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel,Mode=OneWay}"/>
                     </SplitView.Pane>
                 </SplitView>
+                
+                <!--Prompt Input Area & FileViewer-->
                 <Grid Grid.Row="3" 
                       Margin="-36,0,-36,-40" 
                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"  
@@ -481,32 +104,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Padding="16,8">
-                            <DropDownButton x:Uid="ms-resource:///DiscussionPage/AddFileButton" HorizontalAlignment="Stretch">
-                                <DropDownButton.Flyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/DocumentFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
-                                            <MenuFlyoutItem.Icon>
-                                                <SymbolIcon Symbol="Document"/>
-                                            </MenuFlyoutItem.Icon>
-                                            <MenuFlyoutItem.CommandParameter>
-                                                <m:FileType>
-                                                    Document
-                                                </m:FileType>
-                                            </MenuFlyoutItem.CommandParameter>
-                                        </MenuFlyoutItem>
-                                        <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/MediaFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
-                                            <MenuFlyoutItem.Icon>
-                                                <FontIcon Glyph="&#xE91B;" />
-                                            </MenuFlyoutItem.Icon>
-                                            <MenuFlyoutItem.CommandParameter>
-                                                <m:FileType>
-                                                    Media
-                                                </m:FileType>
-                                            </MenuFlyoutItem.CommandParameter>
-                                        </MenuFlyoutItem>
-                                    </MenuFlyout>
-                                </DropDownButton.Flyout>
-                            </DropDownButton>
+                            <DropDownButton x:Uid="ms-resource:///DiscussionPage/AddFileButton" HorizontalAlignment="Stretch" Flyout="{StaticResource AddFileSelectorMenuFlyout}"/>
                         </Grid>
                         <Grid Padding="16,0,16,16" Grid.Row="1">
                             <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -517,122 +115,40 @@
                             </Button>
                         </Grid>
                     </Grid>
-                    <dscc:AdaptiveSplitPanel Padding="16,16,0,16" FirstControlSize="64" SecondControlSize="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Vertical">
-                        <Grid Padding="0,-16,0,0"
-                              Visibility="{x:Bind ViewModel.FileListVisibility, Mode=OneWay}">
+                    <dscc:AdaptiveSplitPanel Padding="16,16,0,16" 
+                                             FirstControlSize="64" 
+                                             SecondControlSize="*" 
+                                             HorizontalAlignment="Stretch" 
+                                             VerticalAlignment="Stretch" 
+                                             Orientation="Vertical"
+                                             Grid.Row="0">
+                        <Grid Padding="0,-16,0,0" Visibility="{x:Bind ViewModel.FileListVisibility, Mode=OneWay}">
                             <tklabcont:TokenView SelectionMode="None" 
                                                  CanRemoveTokens="True" 
                                                  TokenItemRemoving="TokenView_FileItemRemoving" 
-                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels}">
-                                <tklabcont:TokenView.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:FileViewModel">
-                                        <Grid Height="50" Width="Auto" IsDoubleTapEnabled="True" DoubleTapped="FilePresent_DoubleTapped"
-                                              Tag="{Binding}"
-                                              ColumnSpacing="8" Padding="4">    
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <FontIcon Name="Icon" 
-                                                      Grid.Column="0" 
-                                                      Grid.Row="0" 
-                                                      Grid.RowSpan="2" 
-                                                      Glyph="{Binding Type, Converter={StaticResource FileTypeToGlyphConverter}}" 
-                                                      HorizontalAlignment="Left" 
-                                                      VerticalAlignment="Center" 
-                                                      Height="32" 
-                                                      Width="32" 
-                                                      FontSize="32"/>
-                                            <Grid HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Name}"/>
-                                            </Grid>
-                                            <Grid HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto"/>
-                                                    <ColumnDefinition Width="auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" 
-                                                           HorizontalAlignment="Left" 
-                                                           Margin="0,0,8,0" 
-                                                           x:Name="AnalyzingText" 
-                                                           Visibility="{Binding Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
-                                                           x:Uid="ms-resource:///DiscussionPage/AnalyzingCaptionTextBlock">
-                                                </TextBlock>
-                                                <TextBlock Grid.Column="1" 
-                                                           HorizontalAlignment="Right" 
-                                                           Style="{ThemeResource BodyTextBlockStyle}" 
-                                                           Foreground="{ThemeResource TextFillColorSecondary}" 
-                                                           Text="{Binding Size, Converter={StaticResource FileSizeToFriendlyStringConverter}}"/>
-                                            </Grid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </tklabcont:TokenView.ItemTemplate>
-                            </tklabcont:TokenView>
+                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels,Mode=OneWay}"
+                                                 ItemTemplate="{StaticResource FileItemViewDataTemplate}"/>
                         </Grid>
                         <Grid VerticalAlignment="Stretch">
-                            <TextBox KeyboardAcceleratorPlacementMode="Hidden" x:Name="MessageInputBox" AcceptsReturn="True" TextWrapping="Wrap" Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox KeyboardAcceleratorPlacementMode="Hidden" 
+                                     x:Name="MessageInputBox" 
+                                     AcceptsReturn="True" 
+                                     TextWrapping="Wrap" 
+                                     Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <TextBox.KeyboardAccelerators>
-                                    <KeyboardAccelerator Key="Enter" Modifiers="Control" IsEnabled="True" Invoked="SendKeyboardAccelerator_Invoked"/>
+                                    <KeyboardAccelerator Key="Enter" 
+                                                         Modifiers="Control" 
+                                                         IsEnabled="True" 
+                                                         Invoked="SendKeyboardAccelerator_Invoked"/>
                                 </TextBox.KeyboardAccelerators>
                             </TextBox>
                         </Grid>
                     </dscc:AdaptiveSplitPanel>
                 </Grid>
             </Grid>
-            <Grid x:Name="FilePreviewArea" Padding="36,9,36,40" RowSpacing="9" Visibility="Collapsed" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Button x:Name="ExitPreviewFile" Click="ExitPreviewFile_Click" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Style="{ThemeResource SubtleButtonStyle}" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="1,2,0,0">
-                        <FontIcon Glyph="&#xE711;" />
-                        <TextBlock x:Uid="ms-resource:///DiscussionPage/ExitButtonTextBlock"/>
-                    </StackPanel>
-                </Button>
-                <tkcont:Segmented x:Name="ContentSelection" Grid.Row="0" SelectedIndex="0" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <tkcont:SegmentedItem Tag="RenderedContent">
-                        <tkcont:SegmentedItem.Icon>
-                            <FontIcon Glyph="&#xE8FF;" />
-                        </tkcont:SegmentedItem.Icon>
-                        <TextBlock x:Uid="ms-resource:///DiscussionPage/AnalyzedResultItemContent"/>
-                    </tkcont:SegmentedItem>
-                    <tkcont:SegmentedItem Tag="RawData">
-                        <tkcont:SegmentedItem.Icon>
-                            <FontIcon Glyph="&#xE7C3;" />
-                        </tkcont:SegmentedItem.Icon>
-                        <TextBlock x:Uid="ms-resource:///DiscussionPage/RawDataItemContent"/>
-                    </tkcont:SegmentedItem>
-                </tkcont:Segmented>
-                <Grid x:Name="FilePreviewer" Grid.Row="1" RowSpacing="36" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-36,0,-36,-40" Padding="36,40" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderThickness="0,1,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{x:Bind ViewModel.PreviewFileViewModel.Name,Mode=OneWay}"/>
-                    <tkcont:SwitchPresenter HorizontalAlignment="Stretch" Grid.Column="0" VerticalAlignment="Stretch" Grid.Row="1" Value="{Binding SelectedItem.Tag,ElementName=ContentSelection}">
-                        <tkcont:Case Value="RenderedContent">
-                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{x:Bind ViewModel.PreviewFileViewModel.Content,Mode=TwoWay}"/>
-                        </tkcont:Case>
-                        <tkcont:Case Value="RawData">
-                            <tkcont:SwitchPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Value="{x:Bind AsString(ViewModel.PreviewFileViewModel.Type),Mode=OneWay}">
-                                <tkcont:Case Value="Document">
-                                    <ScrollViewer HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
-                                        <TextBlock TextWrapping="Wrap" Text="{x:Bind GetRawDataString(ViewModel.PreviewFileViewModel.InnerObject.CopiedFileUri),Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                    </ScrollViewer>
-                                </tkcont:Case>
-                                <tkcont:Case Value="Media">
-                                    <Image Source="{x:Bind GetRawImageSource(ViewModel.PreviewFileViewModel.InnerObject.CopiedFileUri),Mode=OneWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                                </tkcont:Case>
-                            </tkcont:SwitchPresenter>
-                        </tkcont:Case>
-                    </tkcont:SwitchPresenter>
-                </Grid>
-            </Grid>
+            <dscc:FilePreviewPresenter PreviewFileViewModel="{x:Bind ViewModel.PreviewFileViewModel, Mode=OneWay}" 
+                                       Visibility="{x:Bind ViewModel.FilePreviewerVisibility, Mode=OneWay}" 
+                                       FilePreviewClosing="FilePreviewPresenter_FilePreviewClosing"/>
         </dscc:AdaptiveSplitPanel>
         
     </Grid>

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Markup;
 
-namespace DeepSeekChat.Helper;
+namespace DeepSeekChat.Helper.Markups;
 
 [MarkupExtensionReturnType(ReturnType = typeof(string))]
 public class I18N : MarkupExtension
