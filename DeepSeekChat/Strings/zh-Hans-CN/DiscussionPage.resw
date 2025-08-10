@@ -121,7 +121,7 @@
     <value>深度思考</value>
   </data>
   <data name="OptionsButtonLabel.Text" xml:space="preserve">
-    <value>选项设置</value>
+    <value>会话选项</value>
   </data>
   <data name="PromptTokenUsageFlyoutHeader.Header" xml:space="preserve">
     <value>提示词Token使用量</value>
