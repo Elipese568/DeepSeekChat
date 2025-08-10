@@ -39,6 +39,7 @@
         <TextBlock Margin="36,40,36,0" Style="{ThemeResource TitleTextBlockStyle}" Grid.Row="0" x:Uid="ms-resource:///SettingPage/SettingPageTitle"/>
         <ScrollViewer Grid.Row="1">
             <StackPanel Spacing="36" Padding="36,0,36,40">
+                <!--AI Service-->
                 <Grid RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -143,6 +144,8 @@
                         </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
+
+                <!--Personality-->
                 <Grid RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -228,6 +231,8 @@
                         </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
+
+                <!--General-->
                 <Grid RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -267,8 +272,16 @@
                             </ComboBox>
 
                         </tkc:SettingsCard>
+                        <tkc:SettingsCard x:Uid="ms-resource:///SettingPage/MarkdownRenderSettingCard">
+                            <tkc:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph=""/>
+                            </tkc:SettingsCard.HeaderIcon>
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.MarkdownRendering, Mode=TwoWay}"/>
+                        </tkc:SettingsCard>
                     </StackPanel>
                 </Grid>
+                
+                <!--About-->
                 <Grid RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -305,7 +318,7 @@
                                     <tkc:SettingsCard.Header>
                                         <StackPanel Spacing="3">
                                             <TextBlock>Dependencies and references</TextBlock>
-                                            <HyperlinkButton NavigateUri="https://aka.ms/windowsappsdk">Windows App SDK 1.3, Windows App Runtime</HyperlinkButton>
+                                            <HyperlinkButton NavigateUri="https://aka.ms/windowsappsdk">Windows App SDK 1.7, Windows App Runtime</HyperlinkButton>
                                             <HyperlinkButton NavigateUri="https://aka.ms/winui">Windows UI Library</HyperlinkButton>
                                             <HyperlinkButton NavigateUri="https://aka.ms/toolkit/windows">Windows Community Toolkit</HyperlinkButton>
                                             <HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">Newtonsoft JSON Library</HyperlinkButton>

@@ -240,4 +240,10 @@
   <data name="ServerEndpointTipFlyout.Subtitle" xml:space="preserve">
     <value>Set a correct server endpoint to connect to AI</value>
   </data>
+  <data name="MarkdownRenderSettingCard.Header" xml:space="preserve">
+    <value>Markdown Render</value>
+  </data>
+  <data name="MarkdownRenderSettingCard.Description" xml:space="preserve">
+    <value>Response content rendering as markdown format</value>
+  </data>
 </root>

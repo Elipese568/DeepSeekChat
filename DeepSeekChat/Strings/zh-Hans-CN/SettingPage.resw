@@ -240,4 +240,10 @@
   <data name="UserAvatarSettingCard.Header" xml:space="preserve">
     <value>用户头像</value>
   </data>
+  <data name="MarkdownRenderSettingCard.Header" xml:space="preserve">
+    <value>渲染Markdown</value>
+  </data>
+  <data name="MarkdownRenderSettingCard.Description" xml:space="preserve">
+    <value>将响应内容渲染为 Markdown 格式</value>
+  </data>
 </root>

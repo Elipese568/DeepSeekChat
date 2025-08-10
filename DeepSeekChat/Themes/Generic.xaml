@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DeepSeekChat"
     xmlns:local2="using:DeepSeekChat.Controls"
-    xmlns:conv="using:DeepSeekChat.Helper.Converters">
+    xmlns:conv="using:DeepSeekChat.Helper.Converters"
+    xmlns:tkuicont="using:CommunityToolkit.WinUI.UI.Controls" >
     
     <DataTemplate x:Key="PropertyPresenterTextHeaderTemplate">
         <TextBlock Text="{Binding}"
@@ -132,4 +133,22 @@
             </Grid>
         </Grid>
     </DataTemplate>
+    
+    <Style x:Key="ResponseMarkdownTextBlockStyle" TargetType="tkuicont:MarkdownTextBlock">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="IsTextSelectionEnabled" Value="True"/>
+        <Setter Property="ParagraphLineHeight" Value="16"/>
+    </Style>
+    
+    <Style TargetType="local2:ResponseTextBlock" xmlns:local2="using:DeepSeekChat.Controls">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local2:ResponseTextBlock">
+                    <ContentPresenter x:Name="PART_Content"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

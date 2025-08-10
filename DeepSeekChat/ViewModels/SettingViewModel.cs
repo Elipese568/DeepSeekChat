@@ -128,6 +128,16 @@ public partial class SettingViewModel : ObservableRecipient
         }
     }
 
+    public bool MarkdownRendering
+    {
+        get => bool.Parse(_settingService.Read(SettingService.SETTING_USE_MARKDOWN_RENDER, "true"));
+        set
+        {
+            _settingService.Write(SettingService.SETTING_USE_MARKDOWN_RENDER, value.ToString());
+            OnPropertyChanged();
+        }
+    }
+
     public ObservableCollection<AiModelViewModel> AiModelViewModels { get; set; }
 
     public void RemoveModel(Guid modelUniqueID)

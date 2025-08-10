@@ -12,13 +12,6 @@
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <Style x:Key="ResponseTextBlockStyle" TargetType="tkuicont:MarkdownTextBlock">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="IsTextSelectionEnabled" Value="True"/>
-            <Setter Property="ParagraphLineHeight" Value="16"/>
-        </Style>
         <conv:ProgressStatusVisibilityConverter x:Key="ProgressStatusVisibilityConverter"/>
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
     </UserControl.Resources>
@@ -53,8 +46,8 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <local:MessageItem Grid.Row="0" AvatarSource="{x:Bind UserAvatar,Mode=OneWay}" Side="Right" Content="{x:Bind UserPrompt,Mode=OneWay}"/>
-                        <local:MessageItem Grid.Row="1" AvatarSource="{x:Bind AiAvatar,Mode=OneWay}" Side="Left">
+                        <local:MessageItem Grid.Row="0" MessageSource="User" Side="Right" Content="{x:Bind UserPrompt,Mode=OneWay}"/>
+                        <local:MessageItem Grid.Row="1" MessageSource="Assistant" Side="Left">
                             <StackPanel Grid.Column="1" CornerRadius="4" Spacing="8">
                                 <Expander IsExpanded="True"
                                           ExpandDirection="Down"
@@ -140,8 +133,7 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <Expander.Content>
-                                        <tkuicont:MarkdownTextBlock Style="{StaticResource ResponseTextBlockStyle}" 
-                                                                                Text="{x:Bind AiChatCompletion.ReasoningContent,Mode=OneWay}"/>
+                                        <local:ResponseTextBlock Text="{x:Bind AiChatCompletion.ReasoningContent, Mode=OneWay}"/>
                                     </Expander.Content>
                                 </Expander>
                                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
@@ -150,8 +142,7 @@
                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                       Padding="12"
                                       Visibility="{x:Bind AiChatCompletion.Content, Mode=OneWay, Converter={StaticResource EmptyVisibilityConverter}}">
-                                    <tkuicont:MarkdownTextBlock Style="{StaticResource ResponseTextBlockStyle}" 
-                                                                Text="{x:Bind AiChatCompletion.Content,Mode=OneWay}"/>
+                                    <local:ResponseTextBlock Text="{x:Bind AiChatCompletion.Content, Mode=OneWay}"/>
                                 </Grid>
                             </StackPanel>
                         </local:MessageItem>
