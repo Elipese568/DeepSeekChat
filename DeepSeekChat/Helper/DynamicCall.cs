@@ -25,7 +25,7 @@ public static class DynamicCall
     public static Func<TIn1,TOut> GetInvoker<TObj, TIn1, TOut>(TObj obj, string methodName)
     {
         var type = obj.GetType();
-        var method = type.GetMethod(methodName);
+        var method = type.GetMethod(methodName,[typeof(TIn1)]);
         if (method != null)
         {
             return (p1) => (TOut)method.Invoke(obj, [p1]);

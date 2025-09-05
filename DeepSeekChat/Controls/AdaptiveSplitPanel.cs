@@ -26,7 +26,8 @@ namespace DeepSeekChat.Controls
         public static readonly DependencyProperty PaddingProperty =
             DependencyProperty.Register(nameof(Padding), typeof(Thickness), typeof(AdaptiveSplitPanel),
                 new PropertyMetadata(new Thickness(0), OnLayoutPropertyChanged));
-
+        public static readonly DependencyProperty ControlSpacingProperty =
+            DependencyProperty.Register("ControlSpacing", typeof(double), typeof(AdaptiveSplitPanel), new PropertyMetadata(0.0D));
         #endregion
 
         #region Public Properties
@@ -53,6 +54,12 @@ namespace DeepSeekChat.Controls
         {
             get => (Thickness)GetValue(PaddingProperty);
             set => SetValue(PaddingProperty, value);
+        }
+
+        public double ControlSpacing
+        {
+            get { return (double)GetValue(ControlSpacingProperty); }
+            set { SetValue(ControlSpacingProperty, value); }
         }
 
         #endregion
@@ -107,6 +114,7 @@ namespace DeepSeekChat.Controls
 
         #endregion
 
+        #region Adaptive Core
         protected override Size MeasureOverride(Size availableSize)
         {
             var firstChild = Children.ElementAtOrDefault(0);
@@ -123,6 +131,10 @@ namespace DeepSeekChat.Controls
                 Math.Max(0, availableSize.Height - paddingSize.Height));
 
             double totalMain = Orientation == Orientation.Horizontal ? innerSize.Width : innerSize.Height;
+
+            // 两个都可见时，预留间距
+            if (firstVisible && secondVisible)
+                totalMain = Math.Max(0, totalMain - ControlSpacing);
 
             if (firstVisible && !secondVisible)
             {
@@ -158,7 +170,7 @@ namespace DeepSeekChat.Controls
                 {
                     firstChild.Measure(new Size(innerSize.Width, firstLength));
                     secondChild.Measure(new Size(innerSize.Width, secondLength));
-                    return new Size(innerSize.Width + paddingSize.Width, totalMain + paddingSize.Height);
+                    return new Size(innerSize.Width + paddingSize.Width, totalMain + ControlSpacing + paddingSize.Height);
                 }
             }
 
@@ -182,6 +194,10 @@ namespace DeepSeekChat.Controls
 
             double totalMain = Orientation == Orientation.Horizontal ? contentWidth : contentHeight;
 
+            // 两个都可见时，预留间距
+            if (firstVisible && secondVisible)
+                totalMain = Math.Max(0, totalMain - ControlSpacing);
+
             if (firstVisible && !secondVisible)
             {
                 if (Orientation == Orientation.Horizontal)
@@ -198,23 +214,23 @@ namespace DeepSeekChat.Controls
             }
             else if (firstVisible && secondVisible)
             {
-                double totalLength = totalMain;
-                double firstLength = CalculateLength(FirstControlSize, totalLength, SecondControlSize);
-                double secondLength = totalLength - firstLength;
+                double firstLength = CalculateLength(FirstControlSize, totalMain, SecondControlSize);
+                double secondLength = totalMain - firstLength;
 
                 if (Orientation == Orientation.Horizontal)
                 {
                     firstChild.Arrange(new Rect(offsetX, offsetY, firstLength, contentHeight));
-                    secondChild.Arrange(new Rect(offsetX + firstLength, offsetY, secondLength, contentHeight));
+                    secondChild.Arrange(new Rect(offsetX + firstLength + ControlSpacing, offsetY, secondLength, contentHeight));
                 }
                 else
                 {
                     firstChild.Arrange(new Rect(offsetX, offsetY, contentWidth, firstLength));
-                    secondChild.Arrange(new Rect(offsetX, offsetY + firstLength, contentWidth, secondLength));
+                    secondChild.Arrange(new Rect(offsetX, offsetY + firstLength + ControlSpacing, contentWidth, secondLength));
                 }
             }
 
             return finalSize;
         }
+        #endregion
     }
 }

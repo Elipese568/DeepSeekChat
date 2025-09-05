@@ -122,6 +122,13 @@
                                                         Visibility="{x:Bind ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
                                                     <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE74D;" />
                                                 </Button>
+                                                <Button Padding="4" 
+                                                        VerticalAlignment="Stretch"
+                                                        Style="{ThemeResource SubtleButtonStyle}" 
+                                                        Name="ReferMessageButton" Click="ReferMessageButton_Click"
+                                                        Visibility="{x:Bind ProgressStatus, Converter={StaticResource ProgressStatusVisibilityConverter}, ConverterParameter=true, Mode=OneWay}">
+                                                    <FontIcon Margin="4,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Glyph="&#xE97A;" />
+                                                </Button>
                                                 <!--<Button Padding="4" 
                                                                     VerticalAlignment="Stretch"
                                                                     Style="{ThemeResource SubtleButtonStyle}" 

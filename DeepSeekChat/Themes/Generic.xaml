@@ -85,54 +85,7 @@
     <conv:FileSizeFriendlyStringConverter x:Key="FileSizeToFriendlyStringConverter"/>
     <conv:AnalyzeStatusToVisibilityConverter x:Key="AnalyzeStatusToVisibilityConverter"/>
     <conv:FileTypeToGlyphConverter x:Key="FileTypeToGlyphConverter"/>
-    <DataTemplate x:Key="FileItemViewDataTemplate">
-        <Grid Height="50" 
-              Width="Auto" 
-              IsDoubleTapEnabled="True" 
-              DoubleTapped="FilePresent_DoubleTapped"
-              Tag="{Binding}"
-              ColumnSpacing="8" Padding="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <FontIcon Name="Icon" 
-                  Grid.Column="0" 
-                  Grid.Row="0" 
-                  Grid.RowSpan="2" 
-                  Glyph="{Binding Type, Converter={StaticResource FileTypeToGlyphConverter}}" 
-                  HorizontalAlignment="Left" 
-                  VerticalAlignment="Center" 
-                  Height="32" 
-                  Width="32" 
-                  FontSize="32"/>
-            <Grid HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Name}"/>
-            </Grid>
-            <Grid HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" 
-                       HorizontalAlignment="Left" 
-                       Margin="0,0,8,0" 
-                       x:Name="AnalyzingText" 
-                       Visibility="{Binding Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
-                       x:Uid="ms-resource:///DiscussionPage/AnalyzingCaptionTextBlock">
-                </TextBlock>
-                <TextBlock Grid.Column="1" 
-                       HorizontalAlignment="Right" 
-                       Style="{ThemeResource BodyTextBlockStyle}" 
-                       Foreground="{ThemeResource TextFillColorSecondary}" 
-                       Text="{Binding Size, Converter={StaticResource FileSizeToFriendlyStringConverter}}"/>
-            </Grid>
-        </Grid>
-    </DataTemplate>
+
     
     <Style x:Key="ResponseMarkdownTextBlockStyle" TargetType="tkuicont:MarkdownTextBlock">
         <Setter Property="Background" Value="Transparent"/>

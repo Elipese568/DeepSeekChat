@@ -45,6 +45,7 @@ public sealed partial class MessagesView : UserControl
 
     public event RoutedEventHandler StopGeneratingEvent;
     public event RoutedEventHandler RemoveMessageEvent;
+    public event RoutedEventHandler ReferMessageEvent;
 
     private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
     {
@@ -54,5 +55,10 @@ public sealed partial class MessagesView : UserControl
     private void RemoveMessageButton_Click(object sender, RoutedEventArgs e)
     {
         RemoveMessageEvent(sender, e);
+    }
+
+    private void ReferMessageButton_Click(object sender, RoutedEventArgs e)
+    {
+        ReferMessageEvent(sender, e);
     }
 }

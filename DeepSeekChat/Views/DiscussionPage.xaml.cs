@@ -1,16 +1,23 @@
+using CommunityToolkit.WinUI.Controls;
 using CommunityToolkit.WinUI.UI.Controls;
 using DeepSeekChat.Helper;
 using DeepSeekChat.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -52,6 +59,19 @@ namespace DeepSeekChat.Views
 
     public sealed partial class DiscussionPage : Page
     {
+        private class _ReplyMessageSelectSuggestionItem
+        {
+            private int _pri;
+            public _ReplyMessageSelectSuggestionItem()
+            {
+                _pri = Random.Shared.Next();
+            }
+
+            public override int GetHashCode()
+            {
+                return _pri;
+            }
+        }
         public DiscussionViewModel ViewModel { get; set; }
 
         public DiscussionPage()
@@ -119,5 +139,36 @@ namespace DeepSeekChat.Views
         {
             ViewModel.FilePreviewerVisibility = Visibility.Collapsed;
         }
+
+        private void MessageInputBox_SuggestionRequested(
+            CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
+            CommunityToolkit.WinUI.Controls.SuggestionRequestedEventArgs args)
+        {
+            sender.ItemsSource = ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Where(x => x.Name.Contains(args.QueryText));
+        }
+
+        private void MessageInputBox_SuggestionChosen(
+            CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
+            CommunityToolkit.WinUI.Controls.SuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem is FileViewModel fileVM)
+                args.DisplayText = fileVM.Name;
+            else if (args.SelectedItem is _ReplyMessageSelectSuggestionItem rmssi)
+                args.DisplayText = "ReplyMessageWillDisplayHere";
+        }
+
+        private void MessageInputBox_TextChanged(CommunityToolkit.WinUI.Controls.RichSuggestBox sender, RoutedEventArgs args)
+        {
+            sender.TextDocument.GetText(Microsoft.UI.Text.TextGetOptions.None, out string text);
+            text = text.TrimEnd('\r');
+            ViewModel.InputingPrompt = text;
+        }
+
+
+        private async void MessagesView_ReferMessageEvent(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
     }
 }

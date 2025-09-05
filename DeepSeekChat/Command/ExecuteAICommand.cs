@@ -389,20 +389,21 @@ public class ExecuteAICommand : ICommand
 
         foreach (var msg in item.Messages)
         {
+            if (!string.IsNullOrWhiteSpace(msg.CurrentMessageMetadata.Id))
+                messages.Add($"[id] {msg.CurrentMessageMetadata.Id}");
             if(item.ChatOptions.DetailedRequest)
             {
                 messages.Add(SystemChatMessage.CreateSystemMessage($"""
                     This is a detailed request message, please pay attention to the following information:
-                    Id: {msg.Id}
-                    CreationTime: {msg.CurrentMessageMetadata.TimeCreated}
-                    Completion Status: {msg.ProgressStatus} (Stoped meaning user stopped generate, Failed meaning some error occurred during generate, LengthTerminated meaning AI was stopped because generate content to long)
-                    Model: {msg.CurrentMessageMetadata.Model}
-                    System Prompt: "{msg.CurrentMessageMetadata.Options.SystemPrompt}"
-                    Temperature: {msg.CurrentMessageMetadata.Options.Temperature}
-                    TopP: {msg.CurrentMessageMetadata.Options.TopP}
-                    Frequency Penalty: {msg.CurrentMessageMetadata.Options.FrequencyPenalty}
-                    Seed: {msg.CurrentMessageMetadata.Options.Seed}
-                    Mods: {string.Join(", ", msg.CurrentMessageMetadata.Mods ?? [])}
+                    [creation_time] {msg.CurrentMessageMetadata.TimeCreated}
+                    [completion_status] {msg.ProgressStatus} (Stoped meaning user stopped generate, Failed meaning some error occurred during generate, LengthTerminated meaning AI was stopped because generate content to long)
+                    [model] {msg.CurrentMessageMetadata.Model}
+                    [system_prompt] "{msg.CurrentMessageMetadata.Options.SystemPrompt}"
+                    [temperature] {msg.CurrentMessageMetadata.Options.Temperature}
+                    [top_p] {msg.CurrentMessageMetadata.Options.TopP}
+                    [frequency_penalty] {msg.CurrentMessageMetadata.Options.FrequencyPenalty}
+                    [seed] {msg.CurrentMessageMetadata.Options.Seed}
+                    [mods] {string.Join(", ", msg.CurrentMessageMetadata.Mods ?? [])}
                     """));
             }
             if (!string.IsNullOrEmpty(msg.UserPrompt))

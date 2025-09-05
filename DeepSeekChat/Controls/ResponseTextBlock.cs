@@ -22,6 +22,8 @@ namespace DeepSeekChat.Controls
     public sealed partial class ResponseTextBlock : Control
     {
         private ContentPresenter _content;
+        private FrameworkElement _textControl;
+        private DependencyProperty _textProperty;
 
         public string Text
         {
@@ -38,6 +40,7 @@ namespace DeepSeekChat.Controls
             RegisterPropertyChangedCallback(TextProperty, (s, e) =>
             {
                 OnPropertyChanged(nameof(Text));
+                _textControl?.SetValue(_textProperty, Text);
             });
             DefaultStyleKey = typeof(ResponseTextBlock);
         }
@@ -51,11 +54,9 @@ namespace DeepSeekChat.Controls
             {
                 MarkdownTextBlock mtb = new();
                 mtb.Style = "ResponseMarkdownTextBlockStyle".GetResource<Style>(rd: Application.Current.Resources);
-                mtb.SetBinding(MarkdownTextBlock.TextProperty, new Binding()
-                {
-                    Source = Text,
-                    Mode = BindingMode.OneWay,
-                });
+                mtb.Text = Text;
+                _textControl = mtb;
+                _textProperty = MarkdownTextBlock.TextProperty;
 
                 _content.Content = mtb;
             }
@@ -63,13 +64,13 @@ namespace DeepSeekChat.Controls
             {
                 TextBlock tb = new()
                 {
-                    IsTextSelectionEnabled = true
+                    IsTextSelectionEnabled = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = Text
                 };
-                tb.SetBinding(TextBlock.TextProperty, new Binding()
-                {
-                    Source = Text,
-                    Mode = BindingMode.OneWay,
-                });
+
+                _textControl = tb;
+                _textProperty = TextBlock.TextProperty;
 
                 _content.Content = tb;
             }

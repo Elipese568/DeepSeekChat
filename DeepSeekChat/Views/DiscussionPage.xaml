@@ -81,6 +81,7 @@
                 <dscc:MessagesView MessagesSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel}" 
                                    StopGeneratingEvent="StopGeneratingButton_Click" 
                                    RemoveMessageEvent="RemoveMessageButton_Click"
+                                   ReferMessageEvent="MessagesView_ReferMessageEvent"
                                    Grid.Row="1"/>
                 <SplitView PaneBackground="{ThemeResource SolidBackgroundFillColorBase}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
                     <SplitView.Pane>
@@ -126,23 +127,100 @@
                             <tklabcont:TokenView SelectionMode="None" 
                                                  CanRemoveTokens="True" 
                                                  TokenItemRemoving="TokenView_FileItemRemoving" 
-                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels,Mode=OneWay}"
-                                                 ItemTemplate="{StaticResource FileItemViewDataTemplate}"/>
+                                                 ItemsSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels,Mode=OneWay}">
+                                <tklabcont:TokenView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:FileViewModel">
+                                        <Grid Height="50" 
+                                              Width="Auto" 
+                                              IsDoubleTapEnabled="True" 
+                                              DoubleTapped="FilePresent_DoubleTapped"
+                                              Tag="{x:Bind}"
+                                              ColumnSpacing="8" Padding="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <FontIcon Name="Icon" 
+                                                      Grid.Column="0" 
+                                                      Grid.Row="0" 
+                                                      Grid.RowSpan="2" 
+                                                      Glyph="{x:Bind Type, Converter={StaticResource FileTypeToGlyphConverter}}" 
+                                                      HorizontalAlignment="Left" 
+                                                      VerticalAlignment="Center" 
+                                                      Height="32" 
+                                                      Width="32" 
+                                                      FontSize="32"/>
+                                            <Grid HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Name}"/>
+                                            </Grid>
+                                            <Grid HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" 
+                                                           HorizontalAlignment="Left" 
+                                                           Margin="0,0,8,0" 
+                                                           x:Name="AnalyzingText" 
+                                                           Visibility="{x:Bind Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
+                                                           x:Uid="ms-resource:///DiscussionPage/AnalyzingCaptionTextBlock">
+                                                </TextBlock>
+                                                <TextBlock Grid.Column="1" 
+                                                           HorizontalAlignment="Right" 
+                                                           Style="{ThemeResource BodyTextBlockStyle}" 
+                                                           Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                           Text="{x:Bind Size, Converter={StaticResource FileSizeToFriendlyStringConverter}}"/>
+                                            </Grid>
+                                        </Grid>
+                                    </DataTemplate>
+                                </tklabcont:TokenView.ItemTemplate>
+                            </tklabcont:TokenView>
                         </Grid>
-                        <Grid VerticalAlignment="Stretch">
-                            <TextBox KeyboardAcceleratorPlacementMode="Hidden" 
-                                     x:Name="MessageInputBox" 
-                                     AcceptsReturn="True" 
-                                     TextWrapping="Wrap" 
-                                     Text="{x:Bind ViewModel.InputingPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                <TextBox.KeyboardAccelerators>
+                        <dscc:AdaptiveSplitPanel FirstControlSize="128" 
+                                                 SecondControlSize="*" 
+                                                 Orientation="Horizontal" 
+                                                 VerticalAlignment="Stretch"
+                                                 HorizontalAlignment="Stretch"
+                                                 ControlSpacing="16"
+                                                 >
+                            <Grid>
+                                
+                            </Grid>
+                            <tkcont:RichSuggestBox KeyboardAcceleratorPlacementMode="Hidden" 
+                                                x:Name="MessageInputBox" 
+                                                ClipboardCopyFormat="PlainText"
+                                                ClipboardPasteFormat="PlainText"
+                                                DisabledFormattingAccelerators="All"
+                                                Prefixes="&amp;"
+                                                VerticalAlignment="Stretch"
+                                                SuggestionRequested="MessageInputBox_SuggestionRequested"
+                                                SuggestionChosen="MessageInputBox_SuggestionChosen"
+                                                PlaceholderText="Here input prompt(symbol &amp; to reference file)"
+                                                TextChanged="MessageInputBox_TextChanged">
+                                <tkcont:RichSuggestBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:FileViewModel">
+                                        <Grid ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Glyph="{x:Bind Type, Converter={StaticResource FileTypeToGlyphConverter}, Mode=OneWay}" Grid.Column="0"/>
+                                            <TextBlock Text="{x:Bind Name, Mode=OneWay}" Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </tkcont:RichSuggestBox.ItemTemplate>
+                                <tkcont:RichSuggestBox.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="Enter" 
-                                                         Modifiers="Control" 
-                                                         IsEnabled="True" 
-                                                         Invoked="SendKeyboardAccelerator_Invoked"/>
-                                </TextBox.KeyboardAccelerators>
-                            </TextBox>
-                        </Grid>
+                                                        Modifiers="Control" 
+                                                        IsEnabled="True" 
+                                                        Invoked="SendKeyboardAccelerator_Invoked"/>
+                                </tkcont:RichSuggestBox.KeyboardAccelerators>
+                            </tkcont:RichSuggestBox>
+                        </dscc:AdaptiveSplitPanel>
                     </dscc:AdaptiveSplitPanel>
                 </Grid>
             </Grid>

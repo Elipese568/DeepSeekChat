@@ -53,7 +53,7 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <NavigationView x:Name="DiscussList" IsBackButtonVisible="Collapsed" PaneDisplayMode="Left" SelectionChanged="DiscussList_SelectionChanged" IsPaneToggleButtonVisible="False" IsSettingsVisible="True" ItemInvoked="NavigationView_ItemInvoked">
+    <NavigationView x:Name="DiscussList" IsBackButtonVisible="Collapsed" CacheMode="BitmapCache" PaneDisplayMode="Left" SelectionChanged="DiscussList_SelectionChanged" IsPaneToggleButtonVisible="False" IsSettingsVisible="True" ItemInvoked="NavigationView_ItemInvoked">
         <NavigationView.PaneCustomContent>
             <StackPanel>
                 <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
@@ -103,7 +103,6 @@
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xEE56;" />
                 </NavigationViewItem.Icon>
-                Quick Discussion
             </NavigationViewItem>
             <NavigationViewItem SelectsOnInvoked="False" Tag="AddDiscussionItem" x:Uid="ms-resource:///MainPage/AddDiscussionButton">
                 <NavigationViewItem.Icon>
