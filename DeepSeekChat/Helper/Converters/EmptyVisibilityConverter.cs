@@ -29,8 +29,9 @@ public partial class EmptyVisibilityConverter : IValueConverter
 
         bool rev = parameter != null && bool.Parse((parameter as string)??"false");
 
-        return _handler[value.GetType()](value) ^ rev ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
+        return (_handler.TryGetValue(value.GetType(), out var func)? func : Default)(value) ^ rev ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
     }
+    private bool Default(object val) => val != null;
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         throw new NotImplementedException();

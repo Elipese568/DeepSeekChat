@@ -216,4 +216,13 @@
   <data name="DeleteMessageConfirmDialogText" xml:space="preserve">
     <value>删除后这条消息将消失，无法恢复。确定需要删除吗？</value>
   </data>
+  <data name="ReferPaneHeader.Text" xml:space="preserve">
+    <value>回复消息</value>
+  </data>
+  <data name="ReferPaneUserHeader.Text" xml:space="preserve">
+    <value>用户：</value>
+  </data>
+  <data name="ReferPaneAIHeader.Text" xml:space="preserve">
+    <value>助理：</value>
+  </data>
 </root>

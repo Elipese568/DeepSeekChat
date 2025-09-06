@@ -15,12 +15,8 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 	public ApplicationChatMessageViewModel(ApplicationChatMessage message) : base(message)
 	{
 		AiChatCompletion = new AiChatCompletionViewModel(message.AiChatCompletion);
-		App.Current.GetService<AvatarManagerService>().SelectedUserAvatarChanged += (s, e) =>
-		{
-			OnPropertyChanged(e.Type.HasFlag(AvatarType.User) ? nameof(UserAvatar) : nameof(AiAvatar));
-		};
-        OnPropertyChanged(nameof(UserAvatar));
-        OnPropertyChanged(nameof(AiAvatar));
+		if(message.ReferMessage != null)
+			ReferMessage = new(message.ReferMessage);
     }
 
 	public TokenUsage TokenUsage
@@ -31,6 +27,13 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 			_innerObject.TokenUsage = value;
 			OnPropertyChanged();
 		}
+	}
+
+	private ApplicationChatMessageViewModel _referMessageViewModel;
+	public ApplicationChatMessageViewModel ReferMessage
+	{
+		get { return _referMessageViewModel; }
+		set { _referMessageViewModel = value; }
 	}
 
 	public string UserPrompt
@@ -80,7 +83,4 @@ public class ApplicationChatMessageViewModel : WrapperViewModelBase<ApplicationC
 			OnPropertyChanged();
         }
 	}
-
-	public ImageSource AiAvatar => App.Current.GetService<AvatarManagerService>().GetSelectedAiAvatarViewModel().ImageSource;
-    public ImageSource UserAvatar => App.Current.GetService<AvatarManagerService>().GetSelectedUserAvatarViewModel().ImageSource;
 }

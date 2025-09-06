@@ -5,7 +5,7 @@
     xmlns:local2="using:DeepSeekChat.Controls"
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkuicont="using:CommunityToolkit.WinUI.UI.Controls" >
-    
+
     <DataTemplate x:Key="PropertyPresenterTextHeaderTemplate">
         <TextBlock Text="{Binding}"
                    VerticalAlignment="Center"
@@ -31,10 +31,7 @@
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
               BorderThickness="1" 
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-            <TextBlock HorizontalAlignment="Right" 
-                       IsTextSelectionEnabled="True" 
-                       TextWrapping="Wrap" 
-                       Text="{Binding}" />
+            <local2:ResponseTextBlock HorizontalAlignment="Right" Text="{Binding}" />
         </Grid>
     </DataTemplate>
 
@@ -47,15 +44,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ContentPresenter x:Name="PART_Content"/>
+                        <StackPanel Spacing="8" x:Name="PART_MessagePane">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding Side}" x:Name="PART_Content"/>
+                        </StackPanel>
+
 
                         <PersonPicture ProfilePicture="{TemplateBinding AvatarSource}" 
-                                       Height="32" 
-                                       Width="32" 
-                                       VerticalAlignment="Top" 
-                                       HorizontalAlignment="Center" 
-                                       BorderThickness="1"
-                                       x:Name="PART_Avatar"/>
+                                        Height="32" 
+                                        Width="32" 
+                                        VerticalAlignment="Top" 
+                                        HorizontalAlignment="Center" 
+                                        BorderThickness="1"
+                                        x:Name="PART_Avatar"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

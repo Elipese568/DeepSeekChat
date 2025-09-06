@@ -1,4 +1,5 @@
 using DeepSeekChat.Helper;
+using DeepSeekChat.Helper.Converters;
 using DeepSeekChat.Service;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,7 +28,8 @@ public sealed partial class MessageItem : ContentControl
     private ContentPresenter _contentHost;
     private Grid _root;
     private PersonPicture _avatar;
-
+    private StackPanel _messagePane;
+    private readonly EmptyVisibilityConverter _emptyVisibilityConverter = new();
     public MessageItem()
     {
         DefaultStyleKey = typeof(MessageItem);
@@ -60,12 +62,41 @@ public sealed partial class MessageItem : ContentControl
     public static readonly DependencyProperty MessageSourceProperty =
         DependencyProperty.Register("MessageSource", typeof(MessageSource), typeof(MessageItem), new PropertyMetadata(MessageSource.Assistant));
 
+    public object PaneTopContent
+    {
+        get { return (object)GetValue(PaneTopContentProperty); }
+        set { SetValue(PaneTopContentProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for PaneTopContent.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty PaneTopContentProperty =
+        DependencyProperty.Register("PaneTopContent", typeof(object), typeof(MessageItem), new PropertyMetadata(null));
+
+    public object PaneBottomContent
+    {
+        get { return (object)GetValue(PaneBottomContentProperty); }
+        set { SetValue(PaneBottomContentProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for PaneBottomContent.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty PaneBottomContentProperty =
+        DependencyProperty.Register("PaneBottomContent", typeof(object), typeof(MessageItem), new PropertyMetadata(null));
+
     protected override void OnApplyTemplate()
     {
         HorizontalAlignment = Side;
+        RegisterPropertyChangedCallback(ContentProperty, (o, p) =>
+        {
+            _contentHost.Visibility = (Visibility)_emptyVisibilityConverter.Convert(Content, typeof(Visibility), null, "");
+
+            if (Content is string str)
+                (_contentHost.Content as FrameworkElement).DataContext = str;
+        });
+
         _contentHost = GetTemplateChild("PART_Content") as ContentPresenter;
         _avatar = GetTemplateChild("PART_Avatar") as PersonPicture;
         _root = GetTemplateChild("PART_Root") as Grid;
+        _messagePane = GetTemplateChild("PART_MessagePane") as StackPanel;
         UpdateContentVisual();
         base.OnApplyTemplate();
     }
@@ -86,19 +117,36 @@ public sealed partial class MessageItem : ContentControl
             _contentHost.Content = Content;
         }
 
-        switch(Side)
+        if (PaneTopContent != null)
+        {
+            _messagePane.Children.Insert(0, new ContentPresenter()
+            {
+                Name = "PART_PaneTop",
+                Content = PaneTopContent
+            });
+        }
+        if (PaneBottomContent != null)
+        {
+            _messagePane.Children.Insert(1, new ContentPresenter()
+            {
+                Name = "PART_PaneBottom",
+                Content = PaneBottomContent
+            });
+        }
+
+        switch (Side)
         {
             case HorizontalAlignment.Left:
                 _root.ColumnDefinitions[0].Width = new(32);
                 _root.ColumnDefinitions[1].Width = new(1, GridUnitType.Star);
                 Grid.SetColumn(_avatar, 0);
-                Grid.SetColumn(_contentHost, 1);
+                Grid.SetColumn(_messagePane, 1);
                 break;
             case HorizontalAlignment.Right:
                 _root.ColumnDefinitions[0].Width = new(1, GridUnitType.Star);
                 _root.ColumnDefinitions[1].Width = new(32);
                 Grid.SetColumn(_avatar, 1);
-                Grid.SetColumn(_contentHost, 0);
+                Grid.SetColumn(_messagePane, 0);
                 break;
         }
 

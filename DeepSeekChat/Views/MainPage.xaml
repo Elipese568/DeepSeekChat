@@ -110,7 +110,6 @@
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
         </NavigationView.FooterMenuItems>
-        
         <Frame x:Name="ContentFrame"/>
     </NavigationView>
 </Page>

@@ -57,6 +57,18 @@ namespace DeepSeekChat.Views
         }
     }
 
+    public class TrimStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return ((value as string) ?? "").Trim();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public sealed partial class DiscussionPage : Page
     {
         private class _ReplyMessageSelectSuggestionItem
@@ -118,6 +130,11 @@ namespace DeepSeekChat.Views
 
             ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
             ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.Remove(messageVm.InnerObject);
+            if(ViewModel.ReferMessageViewModel?.Id == messageVm.Id)
+            {
+                ViewModel.ReferMessageViewModel = null;
+                ViewModel.ReferVisibility = Visibility.Collapsed;
+            }
         }
 
         private void RegenerateMessageButton_Click(object sender, RoutedEventArgs e)
@@ -167,8 +184,15 @@ namespace DeepSeekChat.Views
 
         private async void MessagesView_ReferMessageEvent(object sender, RoutedEventArgs e)
         {
-            
+            ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
+            ViewModel.ReferMessageViewModel = messageVm;
+            ViewModel.ReferVisibility = Visibility.Visible;
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ReferVisibility = Visibility.Collapsed;
+            ViewModel.ReferMessageViewModel = null;
+        }
     }
 }

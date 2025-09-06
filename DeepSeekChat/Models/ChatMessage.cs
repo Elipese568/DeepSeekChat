@@ -100,6 +100,7 @@ public partial class ApplicationChatMessage : ObservableObject
     public TokenUsage TokenUsage { get; set; }
 
     public ChatCompletionMetadata CurrentMessageMetadata { get; set; }
+    public ApplicationChatMessage ReferMessage { get; set; }
 
     public string Id { get; set; }
 

@@ -24,7 +24,7 @@
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
         <tkconv:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter"/>
         <local:ModIdToDescriptiveConverter x:Key="ModIdToDescriptiveConverter"/>
-
+        <local:TrimStringConverter x:Key="TrimStringConverter"/>
         <MenuFlyout x:Key="AddFileSelectorMenuFlyout">
             <MenuFlyoutItem x:Uid="ms-resource:///DiscussionPage/DocumentFileTypeMenuItem" Command="{x:Bind ViewModel.AddFileCommand}">
                 <MenuFlyoutItem.Icon>
@@ -54,11 +54,11 @@
                                  HorizontalAlignment="Stretch" 
                                  VerticalAlignment="Stretch" 
                                  Orientation="Horizontal">
-            <Grid RowSpacing="16" Padding="36,40" Grid.Column="0">
+            <Grid x:Name="ContentArea" RowSpacing="16" Padding="36,40" Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="120"/>
+                    <RowDefinition MinHeight="180" Height="180" MaxHeight="800"/>
                 </Grid.RowDefinitions>
                 
                 <!--Header-->
@@ -88,9 +88,15 @@
                         <dscc:ChatOptionSettingPane ChatOptionsViewModel="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel,Mode=OneWay}"/>
                     </SplitView.Pane>
                 </SplitView>
-                
+
+                <tkcont:GridSplitter Margin="-36,0,-36,0" Grid.Row="2" VerticalAlignment="Top" ResizeDirection="Rows">
+                    <tkcont:GridSplitter.RenderTransform>
+                        <TranslateTransform Y="-11"/>
+                    </tkcont:GridSplitter.RenderTransform>
+                </tkcont:GridSplitter>
+
                 <!--Prompt Input Area & FileViewer-->
-                <Grid Grid.Row="3" 
+                <Grid Grid.Row="2" 
                       Margin="-36,0,-36,-40" 
                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"  
                       BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
@@ -180,15 +186,56 @@
                                 </tklabcont:TokenView.ItemTemplate>
                             </tklabcont:TokenView>
                         </Grid>
-                        <dscc:AdaptiveSplitPanel FirstControlSize="128" 
+                        <dscc:AdaptiveSplitPanel FirstControlSize="180" 
                                                  SecondControlSize="*" 
                                                  Orientation="Horizontal" 
                                                  VerticalAlignment="Stretch"
                                                  HorizontalAlignment="Stretch"
                                                  ControlSpacing="16"
                                                  >
-                            <Grid>
+                            <Grid Visibility="{x:Bind ViewModel.ReferVisibility,Mode=OneWay}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" RowSpacing="8" CornerRadius="4" Padding="16">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/ReferPaneHeader">回复消息</TextBlock>
+                                    <TextBlock Text="{x:Bind ViewModel.ReferMessageViewModel.Metadata.Id, Mode=OneWay}"/>
+                                </StackPanel>
                                 
+                                <Grid Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="1*" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Style="{ThemeResource CaptionTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/ReferPaneUserHeader">User:</TextBlock>
+                                        <TextBlock Grid.Row="1" 
+                                                   Style="{ThemeResource CaptionTextBlockStyle}" 
+                                                   TextWrapping="NoWrap" 
+                                                   Text="{x:Bind ViewModel.ReferMessageViewModel.UserPrompt,Mode=OneWay,Converter={StaticResource TrimStringConverter}}"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="1*" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Style="{ThemeResource CaptionTextBlockStyle}" x:Uid="ms-resource:///DiscussionPage/ReferPaneAIHeader">AI:</TextBlock>
+                                        <TextBlock Grid.Row="1" 
+                                                   Style="{ThemeResource CaptionTextBlockStyle}" 
+                                                   TextWrapping="NoWrap" 
+                                                   Text="{x:Bind ViewModel.ReferMessageViewModel.AiChatCompletion.Content,Mode=OneWay,Converter={StaticResource TrimStringConverter}}"/>
+                                    </Grid>
+                                </Grid>
+                                <Button Click="Button_Click_1" Grid.Row="1" Margin="-8,-16" Style="{ThemeResource SubtleButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <FontIcon Glyph="&#xF78A;" FontSize="16" />
+                                </Button>
                             </Grid>
                             <tkcont:RichSuggestBox KeyboardAcceleratorPlacementMode="Hidden" 
                                                 x:Name="MessageInputBox" 

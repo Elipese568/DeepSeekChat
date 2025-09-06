@@ -406,6 +406,10 @@ public class ExecuteAICommand : ICommand
                     [mods] {string.Join(", ", msg.CurrentMessageMetadata.Mods ?? [])}
                     """));
             }
+            if(msg.ReferMessage != null)
+            {
+                messages.Add(SystemChatMessage.CreateSystemMessage($"This message refered message which id is: {msg.ReferMessage.Id}"));
+            }
             if (!string.IsNullOrEmpty(msg.UserPrompt))
             {
                 messages.Add(UserChatMessage.CreateUserMessage(msg.UserPrompt));

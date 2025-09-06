@@ -216,4 +216,13 @@
   <data name="DeleteMessageConfirmDialogText" xml:space="preserve">
     <value>Once it’s gone, it’s gone. Are you sure you want to delete it?</value>
   </data>
+  <data name="ReferPaneAIHeader.Text" xml:space="preserve">
+    <value>AI:</value>
+  </data>
+  <data name="ReferPaneHeader.Text" xml:space="preserve">
+    <value>Refer message</value>
+  </data>
+  <data name="ReferPaneUserHeader.Text" xml:space="preserve">
+    <value>User:</value>
+  </data>
 </root>

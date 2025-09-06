@@ -44,8 +44,12 @@ public partial class DiscussionViewModel : ObservableRecipient
     [ObservableProperty]
     public Visibility _filePreviewerVisibility;
 
+    [ObservableProperty]
+    private ApplicationChatMessageViewModel _referMessageViewModel;
+    [ObservableProperty]
+    private Visibility _referVisibility = Visibility.Collapsed;
+
     public Visibility FileListVisibility => SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Any() ? Visibility.Visible : Visibility.Collapsed;
-    
 
     public DiscussionItemViewModel SelectedDiscussItemViewModel { get; set; }
 
@@ -96,14 +100,26 @@ public partial class DiscussionViewModel : ObservableRecipient
                 ReasoningContent = "",
                 Content = ""
             },
-            TokenUsage = new() { CompletionTokens = 0, PromptTokens = 0, TotalTokens = 0},
+            ReferMessage = ReferMessageViewModel?.InnerObject,
+            TokenUsage = new() { CompletionTokens = 0, PromptTokens = 0, TotalTokens = 0 },
             ProgressStatus = ProgressStatus.InProgress
         });
 
         if (SelectedDiscussItemViewModel.ChatOptionsViewModel.SeedAutoRefresh)
             RandomSeed();
 
-        _sendCommand.Execute(prompt);
+        
+        ReferVisibility = Visibility.Collapsed;
+
+        try
+        {
+            _sendCommand.Execute(prompt);
+        }
+        catch
+        {
+            return;
+        }
+        ReferMessageViewModel = null;
     }
 
     [RelayCommand]
