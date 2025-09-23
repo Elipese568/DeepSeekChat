@@ -370,17 +370,16 @@ public sealed partial class MainPage : Page
 
         if (args.ChosenSuggestion is NoItemSearchGroup)
             return;
-
-        if (args.ChosenSuggestion is DiscussionsResultGroup divmResult)
+        else if (args.ChosenSuggestion is DiscussionsResultGroup divmResult)
         {
             DiscussList.SelectedItem = divmResult.Item;
         }
-
-        if (args.ChosenSuggestion is MessagesResultGroup msgsResult)
+        else if (args.ChosenSuggestion is MessagesResultGroup msgsResult)
         {
             Frame.Navigate(typeof(MessagesResultViewPage), msgsResult);
         }
-        DiscussList.SelectedItem = null;
+        else
+            DiscussList.SelectedItem = null;
     }
 
     public void NavigateToSetting()
