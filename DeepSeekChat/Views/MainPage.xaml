@@ -106,13 +106,27 @@
                     <local:SearchTypeTemplateSelector>
                         <local:SearchTypeTemplateSelector.DiscussionItemSearchTemplate>
                             <DataTemplate x:DataType="local:DiscussionsResultGroup">
-                                <TextBlock Text="{x:Bind Title}"/>
+                                <Grid HorizontalAlignment="Left" VerticalAlignment="Center" ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0" FontSize="16" Glyph="&#xE8BD;"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Title}"/>
+                                </Grid>
                             </DataTemplate>
                         </local:SearchTypeTemplateSelector.DiscussionItemSearchTemplate>
                         <local:SearchTypeTemplateSelector.MessageSearchTemplate>
                             <DataTemplate x:DataType="local:MessagesResultGroup">
                                 <Grid>
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind DiscussionTitle}"/>
+                                    <Grid HorizontalAlignment="Left" VerticalAlignment="Center" ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="0" FontSize="16" Glyph="&#xE90A;"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind DiscussionTitle}"/>
+                                    </Grid>
                                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                                         <Run x:Uid="ms-resource:///MainPage/TotalMessageCountPrefix"/> <Run Text="{x:Bind MessagesViewModel.MessageViewModels.Count.ToString()}"/> <Run x:Uid="ms-resource:///MainPage/TotalMessageCountSuffix"/>
                                     </TextBlock>
