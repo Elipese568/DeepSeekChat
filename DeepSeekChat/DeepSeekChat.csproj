@@ -293,5 +293,6 @@
     <DefaultLanguage>en-us</DefaultLanguage>
     <PackageCertificateThumbprint>BC61A3DB86E7D47279EF21302AE4AB3B52216BDD</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
   </PropertyGroup>
 </Project>
