@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -53,7 +54,7 @@ namespace DeepSeekChat.Views
                     Bindings.Update();
                     GC.Collect();
                 });
-
+                
                 // Animation
                 DispatcherQueue.TryEnqueue(() =>
                 {
@@ -117,6 +118,11 @@ namespace DeepSeekChat.Views
                         GC.Collect();
                     };
                 });
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    MainPage.Current.NavigateToSetting();
+                });
+                await Task.CompletedTask;
             };
         }
 
@@ -214,7 +220,7 @@ namespace DeepSeekChat.Views
 
             var ModelNameChangeTextBox = new TextBox()
             {
-                Header = "ModelNameTextBox.Header".GetLocalized("SettingPage"),
+                Header = "ModelNameTextBox.Key".GetLocalized("SettingPage"),
                 Text = model.Name,
                 PlaceholderText = "ModelNameTextBox.PlaceholderText".GetLocalized("SettingPage"),
                 Name = "ModelNameChangeTextBox",
@@ -248,7 +254,7 @@ namespace DeepSeekChat.Views
             };
             var ModelDescriptionChangeTextBox = new TextBox()
             {
-                Header = "ModelDescriptionTextBox.Header".GetLocalized("SettingPage"),
+                Header = "ModelDescriptionTextBox.Key".GetLocalized("SettingPage"),
                 Text = model.Description,
                 PlaceholderText = "ModelDescriptionTextBox.PlaceholderText".GetLocalized("SettingPage"),
                 Name = "ModelDescriptionChangeTextBox"
@@ -259,7 +265,7 @@ namespace DeepSeekChat.Views
             content.Children.Add(ModelDescriptionChangeTextBox);
             content.Children.Add(new TextBox()
             {
-                Header = "ModelIdTextBox.Header".GetLocalized("SettingPage"),
+                Header = "ModelIdTextBox.Key".GetLocalized("SettingPage"),
                 Text = model.ModelID,
                 IsEnabled = false
             });

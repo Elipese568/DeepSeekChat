@@ -11,6 +11,7 @@
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkwui="using:CommunityToolkit.WinUI"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
+    xmlns:media="using:Microsoft.UI.Xaml.Media"
     mc:Ignorable="d">
     <Page.Resources>
         <conv:GuidToModelIndexConverter x:Key="GuidToModelIndexConverter"/>

@@ -18,6 +18,7 @@
     xmlns:tklabcont="using:CommunityToolkit.Labs.WinUI"
     xmlns:tktriggers="using:CommunityToolkit.WinUI"
     x:Name="PageObj"
+    Loaded="PageObj_Loaded"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=local:DiscussionPage}">
     <Page.Resources>
@@ -79,9 +80,10 @@
                 </StackPanel>-->
                 <!--Messages View Area & Options Setting Pane-->
                 <dscc:MessagesView MessagesSource="{x:Bind ViewModel.SelectedDiscussItemViewModel.MessagesViewModel}" 
-                                   StopGeneratingEvent="StopGeneratingButton_Click" 
-                                   RemoveMessageEvent="RemoveMessageButton_Click"
-                                   ReferMessageEvent="MessagesView_ReferMessageEvent"
+                                   StopGenerating="StopGeneratingButton_Click" 
+                                   RemoveMessage="RemoveMessageButton_Click"
+                                   ReferMessage="MessagesView_ReferMessageEvent"
+                                   x:Name="MessagesViewControl"
                                    Grid.Row="1"/>
                 <SplitView PaneBackground="{ThemeResource SolidBackgroundFillColorBase}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
                     <SplitView.Pane>

@@ -117,52 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddDiscussionButton.Content" xml:space="preserve">
-    <value>开启新对话</value>
+  <data name="SearchResultItemCountDescriptionPrefix.Text" xml:space="preserve">
+    <value>‘s Search Results in</value>
   </data>
-  <data name="ApiKeyEmptyErrorInfoBar.Message" xml:space="preserve">
-    <value>你还没有设置密钥，你需要在使用AI之前设置密钥</value>
+  <data name="SearchResultItemCountDescriptionSuffix.Text" xml:space="preserve">
+    <value> </value>
   </data>
-  <data name="ApiKeyEmptyErrorInfoBar.Title" xml:space="preserve">
-    <value>错误</value>
+  <data name="SearchResultItemCountDescription.Text" xml:space="preserve">
+    <value>'s Search Results</value>
   </data>
-  <data name="ApiKeyInvaildErrorInfoBar.Message" xml:space="preserve">
-    <value>密钥不可用，请重新设置正确的密钥</value>
+  <data name="SearchResultsView.SearchResultTypeSelector.DiscussionTypeItem.Text" xml:space="preserve">
+    <value>Discussions</value>
   </data>
-  <data name="ApiKeyInvaildErrorInfoBar.Title" xml:space="preserve">
-    <value>错误</value>
-  </data>
-  <data name="ApplicationSubtitle.Text" xml:space="preserve">
-    <value>您强而有力的AI帮手</value>
-  </data>
-  <data name="ChangeTitleMenuItem.Text" xml:space="preserve">
-    <value>更改标题</value>
-  </data>
-  <data name="GoSettingButton.Content" xml:space="preserve">
-    <value>设置</value>
-  </data>
-  <data name="InputTitleTextBox.Header" xml:space="preserve">
-    <value>标题</value>
-  </data>
-  <data name="InputTitleTextBox.PlaceholderText" xml:space="preserve">
-    <value>为这个对话起个标题</value>
-  </data>
-  <data name="RemoveMenuItem.Text" xml:space="preserve">
-    <value>删除</value>
-  </data>
-  <data name="GoSettingToCorrectActionButton.Content" xml:space="preserve">
-    <value>前往设置</value>
-  </data>
-  <data name="ServerUnavaliableErrorInfoBar.Title" xml:space="preserve">
-    <value>错误</value>
-  </data>
-  <data name="ServerUnavaliableErrorInfoBar.Message" xml:space="preserve">
-    <value>未连接到互联网、服务器网址不正确或服务不可用，请检查网络连接或稍后重试</value>
-  </data>
-  <data name="NoDiscussionTip.Text" xml:space="preserve">
-    <value>无对话</value>
-  </data>
-  <data name="QuickDiscussionItem.Content" xml:space="preserve">
-    <value>快捷讨论</value>
+  <data name="SearchResultsView.SearchResultTypeSelector.MessageTypeItem.Text" xml:space="preserve">
+    <value>Messages</value>
   </data>
 </root>

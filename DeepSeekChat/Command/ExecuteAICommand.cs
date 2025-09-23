@@ -390,7 +390,7 @@ public class ExecuteAICommand : ICommand
         foreach (var msg in item.Messages)
         {
             if (!string.IsNullOrWhiteSpace(msg.CurrentMessageMetadata.Id))
-                messages.Add($"[id] {msg.CurrentMessageMetadata.Id}");
+                messages.Add($"[id] {(msg.Id == item.Messages.Last().Id? "Current" : msg.CurrentMessageMetadata.Id)}");
             if(item.ChatOptions.DetailedRequest)
             {
                 messages.Add(SystemChatMessage.CreateSystemMessage($"""

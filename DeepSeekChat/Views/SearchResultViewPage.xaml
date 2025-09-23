@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeepSeekChat.Views.SearchResultViewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeepSeekChat.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:vm="using:DeepSeekChat.ViewModels"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tkcont="using:CommunityToolkit.WinUI.Controls" 
+    xmlns:conv="using:DeepSeekChat.Helper.Converters"
+    xmlns:cont="using:DeepSeekChat.Controls"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <ItemsPanelTemplate x:Key="SearchResultListViewItemsPanelTemplate">
+            <ItemsStackPanel Orientation="Vertical"/>
+        </ItemsPanelTemplate>
+        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}" x:Key="SearchResultListViewItemContainerTemplate">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="16,4"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}"/>
+        </Style>
+        <Style TargetType="ListView" x:Key="SearchResultListViewStyle">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource SearchResultListViewItemContainerTemplate}"/>
+            <Setter Property="ItemsPanel" Value="{StaticResource SearchResultListViewItemsPanelTemplate}"/>
+            <Setter Property="SelectionMode" Value="None"/>
+            <Setter Property="IsItemClickEnabled" Value="True"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+        <DataTemplate x:DataType="local:DiscussionsResultGroup" x:Key="DiscussionSearchResultItemTemplate">
+            <Grid HorizontalAlignment="Stretch" Height="48">
+                <TextBlock Text="{x:Bind Title}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind Item.CreationTime}" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:DataType="local:MessagesResultGroup" x:Key="MessagesSearchResultItemTemplate">
+            <Grid HorizontalAlignment="Stretch" Height="64" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="NoWrap" Text="{x:Bind DiscussionTitle}"/>
+                <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind DiscussionItem.CreationTime, Converter={StaticResource DateTimeToStringConverter}}" HorizontalAlignment="Left"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+    </Page.Resources>
+    <Grid Padding="36,40" RowSpacing="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Style="{ThemeResource TitleTextBlockStyle}"><Run>"</Run><Run Text="{x:Bind ViewModel.QueryString}"/><Run>"</Run><Run x:Uid="ms-resource:///Searching/SearchResultItemCountDescription"/></TextBlock>
+        <SelectorBar Grid.Row="1" Name="SearchResultTypeSelector">
+            <SelectorBar.RenderTransform>
+                <CompositeTransform TranslateX="-8"/>
+            </SelectorBar.RenderTransform>
+            <SelectorBarItem Tag="Discussions" x:Uid="ms-resource:///Searching/SearchResultsView/SearchResultTypeSelector/DiscussionTypeItem">
+                <SelectorBarItem.Icon>
+                    <FontIcon Glyph="&#xE8BD;"/>
+                </SelectorBarItem.Icon>
+            </SelectorBarItem>
+            <SelectorBarItem Tag="Messages"  x:Uid="ms-resource:///Searching/SearchResultsView/SearchResultTypeSelector/MessageTypeItem">
+                <SelectorBarItem.Icon>
+                    <FontIcon Glyph="&#xE90A;"/>
+                </SelectorBarItem.Icon>
+            </SelectorBarItem>
+        </SelectorBar>
+        <tkcont:SwitchPresenter Margin="0,-18,0,0" Grid.Row="2" Value="{Binding SelectedItem.Tag,ElementName=SearchResultTypeSelector}">
+            <tkcont:Case Value="Discussions">
+                <Grid>
+                    <ListView Grid.Row="0" 
+                              Style="{StaticResource SearchResultListViewStyle}" 
+                              ItemTemplate="{StaticResource DiscussionSearchResultItemTemplate}"
+                              ItemsSource="{x:Bind ViewModel.DiscussionResults}">
+                    </ListView>
+                    <TextBlock HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               Style="{ThemeResource BodyStrongTextBlockStyle}" 
+                               Visibility="{x:Bind ViewModel.DiscussionResults.Count,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=true,Mode=OneWay}" 
+                               x:Uid="ms-resource:///MainPage/NoResultTip"/>
+                </Grid>
+            </tkcont:Case>
+            <tkcont:Case Value="Messages">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               Style="{ThemeResource BodyStrongTextBlockStyle}" 
+                               Visibility="{x:Bind ViewModel.MessageResults.Count,Converter={StaticResource EmptyVisibilityConverter},ConverterParameter=true,Mode=OneWay}" 
+                               x:Uid="ms-resource:///MainPage/NoResultTip"/>
+                    <Grid BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}" Visibility="{x:Bind ViewModel.MessageResults.Count,Converter={StaticResource EmptyVisibilityConverter},Mode=OneWay}"  BorderThickness="1" CornerRadius="4" Background="{ThemeResource LayerFillColorDefaultBrush}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Padding="8" Grid.Column="0" Background="{ThemeResource LayerFillColorAltBrush}" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                            <ListView ItemsSource="{x:Bind ViewModel.MessageResults}" 
+                                      ItemTemplate="{StaticResource MessagesSearchResultItemTemplate}"
+                                      x:Name="MessageListSelector">
+                            </ListView>
+                        </Grid>
+                        <Grid Grid.Column="1" Padding="16">
+                            <cont:MessagesView MessagesSource="{Binding SelectedItem.MessagesViewModel,ElementName=MessageListSelector}"
+                                               Mode="Previewing"
+                                               GotoMessage="MessagesView_GotoMessage"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </tkcont:Case>
+        </tkcont:SwitchPresenter>
+    </Grid>
+</Page>

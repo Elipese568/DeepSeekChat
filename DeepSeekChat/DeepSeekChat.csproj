@@ -144,6 +144,8 @@
     <None Remove="Styles\Text.xaml" />
     <None Remove="Views\AdvanceOperationPage.xaml" />
     <None Remove="Views\DiscussionPage.xaml" />
+    <None Remove="Views\MessagesResultViewPage.xaml" />
+    <None Remove="Views\SearchResultViewPage.xaml" />
     <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +218,16 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SearchResultViewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\MessagesResultViewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\MessagesView.xaml">

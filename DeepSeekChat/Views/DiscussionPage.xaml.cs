@@ -22,177 +22,197 @@ using Windows.UI;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace DeepSeekChat.Views
+namespace DeepSeekChat.Views;
+
+public enum DiscussionNavigationMode
+{
+    Navigate,
+    LocateMessage
+}
+
+public class DiscussionViewNavigationParameters
+{
+    public DiscussionNavigationMode Mode { get; set; }
+    public DiscussionItemViewModel ItemViewModel { get; set; }
+    public ApplicationChatMessageViewModel? LocateMessageObject { get; set; }
+}
+
+public class StreamingModeToSelectionModeConverter : IValueConverter
 {
 
-    public class StreamingModeToSelectionModeConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return !(bool)value ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+        return !(bool)value ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
     }
 
-    public class ModIdToDescriptiveConverter : IValueConverter
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        public const string DetailedRequest = "detailed_request";
+        throw new NotImplementedException();
+    }
+}
 
-        public object Convert(object value, Type targetType, object parameter, string language)
+public class ModIdToDescriptiveConverter : IValueConverter
+{
+    public const string DetailedRequest = "detailed_request";
+
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return value switch
         {
-            return value switch
-            {
-                DetailedRequest => "DetailedRequestArgumentOption.Text".GetLocalized("DiscussionPage"),
-                _ => value
-            };
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            DetailedRequest => "DetailedRequestArgumentOption.Text".GetLocalized("DiscussionPage"),
+            _ => value
+        };
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class TrimStringConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return ((value as string) ?? "").Trim();
     }
 
-    public class TrimStringConverter : IValueConverter
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        throw new NotImplementedException();
+    }
+}
+public sealed partial class DiscussionPage : Page
+{
+    private class _ReplyMessageSelectSuggestionItem
+    {
+        private int _pri;
+        public _ReplyMessageSelectSuggestionItem()
         {
-            return ((value as string) ?? "").Trim();
+            _pri = Random.Shared.Next();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            return _pri;
         }
     }
-    public sealed partial class DiscussionPage : Page
+    public DiscussionViewModel ViewModel { get; set; }
+
+    public DiscussionPage()
     {
-        private class _ReplyMessageSelectSuggestionItem
+        DataContext = ViewModel;
+        this.InitializeComponent();
+    }
+    private DiscussionViewNavigationParameters _parameter;
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        var parameter = (DiscussionViewNavigationParameters)e.Parameter;
+        ViewModel = new(parameter.ItemViewModel);
+        base.OnNavigatedTo(e);
+
+        _parameter = parameter;
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        OptionPane.IsPaneOpen = !OptionPane.IsPaneOpen;
+    }
+
+    private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.StopGenerating();
+    }
+
+    private void TokenView_FileItemRemoving(object sender, CommunityToolkit.Labs.WinUI.TokenItemRemovingEventArgs e)
+    {
+        FileViewModel fileVm = e.Item as FileViewModel;
+        ViewModel.RemoveFile(fileVm);
+    }
+
+    private void FilePresent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+    {
+        FileViewModel fileVm = ((Grid)sender).Tag as FileViewModel;
+        ViewModel.PreviewFileViewModel = fileVm;
+        ViewModel.FilePreviewerVisibility = Visibility.Visible;
+    }
+
+    private async void RemoveMessageButton_Click(object sender, RoutedEventArgs e)
+    {
+        var result = await ContentDialogHelper.ShowMessageDialog("NeedConfirmOperationText".GetLocalized(), "DeleteMessageConfirmDialogText".GetLocalized("DiscussionPage"), "DeleteText".GetLocalized(), "CancelText".GetLocalized(), "", ContentDialogButton.Close, XamlRoot);
+
+        if (result != ContentDialogResult.Primary)
+            return;
+
+        ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
+        ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.Remove(messageVm.InnerObject);
+        if(ViewModel.ReferMessageViewModel?.Id == messageVm.Id)
         {
-            private int _pri;
-            public _ReplyMessageSelectSuggestionItem()
-            {
-                _pri = Random.Shared.Next();
-            }
-
-            public override int GetHashCode()
-            {
-                return _pri;
-            }
-        }
-        public DiscussionViewModel ViewModel { get; set; }
-
-        public DiscussionPage()
-        {
-            DataContext = ViewModel;
-            this.InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            ViewModel = new((DiscussionItemViewModel)e.Parameter);
-            base.OnNavigatedTo(e);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            OptionPane.IsPaneOpen = !OptionPane.IsPaneOpen;
-        }
-
-        private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.StopGenerating();
-        }
-
-        private void TokenView_FileItemRemoving(object sender, CommunityToolkit.Labs.WinUI.TokenItemRemovingEventArgs e)
-        {
-            FileViewModel fileVm = e.Item as FileViewModel;
-            ViewModel.RemoveFile(fileVm);
-        }
-
-        private void FilePresent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            FileViewModel fileVm = ((Grid)sender).Tag as FileViewModel;
-            ViewModel.PreviewFileViewModel = fileVm;
-            ViewModel.FilePreviewerVisibility = Visibility.Visible;
-        }
-
-        private async void RemoveMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await ContentDialogHelper.ShowMessageDialog("NeedConfirmOperationText".GetLocalized(), "DeleteMessageConfirmDialogText".GetLocalized("DiscussionPage"), "DeleteText".GetLocalized(), "CancelText".GetLocalized(), "", ContentDialogButton.Close, XamlRoot);
-
-            if (result != ContentDialogResult.Primary)
-                return;
-
-            ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
-            ViewModel.SelectedDiscussItemViewModel.MessagesViewModel.Remove(messageVm.InnerObject);
-            if(ViewModel.ReferMessageViewModel?.Id == messageVm.Id)
-            {
-                ViewModel.ReferMessageViewModel = null;
-                ViewModel.ReferVisibility = Visibility.Collapsed;
-            }
-        }
-
-        private void RegenerateMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void SendKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            sender.IsEnabled = false; // 禁用加速器，防止重复触发
-
-            if(ViewModel.SendCommand.CanExecute(ViewModel.InputingPrompt))
-                ViewModel.SendCommand.Execute(ViewModel.InputingPrompt);
-
-            args.Handled = true; // 标记事件已处理
-        }
-
-        private void FilePreviewPresenter_FilePreviewClosing(object sender, EventArgs e)
-        {
-            ViewModel.FilePreviewerVisibility = Visibility.Collapsed;
-        }
-
-        private void MessageInputBox_SuggestionRequested(
-            CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
-            CommunityToolkit.WinUI.Controls.SuggestionRequestedEventArgs args)
-        {
-            sender.ItemsSource = ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Where(x => x.Name.Contains(args.QueryText));
-        }
-
-        private void MessageInputBox_SuggestionChosen(
-            CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
-            CommunityToolkit.WinUI.Controls.SuggestionChosenEventArgs args)
-        {
-            if (args.SelectedItem is FileViewModel fileVM)
-                args.DisplayText = fileVM.Name;
-            else if (args.SelectedItem is _ReplyMessageSelectSuggestionItem rmssi)
-                args.DisplayText = "ReplyMessageWillDisplayHere";
-        }
-
-        private void MessageInputBox_TextChanged(CommunityToolkit.WinUI.Controls.RichSuggestBox sender, RoutedEventArgs args)
-        {
-            sender.TextDocument.GetText(Microsoft.UI.Text.TextGetOptions.None, out string text);
-            text = text.TrimEnd('\r');
-            ViewModel.InputingPrompt = text;
-        }
-
-
-        private async void MessagesView_ReferMessageEvent(object sender, RoutedEventArgs e)
-        {
-            ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
-            ViewModel.ReferMessageViewModel = messageVm;
-            ViewModel.ReferVisibility = Visibility.Visible;
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ReferVisibility = Visibility.Collapsed;
             ViewModel.ReferMessageViewModel = null;
+            ViewModel.ReferVisibility = Visibility.Collapsed;
         }
+    }
+
+    private void RegenerateMessageButton_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void SendKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        sender.IsEnabled = false; // 禁用加速器，防止重复触发
+
+        if(ViewModel.SendCommand.CanExecute(ViewModel.InputingPrompt))
+            ViewModel.SendCommand.Execute(ViewModel.InputingPrompt);
+
+        args.Handled = true; // 标记事件已处理
+    }
+
+    private void FilePreviewPresenter_FilePreviewClosing(object sender, EventArgs e)
+    {
+        ViewModel.FilePreviewerVisibility = Visibility.Collapsed;
+    }
+
+    private void MessageInputBox_SuggestionRequested(
+        CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
+        CommunityToolkit.WinUI.Controls.SuggestionRequestedEventArgs args)
+    {
+        sender.ItemsSource = ViewModel.SelectedDiscussItemViewModel.FilesViewModel.FileViewModels.Where(x => x.Name.Contains(args.QueryText));
+    }
+
+    private void MessageInputBox_SuggestionChosen(
+        CommunityToolkit.WinUI.Controls.RichSuggestBox sender, 
+        CommunityToolkit.WinUI.Controls.SuggestionChosenEventArgs args)
+    {
+        if (args.SelectedItem is FileViewModel fileVM)
+            args.DisplayText = fileVM.Name;
+        else if (args.SelectedItem is _ReplyMessageSelectSuggestionItem rmssi)
+            args.DisplayText = "ReplyMessageWillDisplayHere";
+    }
+
+    private void MessageInputBox_TextChanged(CommunityToolkit.WinUI.Controls.RichSuggestBox sender, RoutedEventArgs args)
+    {
+        sender.TextDocument.GetText(Microsoft.UI.Text.TextGetOptions.None, out string text);
+        text = text.TrimEnd('\r');
+        ViewModel.InputingPrompt = text;
+    }
+
+
+    private async void MessagesView_ReferMessageEvent(object sender, RoutedEventArgs e)
+    {
+        ApplicationChatMessageViewModel messageVm = (sender as Button).DataContext as ApplicationChatMessageViewModel;
+        ViewModel.ReferMessageViewModel = messageVm;
+        ViewModel.ReferVisibility = Visibility.Visible;
+    }
+
+    private void Button_Click_1(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ReferVisibility = Visibility.Collapsed;
+        ViewModel.ReferMessageViewModel = null;
+    }
+
+    private void PageObj_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (_parameter.Mode == DiscussionNavigationMode.LocateMessage && _parameter.LocateMessageObject is var lmo)
+            MessagesViewControl.ScrollIntoView(lmo);
     }
 }

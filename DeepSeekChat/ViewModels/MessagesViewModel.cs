@@ -15,6 +15,11 @@ public class MessagesViewModel : WrapperViewModelBase<List<ApplicationChatMessag
         MessageViewModels = new(wrapped.Select(x => new ApplicationChatMessageViewModel(x)));
     }
 
+    public MessagesViewModel(List<ApplicationChatMessageViewModel> temped) : base(temped.Select(x => x.InnerObject).ToList())
+    {
+        MessageViewModels = new(temped);
+    }
+
     private ObservableCollection<ApplicationChatMessageViewModel> _wrapedViewModels;
 
     public ObservableCollection<ApplicationChatMessageViewModel> MessageViewModels

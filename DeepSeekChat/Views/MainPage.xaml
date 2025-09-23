@@ -25,6 +25,7 @@
         <conv:EmptyVisibilityConverter x:Key="EmptyVisibilityConverter"/>
         <conv:StringSubSplitConverter x:Key="StringSubSplitConverter"/>
         <tkconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
         <DataTemplate x:DataType="vm:DiscussionItemViewModel" x:Key="DiscussionItemNavigationViewItemDataTemplate">
             <Grid RightTapped="ListViewItem_RightTapped" Tag="{Binding}">
                 <Grid Padding="0,16">
@@ -52,9 +53,10 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <CollectionViewSource x:Name="SearchResultsCVS" IsSourceGrouped="True"/>
     </Page.Resources>
     <NavigationView x:Name="DiscussList" IsBackButtonVisible="Collapsed" CacheMode="BitmapCache" PaneDisplayMode="Left" SelectionChanged="DiscussList_SelectionChanged" IsPaneToggleButtonVisible="False" IsSettingsVisible="True" ItemInvoked="NavigationView_ItemInvoked">
-        <NavigationView.PaneCustomContent>
+        <NavigationView.PaneHeader>
             <StackPanel>
                 <Grid Grid.Row="0" HorizontalAlignment="Center" ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
@@ -97,7 +99,38 @@
                     </InfoBar>
                 </StackPanel>
             </StackPanel>
-        </NavigationView.PaneCustomContent>
+        </NavigationView.PaneHeader>
+        <NavigationView.AutoSuggestBox>
+            <AutoSuggestBox x:Uid="ms-resource:///MainPage/DisucssionSearchBox" TextChanged="AutoSuggestBox_TextChanged" QuerySubmitted="AutoSuggestBox_QuerySubmitted" SuggestionChosen="AutoSuggestBox_SuggestionChosen" ItemsSource="{x:Bind SearchResultsCVS.View, Mode=OneWay}">
+                <AutoSuggestBox.ItemTemplateSelector>
+                    <local:SearchTypeTemplateSelector>
+                        <local:SearchTypeTemplateSelector.DiscussionItemSearchTemplate>
+                            <DataTemplate x:DataType="local:DiscussionsResultGroup">
+                                <TextBlock Text="{x:Bind Title}"/>
+                            </DataTemplate>
+                        </local:SearchTypeTemplateSelector.DiscussionItemSearchTemplate>
+                        <local:SearchTypeTemplateSelector.MessageSearchTemplate>
+                            <DataTemplate x:DataType="local:MessagesResultGroup">
+                                <Grid>
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind DiscussionTitle}"/>
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                        <Run x:Uid="ms-resource:///MainPage/TotalMessageCountPrefix"/> <Run Text="{x:Bind MessagesViewModel.MessageViewModels.Count.ToString()}"/> <Run x:Uid="ms-resource:///MainPage/TotalMessageCountSuffix"/>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </local:SearchTypeTemplateSelector.MessageSearchTemplate>
+                        <local:SearchTypeTemplateSelector.NoItemSearchTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Uid="ms-resource:///MainPage/NoResultTip"/>
+                            </DataTemplate>
+                        </local:SearchTypeTemplateSelector.NoItemSearchTemplate>
+                    </local:SearchTypeTemplateSelector>
+                </AutoSuggestBox.ItemTemplateSelector>
+                <AutoSuggestBox.QueryIcon>
+                    <FontIcon Glyph="&#xF78B;" FontSize="{StaticResource AutoSuggestBoxIconFontSize}" />
+                </AutoSuggestBox.QueryIcon>
+            </AutoSuggestBox>
+        </NavigationView.AutoSuggestBox>
         <NavigationView.FooterMenuItems>
             <NavigationViewItem SelectsOnInvoked="False" Tag="QuickDiscussion" x:Uid="ms-resource:///MainPage/QuickDiscussionItem">
                 <NavigationViewItem.Icon>

@@ -36,10 +36,10 @@ namespace DeepSeekChat
 
         private bool _inQuickMode = false;
 
-        public void DrillInQuickDiscussionMode(DiscussionItemViewModel ndVM)
+        public void DrillInQuickDiscussionMode(DiscussionViewNavigationParameters parameter)
         {
             _inQuickMode = true;
-            ContentFrame.Navigate(typeof(DiscussionPage), ndVM, new DrillInNavigationTransitionInfo());
+            ContentFrame.Navigate(typeof(DiscussionPage), parameter, new DrillInNavigationTransitionInfo());
         }
 
         private async void MyTitleBar_BackRequested(TitleBar sender, object args)
@@ -78,7 +78,7 @@ namespace DeepSeekChat
             {
                 TextBox textBox = new()
                 {
-                    Header = "InputTitleTextBox.Header".GetLocalized("MainPage"),
+                    Header = "InputTitleTextBox.Key".GetLocalized("MainPage"),
                     PlaceholderText = "InputTitleTextBox.PlaceholderText".GetLocalized("MainPage"),
                     MaxLength = 32
                 };

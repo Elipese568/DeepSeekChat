@@ -220,7 +220,11 @@ public partial class MainPageViewModel : ObservableRecipient
     public async Task QuickDiscussion()
     {
         var current = _discussionItemService.CreateNewDiscussionItem("QuickDiscussionItem.Content".GetLocalized("MainPage"));
-        var ndVM = new DiscussionItemViewModel(current);
+        var ndVM = new DiscussionViewNavigationParameters()
+        {
+            ItemViewModel = new DiscussionItemViewModel(current),
+            Mode = DiscussionNavigationMode.Navigate
+        };
         MainWindow.Current.DrillInQuickDiscussionMode(ndVM);
         await Task.CompletedTask;
     }

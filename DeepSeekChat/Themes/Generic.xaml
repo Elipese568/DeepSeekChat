@@ -26,8 +26,8 @@
     </Style>
 
     <DataTemplate x:Key="TextMessageTemplate">
-        <Grid CornerRadius="4" 
-              Padding="12" 
+        <Grid CornerRadius="4"
+              Padding="10" 
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
               BorderThickness="1" 
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
@@ -104,4 +104,13 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ItemsPanelTemplate x:Key="MessagesLastItemInViewItemsPanelTemplate">
+        <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
+                         VerticalAlignment="Bottom"/>
+    </ItemsPanelTemplate>
+    <ItemsPanelTemplate x:Key="MessagesNormalItemsPanelTemplate">
+        <ItemsStackPanel ItemsUpdatingScrollMode="KeepItemsInView"
+                         VerticalAlignment="Top"/>
+    </ItemsPanelTemplate>
 </ResourceDictionary>
