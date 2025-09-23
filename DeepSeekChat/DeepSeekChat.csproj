@@ -81,6 +81,8 @@
     <Content Remove="Assets\StoreLogo.scale-400.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\ApiProviderIcons\DeepSeekIcon.png" />
+    <None Remove="Assets\ApiProviderIcons\SiliconFlowIcon.png" />
     <None Remove="Assets\AppIconLight.png" />
     <None Remove="Assets\LargeTile.scale-100.png" />
     <None Remove="Assets\LargeTile.scale-125.png" />
@@ -141,11 +143,10 @@
     <None Remove="Controls\MessageTokenUsagePresenter.xaml" />
     <None Remove="ExceptionPreviewWindow.xaml" />
     <None Remove="MainPage.xaml" />
+    <None Remove="SetupWindow.xaml" />
     <None Remove="Styles\Text.xaml" />
     <None Remove="Views\AdvanceOperationPage.xaml" />
     <None Remove="Views\DiscussionPage.xaml" />
-    <None Remove="Views\MessagesResultViewPage.xaml" />
-    <None Remove="Views\SearchResultViewPage.xaml" />
     <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -218,6 +219,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="SetupWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SearchResultViewPage.xaml">

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="DeepSeekChat.SetupWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeepSeekChat"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tkcont="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d"
+    Title="SetupWindow">
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid Height="Auto">
+        <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TitleBar Title="DeepSeekChat" x:Name="MyTitleBar">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="ms-appx:///Assets/AppIconLight.png"/>
+            </TitleBar.IconSource>
+        </TitleBar>
+        <Grid Grid.Row="1" Padding="36,36" ColumnSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}">初始配置</TextBlock>
+            <Grid Grid.Row="1" RowSpacing="24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <SelectorBar x:Name="StepSelector"  SelectionChanged="StepSelector_SelectionChanged">
+                    <SelectorBar.RenderTransform>
+                        <CompositeTransform TranslateX="-12"/>
+                    </SelectorBar.RenderTransform>
+                    <SelectorBarItem IsSelected="True" Tag="Starting" Text="开始吧!"/>
+                    <SelectorBarItem Tag="AI_Service" Text="AI服务"/>
+                    <SelectorBarItem Tag="Models" Text="对话模型"/>
+                </SelectorBar>
+                <NavigationViewItemSeparator Margin="-36,0" VerticalAlignment="Bottom">
+                    <NavigationViewItemSeparator.RenderTransform>
+                        <CompositeTransform TranslateY="6"/>
+                    </NavigationViewItemSeparator.RenderTransform>
+                </NavigationViewItemSeparator>
+                <tkcont:SwitchPresenter Grid.Row="1" Value="{Binding SelectedItem.Tag,ElementName=StepSelector}">
+                    <tkcont:Case Value="Starting">
+                        <Grid>
+                            <TextBlock>初始启动需要一些配置<LineBreak/>点击"下一步"进行进一步设置。</TextBlock>
+                            <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">下一步</Button>
+                        </Grid>
+                    </tkcont:Case>
+                    <tkcont:Case Value="AI_Service">
+                        <Grid>
+                            <StackPanel Spacing="8">
+                                <ComboBox x:Name="ApiProviderSelector" Header="API服务供应商">
+                                    <ComboBoxItem Tag="DSC">
+                                        <StackPanel Tag="DSC" Spacing="8" Orientation="Horizontal">
+                                            <ImageIcon Source="/Assets/ApiProviderIcons/DeepSeekIcon.png" Height="16" Width="16"/>
+                                            <TextBlock VerticalAlignment="Center">DeepSeek(Offical)</TextBlock>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem Tag="SF">
+                                        <StackPanel Tag="SF" Spacing="8" Orientation="Horizontal">
+                                            <ImageIcon Source="/Assets/ApiProviderIcons/SiliconFlowIcon.png" Height="16" Width="16"/>
+                                            <TextBlock VerticalAlignment="Center">硅基流动</TextBlock>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem Tag="Others">
+                                        <StackPanel Tag="Others" Spacing="8" Orientation="Horizontal">
+                                            <FontIcon Glyph="&#xE712;" FontSize="16"/>
+                                            <TextBlock VerticalAlignment="Center">其他</TextBlock>
+                                        </StackPanel>
+                                    </ComboBoxItem>
+                                </ComboBox>
+                                <tkcont:SwitchPresenter Value="{Binding SelectedItem.Tag,ElementName=ApiProviderSelector}">
+                                    <tkcont:Case Value="Others">
+                                        <TextBox Header="API服务器URI"/>
+                                    </tkcont:Case>
+                                </tkcont:SwitchPresenter>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Header="API密钥" Grid.Column="0"/>
+                                    <Button Grid.Column="1" VerticalAlignment="Bottom">检查</Button>
+                                </Grid>
+                            </StackPanel>
+                            <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">下一步</Button>
+                        </Grid>
+                    </tkcont:Case>
+                    <tkcont:Case Value="Models">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>当前供应商:</TextBlock>
+                                <tkcont:SwitchPresenter Grid.Row="1" Value="{Binding SelectedItem.Tag, ElementName=ApiProviderSelector}">
+                                    <tkcont:Case Value="DSC">
+                                        <TextBlock>DeepSeek(Offical)</TextBlock>
+                                    </tkcont:Case>
+                                    <tkcont:Case Value="SF">
+                                        <TextBlock>硅基流动</TextBlock>
+                                    </tkcont:Case>
+                                    <tkcont:Case Value="Others">
+                                        <TextBlock>其他</TextBlock>
+                                    </tkcont:Case>
+                                </tkcont:SwitchPresenter>
+                            </StackPanel>
+                            <tkcont:SwitchPresenter Grid.Row="1" Value="{Binding SelectedItem.Tag, ElementName=ApiProviderSelector}">
+                                <!-- DeepSeek - DSC -->
+                                <tkcont:Case Value="DSC">
+                                    <ListView ItemsSource="{x:Bind DscItems}"
+                                          SelectionMode="None"
+                                          CharacterSpacing="4">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="local:ModelItem">
+                                                <Grid RowSpacing="8" Padding="0,16">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center" Grid.Row="0"/>
+                                                    <TextBlock Text="{x:Bind Tag}" VerticalAlignment="Center" 
+                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                           Grid.Row="1"/>
+                                                    <NavigationViewItemSeparator Grid.Row="1" VerticalAlignment="Bottom">
+                                                        <NavigationViewItemSeparator.RenderTransform>
+                                                            <CompositeTransform TranslateY="18"/>
+                                                        </NavigationViewItemSeparator.RenderTransform>
+                                                    </NavigationViewItemSeparator>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </tkcont:Case>
+
+                                <!-- DeepSeek - SF -->
+                                <tkcont:Case Value="SF">
+                                    <ListView ItemsSource="{x:Bind SfItems}"
+                                          SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="local:ModelItem">
+                                                <Grid RowSpacing="4" Padding="0,16">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center" Grid.Row="0"/>
+                                                    <TextBlock Text="{x:Bind Tag}" VerticalAlignment="Center" 
+                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                           Grid.Row="1"/>
+                                                    <NavigationViewItemSeparator Grid.Row="1" VerticalAlignment="Bottom">
+                                                        <NavigationViewItemSeparator.RenderTransform>
+                                                            <CompositeTransform TranslateY="18"/>
+                                                        </NavigationViewItemSeparator.RenderTransform>
+                                                    </NavigationViewItemSeparator>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </tkcont:Case>
+                                <tkcont:Case Value="Others">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">无预设，需自行添加</TextBlock>
+                                </tkcont:Case>
+                            </tkcont:SwitchPresenter>
+                        </Grid>
+                    </tkcont:Case>
+                </tkcont:SwitchPresenter>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

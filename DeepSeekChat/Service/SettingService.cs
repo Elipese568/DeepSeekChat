@@ -64,4 +64,5 @@ class SettingService
     public const string SETTING_IS_USE_DISPLAY_LANGUAGE_ANSWER = "IsUseDisplayLanguageAnswer";
     public const string SETTING_SERVER_ENDPOINT = "ServerEndpoint";
     public const string SETTING_USE_MARKDOWN_RENDER = "UseMarkdownRender";
+    public const string SETTING_ALREADY_SETUP = "AlreadySetup";
 }

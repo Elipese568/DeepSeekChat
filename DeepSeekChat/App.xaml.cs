@@ -186,8 +186,17 @@ namespace DeepSeekChat
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            if(GetService<SettingService>().Read(SettingService.SETTING_ALREADY_SETUP) == null)
+            {
+                await EnterSetupMode();
+
+                if (GetService<SettingService>().Read(SettingService.SETTING_ALREADY_SETUP) != null)
+                    EnterUserMode();
+                
+                return;
+            }
             NamedPipeClientStream clientStream = new NamedPipeClientStream(ExceptionDataPipeName);
             try
             {
@@ -212,11 +221,21 @@ namespace DeepSeekChat
             {
                 clientStream.Dispose();
                 Debug.WriteLine(GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, ""));
-                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
-                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
-                m_window = new MainWindow();
-                m_window.Activate();
+                EnterUserMode();
             }
+        }
+        private async Task EnterSetupMode()
+        {
+            m_window = new SetupWindow();
+            await WindowHelper.WaitForWindowCloseAsync(m_window);
+
+        }
+        private void EnterUserMode()
+        {
+            Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = GetService<SettingService>().Read(SettingService.SETTING_DISPLAY_LANGUAGE, "zh-Hans-CN");
+            m_window = new MainWindow();
+            m_window.Activate();
         }
 
         private void ProcessExceptionNotification(PipeData pipeData)
