@@ -285,7 +285,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <DefaultLanguage>en-us</DefaultLanguage>
-    <PackageCertificateThumbprint>BC61A3DB86E7D47279EF21302AE4AB3B52216BDD</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>7BBB0647C85E1D6D68CD144F67B48A1A6032F6D4</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <PackageCertificateKeyFile>DeepSeekChat_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
 </Project>

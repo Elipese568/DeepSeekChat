@@ -9,7 +9,7 @@
 
   <Identity
     Name="Elipese.DeepSeekChat"
-    Publisher="CN=142EE321-56D7-4809-A287-4150F4D70443"
+    Publisher="CN=Elipese"
     Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="f42e31d0-e13f-460f-b693-0fbfe705f93f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
