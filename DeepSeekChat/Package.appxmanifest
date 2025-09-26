@@ -12,7 +12,7 @@
     Publisher="CN=142EE321-56D7-4809-A287-4150F4D70443"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="c94c903b-4f3a-4481-aae3-29ab28d4b4e6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="f42e31d0-e13f-460f-b693-0fbfe705f93f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>DeepSeekChat</DisplayName>

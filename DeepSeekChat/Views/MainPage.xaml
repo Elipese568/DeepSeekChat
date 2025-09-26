@@ -10,15 +10,15 @@
     xmlns:conv="using:DeepSeekChat.Helper.Converters"
     xmlns:tkconv="using:CommunityToolkit.WinUI.Converters"
     xmlns:hmkp="using:DeepSeekChat.Helper.Markups"
-    xmlns:vm="using:DeepSeekChat.ViewModels" d:DataContext="{d:DesignInstance Type=local:MainPage}"
+    xmlns:vm="using:DeepSeekChat.ViewModels"
     Loaded="Page_Loaded"
     x:Name="MainPage_obj"
     mc:Ignorable="d">
     <Page.Resources>
         <MenuFlyout x:Name="RightClickCommands">
-            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" Text="{hmkp:I18N Key=RemoveMenuItem.Text,Map=MainPage}">
+            <MenuFlyoutItem x:Name="RemoveDiscussionMenuItem" Command="{x:Bind ViewModel.RemoveDiscussionCommand}" x:Uid="ms-resource:///MainPage/RemoveMenuItem">
             </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" Text="{hmkp:I18N Key=ChangeTitleMenuItem.Text,Map=MainPage}">
+            <MenuFlyoutItem x:Name="ChangeDiscussionTitleMenuItem" Command="{x:Bind ViewModel.ChangeDiscussionTitleCommand}" x:Uid="ms-resource:///MainPage/changeTitleMenuItem">
             </MenuFlyoutItem>
         </MenuFlyout>
         <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>

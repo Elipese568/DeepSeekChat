@@ -225,4 +225,7 @@
   <data name="ReferPaneUserHeader.Text" xml:space="preserve">
     <value>User:</value>
   </data>
+  <data name="MessageInputBox.PlaceholderText" xml:space="preserve">
+    <value>Here input prompt(symbol &amp; to reference file)</value>
+  </data>
 </root>
