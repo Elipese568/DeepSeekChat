@@ -241,6 +241,7 @@
                             </Grid>
                             <tkcont:RichSuggestBox KeyboardAcceleratorPlacementMode="Hidden" 
                                                 x:Name="MessageInputBox" 
+                                                x:Uid="ms-resource:///DiscussionPage/MessageInputBox"
                                                 ClipboardCopyFormat="PlainText"
                                                 ClipboardPasteFormat="PlainText"
                                                 DisabledFormattingAccelerators="All"
@@ -248,7 +249,6 @@
                                                 VerticalAlignment="Stretch"
                                                 SuggestionRequested="MessageInputBox_SuggestionRequested"
                                                 SuggestionChosen="MessageInputBox_SuggestionChosen"
-                                                PlaceholderText="Here input prompt(symbol &amp; to reference file)"
                                                 TextChanged="MessageInputBox_TextChanged">
                                 <tkcont:RichSuggestBox.ItemTemplate>
                                     <DataTemplate x:DataType="vm:FileViewModel">
