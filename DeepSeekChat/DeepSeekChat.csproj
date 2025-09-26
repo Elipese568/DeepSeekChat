@@ -293,5 +293,7 @@
     <DefaultLanguage>en-us</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+    <PackageCertificateThumbprint>8EC43C8D31791A2D3852C06C79BBF018DFE16818</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>DeepSeekChat_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
 </Project>
