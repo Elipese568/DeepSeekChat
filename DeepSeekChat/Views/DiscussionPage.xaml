@@ -174,7 +174,7 @@
                                                            HorizontalAlignment="Left" 
                                                            Margin="0,0,8,0" 
                                                            x:Name="AnalyzingText" 
-                                                           Visibility="{x:Bind Status, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
+                                                           Visibility="{x:Bind Status, Mode=TwoWay, Converter={StaticResource AnalyzeStatusToVisibilityConverter}, ConverterParameter=false}"
                                                            x:Uid="ms-resource:///DiscussionPage/AnalyzingCaptionTextBlock">
                                                 </TextBlock>
                                                 <TextBlock Grid.Column="1" 
