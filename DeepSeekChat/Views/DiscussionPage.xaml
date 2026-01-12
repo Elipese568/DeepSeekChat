@@ -85,7 +85,7 @@
                                    ReferMessage="MessagesView_ReferMessageEvent"
                                    x:Name="MessagesViewControl"
                                    Grid.Row="1"/>
-                <SplitView PaneBackground="{ThemeResource SolidBackgroundFillColorBase}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
+                <SplitView PaneBackground="{ThemeResource AcrylicInAppFillColorDefaultBrush}" Grid.Row="0" Margin="0,-40,-36,-16"  Grid.RowSpan="2" PanePlacement="Right" DisplayMode="Overlay" x:Name="OptionPane">
                     <SplitView.Pane>
                         <dscc:ChatOptionSettingPane ChatOptionsViewModel="{x:Bind ViewModel.SelectedDiscussItemViewModel.ChatOptionsViewModel,Mode=OneWay}"/>
                     </SplitView.Pane>

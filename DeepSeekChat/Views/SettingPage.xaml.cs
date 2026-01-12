@@ -146,7 +146,7 @@ namespace DeepSeekChat.Views
 
         private void SettingsCard_Click(object sender, RoutedEventArgs e)
         {
-            Launcher.LaunchUriAsync(new("https://github.com/Elipese568/DeepSeekChat/issues"));
+            Launcher.LaunchUriAsync(new(ProjectProperties.IssuesPageUrl));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
